@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.Toolbar
+    android:id="@+id/top_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:background="@drawable/round_corners_sub_toolbar_green"
+    android:elevation="4dp"
+    android:gravity="center"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/sub_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        />
+
+</android.support.v7.widget.Toolbar>

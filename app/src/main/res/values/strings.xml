@@ -1,0 +1,208 @@
+<resources>
+    <string name="app_name">Smart Plug</string>
+    <string name="str_create_account"><u>Create Account</u></string>
+    <string name="str_forgot_password"><u>Forgot Password ?</u></string>
+    <string name="title_activity_reset_password">Reset Password</string>
+    <string name="submit">Submit</string>
+    <string name="login">Login</string>
+    <string name="reset">Reset Password</string>
+    <string name="title_activity_create_account">Create Account</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="deviceList">List of Devices</string>
+    <string name="startSmartConfig">Initialize Device</string>
+    <string name="account_sent">Please check your e-mail for the activation url. This account will be disable after 7 days if you do not activate it. In the meantime, you may start using the account.</string>
+    <string name="create_account_dialog_text">Account Created</string>
+    <string name="reset_password_dialog_text">Password Reset Sent</string>
+    <string name="reset_password">Password reset details has been sent to your email, please check the email for further instructions.</string>
+    <string name="add_device">To start, please make sure you are connected to the WiFi that the JSmartPlug will be connected to. Then Click on te button below.</string>
+    <string name="id_username">Username</string>
+    <string name="id_password">Password</string>
+    <string name="btn_login">Login</string>
+    <string name="lnk_createAccount">Create Account</string>
+    <string name="lnk_forgetPassword">Forget Password</string>
+    <string name="title_passwordResetSent">Password Reset Sent</string>
+    <string name="msg_passwordResetBtn">Password reset details has been sent to your email, please check the email for further instructions.</string>
+    <string name="title_resetPassword">Reset Password</string>
+    <string name="title_initializeDevices">Initialize Devices</string>
+    <string name="msg_enterSSID_password.">Please enter your current SSID and password. </string>
+    <string name="msg_pleaseWait.">Please wait.</string>
+    <string name="msg_enterNewUserName">Enter User Name</string>
+    <string name="btn_submit">Submit</string>
+    <string name="title_accountCreated">Account Created</string>
+    <string name="msg_accountCreatedBtn">Please check your e-mail for the activation url. This account will be disable after 7 days if you do not activate it. In the meantime, you may start using the account.</string>
+    <string name="id_createAccount">Create Account</string>
+    <string name="msg_enterEmail">Enter Your Email</string>
+    <string name="id_email">Email</string>
+    <string name="msg_enterNewPassword">Enter A New Password</string>
+    <string name="msg_confirmPassword">Confirm Password</string>
+    <string name="btn_main">Main</string>
+    <string name="title_addDevice">Add Device</string>
+    <string name="msg_toStartBtn">To start, please scan the QR-Code sticker that came with the box, or manually use your phone’s WIFI to connect to the SSID listed.</string>
+    <string name="btn_initializeDevices">Initialize Devices</string>
+    <string name="title_unableToUseSelectedNetwork">Unable To Use Selected Network</string>
+    <string name="msg_selectedNetworkBtn">The selected network you have chosen is unable to connect to the IOT server. Please check your settings and try aging.</string>
+    <string name="btn_addDevice">Add Device</string>
+    <string name="btn_addingDevice">Adding Device</string>
+    <string name="title_wifi">WIFI</string>
+    <string name="id_chooseNetwork">Choose a Network…</string>
+    <string name="id_other">Other…</string>
+    <string name="title_deviceAdded">Device Added</string>
+    <string name="btn_done">Done</string>
+    <string name="title_deskLamp">Desk Lamp</string>
+    <string name="btn_nightLight">Night Light</string>
+    <string name="btn_coNormal">CO</string>
+    <string name="btn_outlet">Outlet</string>
+    <string name="btn_ir">IR</string>
+    <string name="title_bedroom">Bedroom</string>
+    <string name="title_logout">Logout</string>
+    <string name="msg_logoutBtn">Are you sure you want to logout? You will need to login again to access your devices.</string>
+    <string name="btn_no">No</string>
+    <string name="btn_yes">Yes</string>
+    <string name="title_settings">Settings</string>
+    <string name="id_changePassword">Change Password</string>
+    <string name="id_logout">Logout</string>
+    <string name="btn_setting">Setting</string>
+    <string name="title_changePassword">Change Password</string>
+    <string name="msg_enterOldPassword">Enter Old Password</string>
+    <string name="title_removeAction">Remove Action</string>
+    <string name="msg_removeActionBtn">Are you sure you want to remove this scheduled action?</string>
+    <string name="title_scheduling">Scheduling</string>
+    <string name="id_deskLamp">Desk Lamp</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_save">Save</string>
+    <string name="title_scheduleAction">Schedule Action</string>
+    <string name="msg_daysofWeek">Days of Week</string>
+    <string name="msg_timeEachDay">Time Each Day</string>
+    <string name="msg_action">Action</string>
+    <string name="btn_select">Select</string>
+    <string name="id_sevice">Device</string>
+    <string name="id_jsPlug">JS Plug</string>
+    <string name="id_icon">Icon</string>
+    <string name="id_name">Name</string>
+    <string name="id_wifi">WIFI</string>
+    <string name="id_macID">Mac ID</string>
+    <string name="msg_deskLampBtn">To configure this device, please join the network the device is connected to.</string>
+    <string name="lnk_removeAndReset"><u>Remove And Reset Device</u></string>
+    <string name="title_removeAndReset">Remove And Reset Device</string>
+    <string name="msg_removeAndResetBtn">Are you sure you want reset the device and remove it from your account?</string>
+    <string name="id_irTransmitter">IR Transmitter</string>
+    <string name="id_program">Program</string>
+    <string name="id_cosensor">CO sensor</string>
+    <string name="id_hardware">Hardware</string>
+    <string name="id_version">Version</string>
+    <string name="id_firmware">Firmware</string>
+    <string name="btn_deskLamp">Desk Lamp</string>
+    <string name="btn_wifi">WIFI</string>
+    <string name="id_mode">Mode</string>
+    <string name="id_ipAddress">IP Address</string>
+    <string name="id_subnetMask">Subnet Mask</string>
+    <string name="id_gateway">Gateway</string>
+    <string name="lnk_renewLease">Renew Lease</string>
+    <string name="btn_remove">Remove</string>
+    <string name="title_other">Other</string>
+    <string name="id_security">Security</string>
+    <string name="id_none">None</string>
+    <string name="btn_join">Join</string>
+    <string name="title_irControl">IR Control</string>
+    <string name="btn_tvOn_off">TV on/off</string>
+    <string name="btn_acOn_off">AC on/off</string>
+    <string name="btn_acFullPwr">AC full pwr</string>
+    <string name="title_title">Title</string>
+    <string name="title_editCommand">Edit Command</string>
+    <string name="btn_chooseBrand">Choose brand and model</string>
+    <string name="btn_detectBrand">Detect brand and model</string>
+    <string name="btn_recordCustom">Record custom command</string>
+    <string name="msg_delectIr">Please point your remote at the JSPlug and press the indicated buttons.<br>
+    1.Press the “power” button</br>
+2.Press the “Volume” button
+3.Device recognized as: Hitachi A/C</string>
+    "
+    <string name="btn_addNow">Add now</string>
+    <string name="title_customCommand">Custom Command</string>
+    <string name="id_recordIrCommand">Record IR command</string>
+    "<string name="msg_recordIr">Please point your remote at the JSPlug and press the button you wish to record.
+
+1.Button recorded.</string>"
+    <string name="btn_recordAgain">Record again</string>
+    <string name="btn_testCommand">Test command</string>
+    <string name="msg_co_warning">CO Warning</string>
+    <string name="msg_ha_warning">Over current Warning</string>
+    <string name="add_timer">Add Timer ?</string>
+    <string name="no_timer_set">No Timer Set</string>
+    <string name="title_add_new">Add New</string>
+    <string name="ir_recorded">(Recorded)</string>
+    <string name="title_device">Device</string>
+    <string name="notify_on_power_outage">Notify on Power Outage</string>
+    <string name="notify_on_co_warning">Notify on CO Warning</string>
+    <string name="notify_on_timer_activated">Notify on Timer Activated</string>
+    <string name="gcm_send_message">GCM send message</string>
+    <string name="token_error_message">Token Error Message</string>
+    <string name="connect_to_wifi"><u>Connect to WiFi</u></string>
+    <!--<string name="gcm_defaultSenderId">725253730549</string>-->
+    <string name="create_account_error">Error Creating New Account</string>
+    <string name="password_compare_error">Passwords are not the same</string>
+    <string name="no_udp_Connection">No UDP Connection</string>
+    <string name="new_device_found">New Device Found</string>
+    <string name="USB_not_plugged_in">USB not plugged in</string>
+    <string name="delay_5_minutes">Timer Delay 5 Minutes Sent</string>
+    <string name="delay_10_minutes">Timer Delay 10 Minutes Sent</string>
+    <string name="delay_60_minutes">Timer Delay 1 Hour Sent</string>
+    <string name="delay_30_minutes">Timer Delay 30 Minutes Sent</string>
+    <string name="please_wait">Wait a moment while we process your request, thank you</string>
+    <string name="btn_ota"><u>Update Firmware</u></string>
+    <string name="ip_not_found">Device Not Connected, Please refresh APP within device local network</string>
+    <string name="please_wait_done">Loading... Please wait</string>
+    <string name="update_alarms_on_server">Update Alarms on Device</string>
+    <string name="alarms_sent_success">Alarms Sent Successfully</string>
+    <string name="add_new_timer">Add New Timer</string>
+    <string name="show_modify_timer">Show/Modify Timer</string>
+    <string name="Snooze_5_Minutes">Snooze 5 Minutes</string>
+    <string name="Snooze_10_Minutes">Snooze 10 Minutes</string>
+    <string name="Snooze_30_Minutes">Snooze 30 Minutes</string>
+    <string name="Snooze_1_Hour">Snooze 1 Hour</string>
+
+    <string name="instructions">Please Swipe</string>
+    <string-array name="backgrounds">
+        <item>Quick Start Guide</item>
+        <item>Login</item>
+        <item>Add a New Device</item>
+        <item>Turn on Your JSPlug</item>
+        <item>Initialize the Device</item>
+        <item>Add the Device</item>
+        <item>Ready to Begin !</item>
+    </string-array>
+
+    <string name="help1">Using this app, you can easily access your new JSPlug from anywhere in the world !</string>
+    <string name="help2">Create an account or login to your current account</string>
+    <string name="help3">If the add device screen is not shown, press the (+) button to show the add device screen</string>
+    <string name="help4">Plug in your JSPlug, and wait for the green indicator light to turn on</string>
+    <string name="help5">Press the "Initialize Devices" button and enter the SSID and password for your WiFi router</string>
+    <string name="help6">Your JSPlug should now be listed in the list. Simply tap it to add the device to your account</string>
+    <string name="help7"></string>
+
+    <string name="cancelir">Stop Scanning</string>
+    <string name="ir_timeout">IR Scanning Time Out</string>
+    <string name="processing_ir_command">Processing IR Command</string>
+    <string name="processing_command">Processing Command</string>
+
+    <string name="password_reseted">Password has been changed successfully</string>
+    <string name="delay_plus_five">Snooze 5 More Minutes</string>
+    <string name="delay_plus_ten">Snooze 10 More Minutes</string>
+    <string name="delay_plus_thirty">Snooze 30 More Minutes</string>
+    <string name="delay_plus_sixty">Snooze 1 More Hour</string>
+    <string name="delay_cancel">Cancel Snooze</string>
+    <string name="msg_snooze_cancel">Snooze Cancelled</string>
+
+    <string name="timer_set">Set Timer</string>
+    <string name="timer_set_snoozing">Set Timer Snoozing </string>
+
+    <string name="error_adding_device">Error adding device, make sure the device was has not been activated in another account.</string>
+    <string name="error_adding_new_device">Error adding device, please try again in a few seconds</string>
+    <string name="connection_error">Network Error, device unreachable, please make sure you have internet or you are in the same network as your device</string>
+    <string name="general_error">An Error Occurred, please try again</string>
+    <string name="timer">Timer</string>
+    <string name="snooze">Snoozed</string>
+    <string name="minutes">Minutes</string>
+
+</resources>

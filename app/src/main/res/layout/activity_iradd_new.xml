@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.jiee.smartplug.IRAddNew">
+
+    <include layout="@layout/toolbar" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/top_toolbar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="66dp"
+        android:layout_marginBottom="16dp"
+        android:paddingBottom="30dp"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
+        android:background="@drawable/round_corners"
+        >
+
+        <include layout="@layout/toolbar_sub_green_toolbar" />
+
+        <TableLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+            <TableRow android:layout_marginTop="5dp" android:layout_gravity="center_horizontal">
+                <RelativeLayout
+                    android:layout_height="110dp"
+                    android:layout_width="100dp"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    android:id="@+id/btn_choose"
+                    android:background="@drawable/round_corners_btn_m1_ir"
+                    android:layout_margin="5dp">
+                    <ImageButton
+                        android:id="@+id/choose_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ir_choose"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginLeft="32dp"
+                        android:background="@null"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/btn_chooseBrand"
+                        android:textColor="#FFF"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginBottom="5dp"
+                        android:textAlignment="center"/>
+                </RelativeLayout>
+            </TableRow>
+            <TableRow android:layout_marginTop="5dp" android:layout_gravity="center_horizontal">
+                <RelativeLayout
+                    android:layout_height="110dp"
+                    android:layout_width="100dp"
+                    android:visibility="gone"
+                    android:layout_gravity="center"
+                    android:id="@+id/btn_detect"
+                    android:background="@drawable/round_corners_btn_m1_ir"
+                    android:layout_margin="5dp">
+                    <ImageButton
+                        android:id="@+id/detect_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ir_detect"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginLeft="32dp"
+                        android:background="@null"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/btn_detectBrand"
+                        android:textColor="#FFF"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginBottom="5dp"
+                        android:textAlignment="center"/>
+                </RelativeLayout>
+            </TableRow>
+            <TableRow android:layout_marginTop="5dp" android:layout_gravity="center_horizontal">
+                <RelativeLayout
+                    android:layout_height="110dp"
+                    android:layout_width="100dp"
+                    android:layout_gravity="center"
+                    android:id="@+id/btn_create"
+                    android:background="@drawable/round_corners_btn_m1_ir"
+                    android:layout_margin="5dp">
+                    <ImageButton
+                        android:id="@+id/record_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ir_record"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginLeft="32dp"
+                        android:background="@null"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/btn_recordCustom"
+                        android:textColor="#FFF"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginBottom="5dp"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:textAlignment="center"/>
+                </RelativeLayout>
+            </TableRow>
+        </TableLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

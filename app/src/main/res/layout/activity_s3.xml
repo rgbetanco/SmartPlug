@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/gray"
+    tools:context="com.jiee.smartplug.S3">
+
+    <include layout="@layout/toolbar_2" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout_s0"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical"
+        android:background="@drawable/round_corners">
+
+        <include layout="@layout/toolbar_sub_red_toolbar" />
+
+        <TextView
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/msg_daysofWeek"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_sunday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="S"
+                android:background="@drawable/btn_bkgnd"/>
+
+            <Button
+                android:id="@+id/btn_monday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="M"
+                android:background="@drawable/btn_bkgnd"/>
+
+            <Button
+                android:id="@+id/btn_tuesday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="T"
+                android:background="@drawable/btn_bkgnd"/>
+
+            <Button
+                android:id="@+id/btn_wednesday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="W"
+                android:background="@drawable/btn_bkgnd"/>
+
+            <Button
+                android:id="@+id/btn_thursday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="T"
+                android:background="@drawable/btn_bkgnd"/>
+
+            <Button
+                android:id="@+id/btn_friday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="F"
+                android:background="@drawable/btn_bkgnd"/>
+
+            <Button
+                android:id="@+id/btn_saturday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="S"
+                android:background="@drawable/btn_bkgnd"/>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:id="@+id/txt_timeeachday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/msg_timeEachDay"/>
+
+            <Button
+                android:layout_marginTop="27dp"
+                android:layout_weight="1"
+                android:id="@+id/init_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="From"
+                android:background="@drawable/btn_bkgnd"
+                />
+
+            <Button
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="27dp"
+                android:layout_weight="1"
+                android:id="@+id/end_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/init_time"
+                android:text="To"
+                android:background="@drawable/btn_bkgnd"
+                />
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/msg_action"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/img_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/lamp"/>
+            <TextView
+                android:id="@+id/txt_action"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="16dp"
+                android:minWidth="150dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name"/>
+            <ImageView
+                android:id="@+id/img_action_service"
+                android:padding="14dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:src="@drawable/svc_0_big"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:layout_marginTop="30dp"
+                android:layout_weight="1"
+                android:id="@+id/init_IR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="IR Code"
+                android:background="@drawable/btn_bkgnd"
+                />
+            <Button
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="30dp"
+                android:layout_weight="1"
+                android:id="@+id/end_IR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="IR Code"
+                android:background="@drawable/btn_bkgnd"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

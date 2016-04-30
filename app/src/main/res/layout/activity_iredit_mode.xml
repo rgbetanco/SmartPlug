@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.jiee.smartplug.IREditMode">
+
+    <include layout="@layout/toolbar_4" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/top_toolbar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="66dp"
+        android:layout_marginBottom="16dp"
+        android:paddingBottom="100dp"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
+        android:background="@drawable/round_corners"
+        >
+
+        <include layout="@layout/toolbar_sub_green_toolbar" />
+
+            <GridLayout
+                android:orientation="horizontal"
+                android:id="@+id/ir_edit_linearlayout"
+                android:columnCount="2"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:layout_gravity="center"
+                    android:layout_margin="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_add_ir"
+                    android:src="@drawable/btn_add"
+                    android:background="@null"
+                    android:layout_marginTop="16dp"
+                    />
+
+            </GridLayout>
+
+    </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
