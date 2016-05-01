@@ -43,6 +43,8 @@ public class MySQLHelper extends SQLiteOpenHelper {
     public static final String COLUMN_NOTIFY_POWER = "notify_power";
     public static final String COLUMN_NOTIFY_CO = "notify_co";
     public static final String COLUMN_NOTIFY_TIMER = "notify_timer";
+    public static final String COLUMN_INIT_IR = "init_ir";
+    public static final String COLUMN_END_IR = "end_ir";
 
     // alarm table
     public static final String TABLE_ALARMS = "alarms";
@@ -104,7 +106,7 @@ public class MySQLHelper extends SQLiteOpenHelper {
             + " integer primary key autoincrement, " + COLUMN_DEVICE_ID +" text not null, " + COLUMN_SERVICE_ID
             + " integer not null, "+ COLUMN_DOW + " integer not null, "+ COLUMN_INIT_HOUR +" integer not null, "+ COLUMN_INIT_MINUTES
             + " integer not null, "+COLUMN_END_HOUR+" integer not null, "+ COLUMN_END_MINUTES +" integer not null, "+ COLUMN_SNOOZE
-            + " integer);";
+            + " integer, "+COLUMN_INIT_IR+" integer, "+COLUMN_END_IR+" integer );";
 
     private static final String TABLE_CREATE_PARAMS = "create table "
             + TABLE_PARAMS + "(" + COLUMN_ID
@@ -113,7 +115,8 @@ public class MySQLHelper extends SQLiteOpenHelper {
 
     private static final String TABLE_CREATE_IRGROUPS = "create table "
             + TABLE_IRGROUPS + "(" + COLUMN_ID
-            + " integer primary key autoincrement, " + COLUMN_NAME + " text, " + COLUMN_ICON + " text, "+ COLUMN_POSITION + " integer, "+COLUMN_SID+" integer unique); ";
+            + " integer primary key autoincrement, " + COLUMN_NAME + " text, " + COLUMN_ICON + " text, "+ COLUMN_POSITION
+            + " integer, "+COLUMN_SID+" integer unique, "+COLUMN_MAC+" text); ";
 
     private static final String TABLE_CREATE_ICONS = "create table "
             + TABLE_ICONS + "(" + COLUMN_ID + " integer primary key autoincrement, "+ COLUMN_SID + " text, "
@@ -205,17 +208,15 @@ public class MySQLHelper extends SQLiteOpenHelper {
 
     public Cursor getIcons(){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("select * from " + TABLE_ICONS, null);
-        return res;
+        return db.rawQuery("select * from " + TABLE_ICONS, null);
     }
 
     public Cursor getIconByUrl(String url){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("select * from " + TABLE_ICONS + " where url = '" + url + "'", null);
-        return res;
+        return db.rawQuery("select * from " + TABLE_ICONS + " where url = '" + url + "'", null);
     }
 
-    public int insertIRGroup(String desc, String icon, int position, int sid){
+    public int insertIRGroup(String desc, String devid, String icon, int position, int sid){
         SQLiteDatabase read = this.getReadableDatabase();
         Cursor c = read.rawQuery("select * from "+TABLE_IRGROUPS+" where "+COLUMN_SID+" = "+sid, null );
         if(c.getCount() == 0) {
@@ -225,6 +226,7 @@ public class MySQLHelper extends SQLiteOpenHelper {
             cv.put(COLUMN_ICON, icon);
             cv.put(COLUMN_POSITION, position);
             cv.put(COLUMN_SID, sid);
+            cv.put(COLUMN_MAC, devid);
             try {
                 db.insert(TABLE_IRGROUPS, null, cv);
             } catch (Exception e) {
@@ -233,11 +235,17 @@ public class MySQLHelper extends SQLiteOpenHelper {
         }
         c.close();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cx = db.rawQuery("select seq from sqlite_sequence where name='"+TABLE_IRGROUPS+"'", null);
+        Cursor cx = db.rawQuery("select seq from sqlite_sequence where name='" + TABLE_IRGROUPS + "'", null);
         cx.moveToFirst();
         int i = cx.getInt(0);
         cx.close();
         return i;
+    }
+
+    public Cursor getIRGroupByName(String groupName){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("select * from "+TABLE_IRGROUPS+" where "+COLUMN_NAME+" = '"+groupName+"'", null);
+        return res;
     }
 
     public Cursor getIRGroups(){
@@ -310,6 +318,12 @@ public class MySQLHelper extends SQLiteOpenHelper {
     public Cursor getIRGroupBySID(int id){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res =  db.rawQuery("select * from " + TABLE_IRGROUPS + " where " + COLUMN_SID + " = " + id, null);
+        return res;
+    }
+
+    public Cursor getIRGroupByMac(String mac){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("select * from "+TABLE_IRGROUPS+" where "+COLUMN_MAC+" = '"+mac+"'", null);
         return res;
     }
 
@@ -644,6 +658,8 @@ public class MySQLHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_END_HOUR, a.getEnd_hour());
         contentValues.put(COLUMN_END_MINUTES, a.getEnd_minute());
         contentValues.put(COLUMN_SNOOZE, a.getSnooze());
+        contentValues.put(COLUMN_INIT_IR, a.getInit_ir());
+        contentValues.put(COLUMN_END_IR, a.getEnd_ir());
         db.insert(TABLE_ALARMS, null, contentValues);
         return true;
     }
@@ -659,6 +675,8 @@ public class MySQLHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_END_HOUR, a.getEnd_hour());
         contentValues.put(COLUMN_END_MINUTES, a.getEnd_minute());
         contentValues.put(COLUMN_SNOOZE, a.getSnooze());
+        contentValues.put(COLUMN_INIT_IR, a.getInit_ir());
+        contentValues.put(COLUMN_END_IR, a.getEnd_ir());
         if(db.update(TABLE_ALARMS, contentValues, COLUMN_ID + " = "+ a.getAlarm_id(), null) == 1){
             System.out.println("ALARM UPDATED SUCCESSFULLY");
         } else {

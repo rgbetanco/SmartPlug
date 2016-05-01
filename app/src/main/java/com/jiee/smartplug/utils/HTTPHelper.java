@@ -777,7 +777,7 @@ public class HTTPHelper {
                         JSONObject group = groupArray.getJSONObject(i);
                         sql.deleteIRGroupBySID(Integer.parseInt(group.getString("id")));
                         sql.deleteIRCodes(Integer.parseInt(group.getString("id")));
-                        sql.insertIRGroup(group.getString("title"), group.getString("icon"), 0, Integer.parseInt(group.getString("id")));
+                        sql.insertIRGroup(group.getString("title"), devid, group.getString("icon"), 0, Integer.parseInt(group.getString("id")));
                         JSONArray buttons = group.getJSONArray("buttons");
                         for (int j = 0; j < buttons.length(); j++) {
                             JSONObject button = buttons.getJSONObject(j);

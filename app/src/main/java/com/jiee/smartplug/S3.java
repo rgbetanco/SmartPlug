@@ -40,6 +40,8 @@ public class S3 extends AppCompatActivity {
 
     Button init_time;
     Button end_time;
+    Button init_IR;
+    Button end_IR;
     private int init_hour;
     private int end_hour;
     private int init_minute;
@@ -64,6 +66,8 @@ public class S3 extends AppCompatActivity {
     MySQLHelper sql;
 
     byte dow = 0b00000000;
+    byte init_ir_code = 0;
+    byte end_ir_code = 0;
 
     UDPCommunication udp;
     BroadcastReceiver timers_sent_successfully;
@@ -127,6 +131,27 @@ public class S3 extends AppCompatActivity {
 
         TextView sub_red_title = (TextView) findViewById(R.id.sub_toolbar_red);
         sub_red_title.setText(R.string.title_scheduleAction);
+
+        init_IR = (Button) findViewById(R.id.init_IR);
+        end_IR = (Button) findViewById(R.id.end_IR);
+
+        init_IR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(S3.this, IRListCommands.class);
+                i.putExtra("status", 0);
+                startActivityForResult(i, 3);  // 3 was random chosen
+            }
+        });
+
+        end_IR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(S3.this, IRListCommands.class);
+                i.putExtra("status", 1);
+                startActivityForResult(i, 3);  // 3 was random chosen
+            }
+        });
 
         monday = (Button) findViewById(R.id.btn_monday);
         tuesday = (Button) findViewById(R.id.btn_tuesday);
@@ -247,6 +272,8 @@ public class S3 extends AppCompatActivity {
                 a.setInit_minute(init_minute);
                 a.setEnd_hour(end_hour);
                 a.setEnd_minute(end_minute);
+                a.setInit_ir(init_ir_code);
+                a.setEnd_ir(end_ir_code);
                 a.setSnooze(0);
 
                 new Thread(new Runnable() {
@@ -290,6 +317,55 @@ public class S3 extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        sql = new MySQLHelper(this);
+        if(resultCode == 3){
+            int localStatus = data.getIntExtra("status", -1);
+            String groupName = data.getStringExtra("group");
+            String IRName = data.getStringExtra("irName");
+
+            int groupId = 0;
+            int IRId = -1;
+
+            Cursor c = sql.getIRGroupByName(groupName);
+            if(c.getCount()>0){
+                c.moveToFirst();
+                groupId = c.getInt(4);
+                for (int i = 0; i < c.getCount(); i++){
+                    Cursor cur = sql.getIRCodesByGroup(groupId);
+                    if(cur.getCount()>0){
+                        cur.moveToFirst();
+                        for(int j = 0; j < cur.getCount(); j++){
+                            if(IRName.equals(cur.getString(2))){
+                                IRId = cur.getInt(3);
+                            }
+                            cur.moveToNext();
+                        }
+                    }
+                    cur.close();
+                    c.moveToNext();
+                }
+            }
+            c.close();
+
+            switch (localStatus){
+                case 0:
+                    init_IR.setText(IRName);
+                    init_ir_code = (byte)IRId;
+                    break;
+                case 1:
+                    end_IR.setText(IRName);
+                    end_ir_code = (byte)IRId;
+                    break;
+            }
+
+            //System.out.println("init_ir_code: "+init_ir_code+", end_ir_code: "+end_ir_code);
+
+        }
+
     }
 
     public void setDOW(){

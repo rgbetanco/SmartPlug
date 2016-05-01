@@ -83,7 +83,7 @@ public class R2_EditItem extends Activity {
                         iconId = cur.getInt(1);
                     }
 
-                    final int groupId = sql.insertIRGroup(groupName, filePath, 0, -1);
+                    final int groupId = sql.insertIRGroup(groupName, devid, filePath, 0, -1);
 
                     Miscellaneous mis = new Miscellaneous();
                     final int res = mis.getResolution(R2_EditItem.this);

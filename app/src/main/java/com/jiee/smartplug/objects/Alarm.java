@@ -15,7 +15,25 @@ public class Alarm {
     int init_minute;
     int end_hour;
     int end_minute;
+    int init_ir;
+    int end_ir;
     int snooze;
+
+    public int getInit_ir() {
+        return init_ir;
+    }
+
+    public void setInit_ir(int init_ir) {
+        this.init_ir = init_ir;
+    }
+
+    public int getEnd_ir() {
+        return end_ir;
+    }
+
+    public void setEnd_ir(int end_ir) {
+        this.end_ir = end_ir;
+    }
 
     public int getAlarm_id() {
         return alarm_id;

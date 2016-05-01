@@ -447,8 +447,10 @@ public class UDPCommunication {
                     timers[i++] = (byte) ((serviceId >> 8) & 0xff);
                     timers[i++] = (byte) (serviceId & 0xff);
                     timers[i++] = 0x01;
-                    timers[i++] = 0x01;
-                    timers[i++] = 0x00;
+                    int init_ir = c.getInt(9);
+                    timers[i++] = (byte)init_ir;
+                    int end_ir = c.getInt(10);
+                    timers[i++] = (byte)end_ir;
                     int dow = c.getInt(3);
                     timers[i++] = (byte) (dow & 0xff);
                     int initHour = c.getInt(4);
@@ -505,8 +507,10 @@ public class UDPCommunication {
                         timers[i++] = (byte) ((serviceId >> 8) & 0xff);
                         timers[i++] = (byte) (serviceId & 0xff);
                         timers[i++] = 0x01;
-                        timers[i++] = 0x01;
-                        timers[i++] = 0x00;
+                        int init_ir = c.getInt(9);
+                        timers[i++] = (byte)init_ir;
+                        int end_ir = c.getInt(10);
+                        timers[i++] = (byte)end_ir;
                         int dow = c.getInt(3);
                         timers[i++] = (byte) (dow & 0xff);
                         int initHour = c.getInt(4);

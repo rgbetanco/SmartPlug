@@ -26,8 +26,7 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".ResetPassword"
             android:configChanges="orientation"
@@ -108,11 +107,11 @@
             android:name=".services.UDPListenerService"
             android:enabled="true"
             android:exported="true" />
-        <service android:name="org.eclipse.paho.android.service.MqttService"></service>
-        <service android:name=".services.M1ServicesService"></service>
-        <service android:name=".services.ListDevicesServicesService"></service>
-        <service android:name=".services.gcmNotificationService"></service>
-        <service android:name=".services.ListDevicesUpdateAlarmService"></service>
+        <service android:name="org.eclipse.paho.android.service.MqttService" />
+        <service android:name=".services.M1ServicesService" />
+        <service android:name=".services.ListDevicesServicesService" />
+        <service android:name=".services.gcmNotificationService" />
+        <service android:name=".services.ListDevicesUpdateAlarmService" />
 
         <activity
             android:name=".M1"
@@ -186,6 +185,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".IRListCommands"></activity>
     </application>
 
 </manifest>
