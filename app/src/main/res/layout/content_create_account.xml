@@ -71,7 +71,7 @@
             android:paddingLeft="10dp"
             android:textSize="15sp"
             android:inputType="textPassword"
-            android:hint="Enter Password"
+            android:hint="@string/id_password"
             android:background="@drawable/edit_text_design"
             android:id="@+id/txt_password" />
 
@@ -85,7 +85,7 @@
             android:paddingLeft="10dp"
             android:textSize="15sp"
             android:inputType="textPassword"
-            android:hint="Confirm Password"
+            android:hint="@string/msg_confirmPassword"
             android:background="@drawable/edit_text_design"
             android:id="@+id/txt_confirm_password" />
 

@@ -50,6 +50,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Locale;
 import java.util.TooManyListenersException;
@@ -83,12 +84,10 @@ public class ListDevices extends Activity {
     JSmartPlug jsTemp;
     String ip;
     String name;
-    Miscellaneous misc;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private ProgressBar mRegistrationProgressBar;
     private TextView mInformationTextView;
     UDPCommunication con;
-    GlobalVariables gb;
     Intent mDNS;
     String ipParam, macParam;
     Handler mHandler;
@@ -100,13 +99,14 @@ public class ListDevices extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Miscellaneous.mParentActivity = new WeakReference<Activity>(this);
+
         setContentView(R.layout.activity_list_devices);
-        gb = new GlobalVariables();
-        misc = new Miscellaneous();
 
         sharedpreferences = getSharedPreferences("properties", Context.MODE_PRIVATE);
 
-        token = misc.getToken(this);
+        token = Miscellaneous.getToken(this);
 
         registerOnGCM();
 
@@ -115,7 +115,7 @@ public class ListDevices extends Activity {
         con = new UDPCommunication();
 
         networkUtil = new NetworkUtil();
-        mySQLHelper = new MySQLHelper(this);
+        mySQLHelper = HTTPHelper.getDB(this);
 
         bt = (ImageButton)findViewById(R.id.btn_new_plugs);
 
@@ -327,7 +327,7 @@ public class ListDevices extends Activity {
             public void onReceive(Context act, Intent intent) {
                 mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(act);
-                boolean sentToken = sharedPreferences.getBoolean(gb.SENT_TOKEN_TO_SERVER, false);
+                boolean sentToken = sharedPreferences.getBoolean(GlobalVariables.SENT_TOKEN_TO_SERVER, false);
                 if (sentToken) {
                     Toast.makeText(act, R.string.gcm_send_message, Toast.LENGTH_SHORT).show();
                 } else {
@@ -349,7 +349,6 @@ public class ListDevices extends Activity {
 
      //   if(!sharedpreferences.getString("alarms", "outdated").equals("updated")) {
             Cursor c = mySQLHelper.getPlugData();
-            ListDevicesUpdateAlarmService.activity = this;
             if (c.getCount() > 0) {
                 c.moveToFirst();
                 for (int i = 0; i < c.getCount(); i++) {
@@ -487,7 +486,7 @@ public class ListDevices extends Activity {
             registerReceiver(UpdateAlarmServiceDone, new IntentFilter("UpdateAlarmServiceDone"));
             registerReceiver(http_device_status, new IntentFilter("http_device_status"));
             LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                    new IntentFilter(gb.REGISTRATION_COMPLETE));
+                    new IntentFilter(GlobalVariables.REGISTRATION_COMPLETE));
     //    }
     }
     @Override
@@ -516,7 +515,6 @@ public class ListDevices extends Activity {
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        mySQLHelper.close();
         stopService(mDNS);
         stopRepeatingTask();
 
@@ -526,7 +524,7 @@ public class ListDevices extends Activity {
     }
 
     public void registerOnGCM(){
-        if (misc.checkPlayServices(this)) {
+        if (Miscellaneous.checkPlayServices(this)) {
             // Start IntentService to register this application with GCM.
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
@@ -557,7 +555,8 @@ public class ListDevices extends Activity {
     }
 
     public void removeGrayOutView(){
-        l.getData();
+        if( l!=null )
+            l.getData();
         overlay.invalidate(); // update the view
         overlay.setVisibility(View.INVISIBLE);
     }

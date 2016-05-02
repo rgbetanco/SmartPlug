@@ -44,6 +44,7 @@ import com.jiee.smartplug.utils.NetworkUtil;
 import com.jiee.smartplug.utils.UDPCommunication;
 import com.squareup.picasso.Picasso;
 
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 public class M1 extends AppCompatActivity {
@@ -81,8 +82,6 @@ public class M1 extends AppCompatActivity {
     ImageView jsplug_icon;
     TextView plug_name;
     Animation animation;
-    Context context = this;
-    Activity activity = this;
     NetworkUtil networkUtil;
     RelativeLayout warning_layout;
     TextView warning_text;
@@ -92,7 +91,6 @@ public class M1 extends AppCompatActivity {
     int relay = 0;
     int nightlight = 0;
     JSmartPlug js;
-    GlobalVariables gb = new GlobalVariables();
     Intent i;
     UDPListenerService mBoundService;
     boolean mServiceBound = false;
@@ -113,15 +111,14 @@ public class M1 extends AppCompatActivity {
     int irSnooze = 0;
     public static boolean deviceStatusChangedFlag = false;
     String token;
-    Miscellaneous misc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_m1);
 
-        misc = new Miscellaneous();
-        token = misc.getToken(this);
+        token = Miscellaneous.getToken(this);
 
         udp = new UDPCommunication();
         http = new Http();
@@ -198,7 +195,7 @@ public class M1 extends AppCompatActivity {
         btn_ir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(context, IREditMode.class);
+                Intent i = new Intent(M1.this, IREditMode.class);
                 if (mac != null && !mac.isEmpty()) {
                     i.putExtra("ip", ip);
                     i.putExtra("devid", mac);
@@ -212,7 +209,7 @@ public class M1 extends AppCompatActivity {
         btn_layout_ir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(context, IREditMode.class);
+                Intent i = new Intent(M1.this, IREditMode.class);
                 //       if(ip != null && !ip.isEmpty()){
                 i.putExtra("ip", ip);
                 startActivity(i);
@@ -244,7 +241,7 @@ public class M1 extends AppCompatActivity {
             }
         });
 
-        sql = new MySQLHelper(this);
+        sql = HTTPHelper.getDB(this);
 
         overlay = (RelativeLayout)findViewById(R.id.overlay);
         int opacity = 200; // from 0 to 255
@@ -382,13 +379,13 @@ public class M1 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //I need to check on the database if there are alarms already set to this device
-                Cursor c = sql.getAlarmData(mac, gb.ALARM_RELAY_SERVICE);
+                Cursor c = sql.getAlarmData(mac, GlobalVariables.ALARM_RELAY_SERVICE);
                 if (c.getCount() > 0) {
-                    final M1SnoozeDialog m1d = new M1SnoozeDialog(activity, mac, relaySnooze, gb.ALARM_RELAY_SERVICE);
+                    final M1SnoozeDialog m1d = new M1SnoozeDialog(M1.this, mac, relaySnooze, GlobalVariables.ALARM_RELAY_SERVICE);
                     m1d.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     m1d.show();
                 } else {
-                    final YesNoDialog cd = new YesNoDialog(activity, 2, mac, gb.ALARM_RELAY_SERVICE);   // 1 = logout, 2 = M1 : device_id : service_id
+                    final YesNoDialog cd = new YesNoDialog(M1.this, 2, mac, GlobalVariables.ALARM_RELAY_SERVICE);   // 1 = logout, 2 = M1 : device_id : service_id
                     cd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     cd.show();
                 }
@@ -399,13 +396,13 @@ public class M1 extends AppCompatActivity {
         btn_nightled_alarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor c = sql.getAlarmData(mac, gb.ALARM_NIGHLED_SERVICE);
+                Cursor c = sql.getAlarmData(mac, GlobalVariables.ALARM_NIGHLED_SERVICE);
                 if (c.getCount() > 0) {
-                    final M1SnoozeDialog m1d = new M1SnoozeDialog(activity, mac, ledSnooze, gb.ALARM_NIGHLED_SERVICE);
+                    final M1SnoozeDialog m1d = new M1SnoozeDialog(M1.this, mac, ledSnooze, GlobalVariables.ALARM_NIGHLED_SERVICE);
                     m1d.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     m1d.show();
                 } else {
-                    final YesNoDialog cd = new YesNoDialog(activity, 2, mac, gb.ALARM_NIGHLED_SERVICE);   // 1 = logout, 2 = M1 : device_id : service_id
+                    final YesNoDialog cd = new YesNoDialog(M1.this, 2, mac, GlobalVariables.ALARM_NIGHLED_SERVICE);   // 1 = logout, 2 = M1 : device_id : service_id
                     cd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     cd.show();
                 }
@@ -416,13 +413,13 @@ public class M1 extends AppCompatActivity {
         btn_ir_alarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor c = sql.getAlarmData(mac, gb.ALARM_IR_SERVICE);
+                Cursor c = sql.getAlarmData(mac, GlobalVariables.ALARM_IR_SERVICE);
                 if(c.getCount() > 0){
-                    final M1SnoozeDialog m1d = new M1SnoozeDialog(activity, mac, irSnooze, gb.ALARM_IR_SERVICE);
+                    final M1SnoozeDialog m1d = new M1SnoozeDialog(M1.this, mac, irSnooze, GlobalVariables.ALARM_IR_SERVICE);
                     m1d.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     m1d.show();
                 } else {
-                    final YesNoDialog cd = new YesNoDialog(activity, 2, mac, gb.ALARM_IR_SERVICE);   // 1 = logout, 2 = M1 : device_id : service_id
+                    final YesNoDialog cd = new YesNoDialog(M1.this, 2, mac, GlobalVariables.ALARM_IR_SERVICE);   // 1 = logout, 2 = M1 : device_id : service_id
                     cd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     cd.show();
                 }
@@ -441,14 +438,14 @@ public class M1 extends AppCompatActivity {
         nightled_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendService(gb.ALARM_NIGHLED_SERVICE);
+                sendService(GlobalVariables.ALARM_NIGHLED_SERVICE);
             }
         });
 
         btn_layout_nightled.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendService(gb.ALARM_NIGHLED_SERVICE);
+                sendService(GlobalVariables.ALARM_NIGHLED_SERVICE);
             }
         });
 
@@ -479,14 +476,14 @@ public class M1 extends AppCompatActivity {
         plug_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendService(gb.ALARM_RELAY_SERVICE);
+                sendService(GlobalVariables.ALARM_RELAY_SERVICE);
             }
         });
 
         btn_outlet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendService(gb.ALARM_RELAY_SERVICE);
+                sendService(GlobalVariables.ALARM_RELAY_SERVICE);
             }
         });
 
@@ -553,9 +550,7 @@ public class M1 extends AppCompatActivity {
             @Override
             public void run() {
                 HTTPHelper http = new HTTPHelper(M1.this);
-                Miscellaneous misc = new Miscellaneous();
-                GlobalVariables gb = new GlobalVariables();
-                http.getServerIR(token, Locale.getDefault().getLanguage(), mac, gb.IR_SERVICE, misc.getResolution(M1.this));
+                http.getServerIR(mac, GlobalVariables.IR_SERVICE, Miscellaneous.getResolution(M1.this));
                 Intent i = new Intent("serverReplied");
                 sendBroadcast(i);
             }
@@ -656,7 +651,7 @@ public class M1 extends AppCompatActivity {
 
             relaySnooze = u.getInt(22);
             if(relaySnooze == 0){
-                Cursor c = sql.getAlarmData(mac, gb.ALARM_RELAY_SERVICE);
+                Cursor c = sql.getAlarmData(mac, GlobalVariables.ALARM_RELAY_SERVICE);
                 if(c.getCount()>0){
                     btn_plug_alarm.setImageResource(R.drawable.btn_timer_on);
                 } else {
@@ -669,7 +664,7 @@ public class M1 extends AppCompatActivity {
 
             ledSnooze = u.getInt(23);
             if(ledSnooze == 0){
-                Cursor e = sql.getAlarmData(mac, gb.ALARM_NIGHLED_SERVICE);
+                Cursor e = sql.getAlarmData(mac, GlobalVariables.ALARM_NIGHLED_SERVICE);
                 if(e.getCount()>0){
                     btn_nightled_alarm.setImageResource(R.drawable.btn_timer_on);
                 } else {
@@ -682,7 +677,7 @@ public class M1 extends AppCompatActivity {
 
             irSnooze = u.getInt(24);
             if(irSnooze == 0){
-                Cursor f = sql.getAlarmData(mac, gb.ALARM_IR_SERVICE);
+                Cursor f = sql.getAlarmData(mac, GlobalVariables.ALARM_IR_SERVICE);
                 if(f.getCount() > 0){
                     btn_ir_alarm.setImageResource(R.drawable.btn_timer_on);
                 } else {
@@ -834,7 +829,7 @@ public class M1 extends AppCompatActivity {
         //Toast.makeText(this, getApplicationContext().getString(R.string.processing_command), Toast.LENGTH_SHORT).show();
         serviceId = sId;
         progressBar.setVisibility(View.VISIBLE);
-        if(serviceId == gb.ALARM_RELAY_SERVICE) {
+        if(serviceId == GlobalVariables.ALARM_RELAY_SERVICE) {
             if (relay == 0) {
                 action = 0x01;
             } else {
@@ -842,7 +837,7 @@ public class M1 extends AppCompatActivity {
             }
         }
 
-        if(serviceId == gb.ALARM_NIGHLED_SERVICE) {
+        if(serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
             if (nightlight == 0) {
                 action = 0x01;
             } else {
@@ -859,8 +854,6 @@ public class M1 extends AppCompatActivity {
         M1ServicesService.ip = ip;
         M1ServicesService.serviceId = serviceId;
         M1ServicesService.action = action;
-        M1ServicesService.token = token;
-        M1ServicesService.activity = M1.this;
         M1ServicesService.mac = mac;
         startService(iService);
 

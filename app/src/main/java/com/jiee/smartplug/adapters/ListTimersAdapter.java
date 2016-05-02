@@ -51,8 +51,6 @@ public class ListTimersAdapter extends BaseAdapter {
     private ImageButton btn_delete_timer;
     int service_id;
     String device_id;
-    GlobalVariables gb = new GlobalVariables();
-    Miscellaneous misc = new Miscellaneous();
     UDPCommunication udp = new UDPCommunication();
     MySQLHelper sql;
     int globalposition;
@@ -74,7 +72,7 @@ public class ListTimersAdapter extends BaseAdapter {
 
     public void getAlarms(){
         this.alarms.clear();
-        this.alarms = misc.populateAlarm(context, device_id, service_id);
+        this.alarms = Miscellaneous.populateAlarm(context, device_id, service_id);
     }
 
     @Override
@@ -113,10 +111,10 @@ public class ListTimersAdapter extends BaseAdapter {
                 + "  " + name;
 
         txt_timer.setText(name);
-        if(service_id == gb.ALARM_RELAY_SERVICE){
+        if(service_id == GlobalVariables.ALARM_RELAY_SERVICE){
             txt_service.setText(context.getApplicationContext().getString(R.string.btn_outlet));
             btn_service.setImageResource(R.drawable.svc_0_small);
-        } else if(service_id == gb.ALARM_NIGHLED_SERVICE){
+        } else if(service_id == GlobalVariables.ALARM_NIGHLED_SERVICE){
             txt_service.setText(context.getApplicationContext().getString(R.string.btn_nightLight));
             btn_service.setImageResource(R.drawable.svc_1_small);
         }

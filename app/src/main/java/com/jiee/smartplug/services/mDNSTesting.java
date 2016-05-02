@@ -14,6 +14,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.jiee.smartplug.objects.JSmartPlug;
+import com.jiee.smartplug.utils.HTTPHelper;
 import com.jiee.smartplug.utils.MySQLHelper;
 import com.jiee.smartplug.utils.UDPCommunication;
 
@@ -37,10 +38,16 @@ public class mDNSTesting extends Service {
     private static final String DNS_TYPE = "_http._tcp.";
     private JmDNS jmdns = null;
     private ServiceListener listener;
-    MySQLHelper sql = new MySQLHelper(this);
+    MySQLHelper sql;
     private final IBinder mBinder = new MyBinder();
     NsdManager.ResolveListener mResolveListener;
     public static ArrayList<JSmartPlug> plugs = new ArrayList<JSmartPlug>();
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        sql = HTTPHelper.getDB(this);
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -82,7 +89,6 @@ public class mDNSTesting extends Service {
 
     @Override
     public void onDestroy(){
-        sql.close();
         if(mNsdManager != null) {
             mNsdManager.stopServiceDiscovery(discoveryListener);
         }

@@ -35,12 +35,16 @@ public class R6_Record_IR extends Activity {
     ProgressBar pb;
     BroadcastReceiver brec;
     UDPCommunication con = new UDPCommunication();
-    MySQLHelper sql = new MySQLHelper(this);
-    HTTPHelper http = new HTTPHelper(this);
+    MySQLHelper sql;
+    HTTPHelper http;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sql = HTTPHelper.getDB(this);
+        http = new HTTPHelper(this);
+
         setContentView(R.layout.activity_r6__record__ir);
 
         Intent i = getIntent();
@@ -90,7 +94,6 @@ public class R6_Record_IR extends Activity {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    sql.close();
                     String token = "";
                     Cursor c = sql.getToken();
                     if(c.getCount()>0){
@@ -113,10 +116,8 @@ public class R6_Record_IR extends Activity {
                     }
                     String action = "add";
                     String type = "button";
-                    GlobalVariables gb = new GlobalVariables();
-                    Miscellaneous misc = new Miscellaneous();
                     if(token != null && !token.isEmpty()) {
-                        http.manageIRButton(token, M1.mac, gb.IR_SERVICE, type, action,groupId,0, name, iconId,ir_filename, misc.getResolution(R6_Record_IR.this));
+                        http.manageIRButton(M1.mac, GlobalVariables.IR_SERVICE, type, action,groupId,0, name, iconId,ir_filename, Miscellaneous.getResolution(R6_Record_IR.this));
                     }
                     Intent i = new Intent("serverReplied");
                     sendBroadcast(i);

@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jiee.smartplug.utils.HTTPHelper;
+import com.jiee.smartplug.utils.Miscellaneous;
 import com.jiee.smartplug.utils.MySQLHelper;
 import com.jiee.smartplug.utils.NetworkUtil;
 import com.jiee.smartplug.utils.UDPCommunication;
@@ -32,7 +33,7 @@ import java.util.Locale;
 
 public class M2A_Item_Settings extends Activity {
 
-    MySQLHelper sql = new MySQLHelper(this);
+    MySQLHelper sql;
 
     String icon;
     String name;
@@ -76,6 +77,7 @@ public class M2A_Item_Settings extends Activity {
 
         wifi = NetworkUtil.getWifiName(this);
         http = new HTTPHelper(this);
+        sql = HTTPHelper.getDB(this);
         udp = new UDPCommunication();
         networkUtil = new NetworkUtil();
 
@@ -158,9 +160,9 @@ public class M2A_Item_Settings extends Activity {
                 l2.setVisibility(View.VISIBLE);
                 l3.setVisibility(View.VISIBLE);
                 l4.setVisibility(View.VISIBLE);
-                l5.setVisibility(View.GONE);
-                l6.setVisibility(View.GONE);
-                l7.setVisibility(View.GONE);
+                //l5.setVisibility(View.GONE);
+                //l6.setVisibility(View.GONE);
+                //l7.setVisibility(View.GONE);
             } else {
                 System.out.println("IP iS NULL ");
                 inrange = false;
@@ -171,9 +173,9 @@ public class M2A_Item_Settings extends Activity {
                 l2.setVisibility(View.GONE);
                 l3.setVisibility(View.GONE);
                 l4.setVisibility(View.GONE);
-                l5.setVisibility(View.VISIBLE);
-                l6.setVisibility(View.VISIBLE);
-                l7.setVisibility(View.VISIBLE);
+                //l5.setVisibility(View.VISIBLE);
+                //l6.setVisibility(View.VISIBLE);
+                //l7.setVisibility(View.VISIBLE);
             }
 
             c.close();
@@ -186,6 +188,7 @@ public class M2A_Item_Settings extends Activity {
             } else {
                 txt_wifi.setText(R.string.connect_to_wifi);
             }
+            /*
             if (notify_on_power_outage == 1) {
                 cbx_power.setChecked(true);
             } else {
@@ -201,6 +204,8 @@ public class M2A_Item_Settings extends Activity {
             } else {
                 cbx_timer.setChecked(false);
             }
+            */
+
             if (M1.mac != null) {
                 String temp_mac = M1.mac.substring(0, 2).toUpperCase() + ":" + M1.mac.substring(2, 4).toUpperCase() + ":" + M1.mac.substring(4, 6).toUpperCase() + ":" + M1.mac.substring(6, 8).toUpperCase() + ":" + M1.mac.substring(8, 10).toUpperCase() + ":" + M1.mac.substring(10, 12).toUpperCase();
                 txt_mac.setText(temp_mac);
@@ -246,6 +251,7 @@ public class M2A_Item_Settings extends Activity {
 
                     grayOutView();
 
+                    /*
                     if (cbx_power.isChecked()) {
                         notify_on_power_outage = 1;
                     } else {
@@ -261,6 +267,7 @@ public class M2A_Item_Settings extends Activity {
                     } else {
                         notify_on_timer_activated = 0;
                     }
+                    */
 
                     name = txt_jsname.getText().toString();
                     if (M1.mac != null && inrange) {
@@ -275,7 +282,7 @@ public class M2A_Item_Settings extends Activity {
                                         cursor.moveToFirst();
                                         iconId = cursor.getString(1);
                                     }
-                                    String param = "devset?token="+MainActivity.token+"&hl="+ Locale.getDefault().getLanguage()+"&devid="+M1.mac+"&icon="+iconId+"&title="+name+"&notify_power="+notify_on_power_outage+"&notify_timer="+notify_on_timer_activated+"&notify_danger="+notify_on_co_warning+"&send=1";
+                                    String param = "devset?token="+ Miscellaneous.getToken(M2A_Item_Settings.this)+"&hl="+ Locale.getDefault().getLanguage()+"&devid="+M1.mac+"&icon="+iconId+"&title="+name+"&notify_power="+notify_on_power_outage+"&notify_timer="+notify_on_timer_activated+"&notify_danger="+notify_on_co_warning+"&send=1";
                                     System.out.println("DEBUGING: "+param);
                                     try {
                                         http.setDeviceSettings(param);
@@ -346,7 +353,6 @@ public class M2A_Item_Settings extends Activity {
     @Override
     protected void onStop(){
         super.onStop();
-        sql.close();
         HttpResponseCache cache = HttpResponseCache.getInstalled();
         if (cache != null) {
             cache.flush();            //FORCE THE CACHE DATA TO BE SAVED ON DISK

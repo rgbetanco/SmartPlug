@@ -24,6 +24,7 @@ import java.security.spec.ECField;
 
 public class S1 extends AppCompatActivity {
 
+    EditText oldpass;
     EditText newpass;
     EditText confirmpass;
 
@@ -41,6 +42,7 @@ public class S1 extends AppCompatActivity {
         this.getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        oldpass = (EditText)findViewById(R.id.txt_oldPassword);
         newpass = (EditText)findViewById(R.id.txt_newPassword);
         confirmpass = (EditText)findViewById(R.id.txt_confirmPassword);
 
@@ -52,7 +54,7 @@ public class S1 extends AppCompatActivity {
                 HTTPHelper httpHelper = new HTTPHelper(S1.this);
                 try {
                     if(newpass.getText().toString().equals(confirmpass.getText().toString())) {
-                        httpHelper.resetPassword(newpass.getText().toString());
+                        httpHelper.resetPassword( oldpass.getText().toString(), newpass.getText().toString());
                     } else {
                         Toast.makeText(S1.this, R.string.password_compare_error, Toast.LENGTH_SHORT).show();
                     }
@@ -70,9 +72,18 @@ public class S1 extends AppCompatActivity {
 
     }
 
-    public boolean onOptionsItemSelected(MenuItem item){
-        Intent myIntent = new Intent(getApplicationContext(), S0.class);
-        startActivityForResult(myIntent, 0);
-        return true;
-    }
-}
+    /**
+     * react to the user tapping the back/up icon in the action bar
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // this takes the user 'back', as if they pressed the left-facing triangle icon on the main android toolbar.
+                // if this doesn't work as desired, another possibility is to call `finish()` here.
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }}

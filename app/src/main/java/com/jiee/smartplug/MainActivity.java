@@ -43,9 +43,9 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    static String token;
+    String token;
     Http http = new Http();
-    HTTPHelper httpHelper = new HTTPHelper(this);
+    HTTPHelper httpHelper;
     MySQLHelper mySQLHelper;
     NetworkUtil networkUtil;
     String response;
@@ -61,6 +61,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        httpHelper = new HTTPHelper(this);
+        mySQLHelper = HTTPHelper.getDB(this);
+
+        token = Miscellaneous.getToken(this);
+
         setContentView(R.layout.activity_main);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -86,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
         k = new Intent(this, UDPListenerService.class);
         startService(k);
 
-        mySQLHelper = new MySQLHelper(this);
 
         /*
         need to remove later when the server is working
@@ -161,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
 
-                            String tosend = "devlist?token="+ MainActivity.token+"&hl="+ Locale.getDefault().getLanguage()+"&res=1";
+                            String tosend = "devlist?token="+ token+"&hl="+ Locale.getDefault().getLanguage()+"&res=1";
                             if(httpHelper.getDeviceList(tosend)) {
                                 //   registerOnGCM();
                                 Cursor c = mySQLHelper.getPlugData();
@@ -197,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                             if(token != null && !token.isEmpty()){
                                 getGallery();
 
-                                String tosend = "devlist?token="+ MainActivity.token+"&hl="+ Locale.getDefault().getLanguage()+"&res=1";
+                                String tosend = "devlist?token="+ token+"&hl="+ Locale.getDefault().getLanguage()+"&res=1";
                                 if(httpHelper.getDeviceList(tosend)) {
 
                                     getGallery();
@@ -212,7 +217,6 @@ public class MainActivity extends AppCompatActivity {
                                         finish();
                                     }
                                     c.close();
-                                    mySQLHelper.close();
 
                                 }
 
@@ -240,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String param = "gallery?token="+MainActivity.token+"&hl="+ Locale.getDefault().getLanguage()+"&res=3";
+                String param = "gallery?token="+token+"&hl="+ Locale.getDefault().getLanguage()+"&res=3";
                 try {
                     httpHelper.saveGallery(param);
                 } catch (Exception e){

@@ -20,6 +20,7 @@ import android.util.Log;
 
 import com.jiee.smartplug.M1;
 import com.jiee.smartplug.objects.JSmartPlug;
+import com.jiee.smartplug.utils.HTTPHelper;
 import com.jiee.smartplug.utils.MySQLHelper;
 import com.jiee.smartplug.utils.NetworkUtil;
 import com.jiee.smartplug.utils.UDPCommunication;
@@ -228,7 +229,7 @@ public class UDPListenerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         js = new JSmartPlug();
-        sql = new MySQLHelper(getApplicationContext());
+        sql = HTTPHelper.getDB(this);
         shouldRestartSocketListen = true;
         try {
             broadcastIP = InetAddress.getByName("255.255.255.255");

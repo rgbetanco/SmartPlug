@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.jiee.smartplug.R;
 import com.jiee.smartplug.objects.AlarmList;
+import com.jiee.smartplug.utils.HTTPHelper;
 import com.jiee.smartplug.utils.MySQLHelper;
 
 import java.util.List;
@@ -19,7 +20,6 @@ import java.util.List;
  * Created by ronaldgarcia on 29/12/15.
  */
 public class ListAlarmsAdapter extends ArrayAdapter<AlarmList> {
-    private final Context context;
     private final List<AlarmList> values;
     MySQLHelper sql;
 
@@ -27,10 +27,9 @@ public class ListAlarmsAdapter extends ArrayAdapter<AlarmList> {
 
     public ListAlarmsAdapter(Context c, List<AlarmList> values){
         super(c, R.layout.alarmrowlayout, values);
-        this.context = c;
         this.values = values;
 
-        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater = (LayoutInflater)c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
@@ -41,10 +40,8 @@ public class ListAlarmsAdapter extends ArrayAdapter<AlarmList> {
         btn_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sql = new MySQLHelper(context);
+                sql = HTTPHelper.getDB(getContext());
                 sql.deleteAlarmData(values.get(position).getAlarm_id());
-                sql.close();
-
             }
         });
 

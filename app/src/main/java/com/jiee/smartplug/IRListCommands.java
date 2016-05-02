@@ -10,6 +10,7 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.jiee.smartplug.adapters.IRExpandableListAdapter;
+import com.jiee.smartplug.utils.HTTPHelper;
 import com.jiee.smartplug.utils.MySQLHelper;
 
 import java.util.ArrayList;
@@ -22,12 +23,15 @@ public class IRListCommands extends Activity {
     ExpandableListView expListView;
     List<String> listDataHeader;
     HashMap<String, List<String>> listDataChild;
-    MySQLHelper sql = new MySQLHelper(this);
+    MySQLHelper sql;
     int status = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sql = HTTPHelper.getDB(this);
+
         setContentView(R.layout.activity_irlist_commands);
 
         Intent i = getIntent();

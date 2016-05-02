@@ -48,9 +48,8 @@
 
     <ProgressBar
         android:id="@+id/pbHeaderProgress"
-        style="@style/Base.Widget.AppCompat.Spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_below="@+id/linearLayout"
         android:layout_toRightOf="@+id/btn_refresh_list"
         android:layout_toEndOf="@+id/btn_refresh_list">

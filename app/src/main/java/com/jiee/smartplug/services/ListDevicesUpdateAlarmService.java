@@ -17,11 +17,7 @@ import java.util.Locale;
  */
 public class ListDevicesUpdateAlarmService extends IntentService {
 
-    public static Activity activity;
-
-    String macParam;
-    HTTPHelper httpHelper = new HTTPHelper(activity);
-    Miscellaneous misc = new Miscellaneous();
+    HTTPHelper httpHelper;
 
     public ListDevicesUpdateAlarmService(){
         super("ListDevicesUpdateAlarmService");
@@ -29,10 +25,14 @@ public class ListDevicesUpdateAlarmService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        macParam = intent.getStringExtra("macParam");
+        if( httpHelper==null )
+            httpHelper = new HTTPHelper( this );
+
+        String macParam = intent.getStringExtra("macParam");
+
         try {
             if (macParam != null && !macParam.isEmpty()) {
-                httpHelper.updateAlarms(misc.getToken(activity), macParam, getApplicationContext());
+                httpHelper.updateAlarms(macParam);
             } else {
                 System.out.println("Mac id is empty");
             }
@@ -41,7 +41,7 @@ public class ListDevicesUpdateAlarmService extends IntentService {
         }
 
         try {
-            String param = "devget?token=" + misc.getToken(getApplicationContext()) + "&hl=" + Locale.getDefault().getLanguage() + "&res=0&devid=" + macParam;
+            String param = "devget?token=" + Miscellaneous.getToken( getApplicationContext() ) + "&hl=" + Locale.getDefault().getLanguage() + "&res=0&devid=" + macParam;
             httpHelper.getDeviceStatus(param, macParam, getApplicationContext());
         } catch (Exception e){
             e.printStackTrace();
