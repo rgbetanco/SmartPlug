@@ -1,6 +1,5 @@
 package com.jiee.smartplug.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -57,7 +56,6 @@ public class UDPCommunication {
     int irCode = 0;
     int sendFlag = 0;
     HTTPHelper http;
-    GlobalVariables gb = new GlobalVariables();
 
     public UDPCommunication(){
 
@@ -115,7 +113,7 @@ public class UDPCommunication {
         return js;
     }
 
-    public boolean delayTimer(int seconds, int protocol, Activity activity, int serviceId, int send){
+    public boolean delayTimer(int seconds, int protocol, Context activity, int serviceId, int send){
         UDPListenerService.code = 1;
         boolean toReturn = false;
         http = new HTTPHelper(activity);
@@ -405,7 +403,7 @@ public class UDPCommunication {
         ds.close();
     }
 
-    public boolean setDeviceTimersHTTP(String id, Activity activity, int send){
+    public boolean setDeviceTimersHTTP(String id, Context activity, int send){
         boolean toReturn = true;
         sendFlag = send;
         String ip = M1.ip;
@@ -416,7 +414,7 @@ public class UDPCommunication {
         return toReturn;
     }
 
-    public boolean sendTimers(Activity a, String id, String ip){
+    public boolean sendTimers(Context a, String id, String ip){
 
         this.command = 0x0009;
 
@@ -440,7 +438,7 @@ public class UDPCommunication {
             c.moveToFirst();
             for (int j = 0; j < c.getCount(); j++) {
                 int serviceId = c.getInt(2);
-                if(serviceId == gb.ALARM_RELAY_SERVICE || serviceId == gb.ALARM_NIGHLED_SERVICE) {
+                if(serviceId == GlobalVariables.ALARM_RELAY_SERVICE || serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
 
                     timers[i++] = (byte) ((serviceId >> 24) & 0xff);
                     timers[i++] = (byte) ((serviceId >> 16) & 0xff);
@@ -476,7 +474,7 @@ public class UDPCommunication {
 
     }
 
-    public boolean sendTimersHTTP(Activity a, String id, int send){
+    public boolean sendTimersHTTP(Context a, String id, int send){
             boolean toReturn = false;
             this.command = 0x0009;
             http = new HTTPHelper(a);
@@ -500,7 +498,7 @@ public class UDPCommunication {
                 c.moveToFirst();
                 for (int j = 0; j < c.getCount(); j++) {
                     int serviceId = c.getInt(2);
-                    if(serviceId == gb.ALARM_RELAY_SERVICE || serviceId == gb.ALARM_NIGHLED_SERVICE) {
+                    if(serviceId == GlobalVariables.ALARM_RELAY_SERVICE || serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
 
                         timers[i++] = (byte) ((serviceId >> 24) & 0xff);
                         timers[i++] = (byte) ((serviceId >> 16) & 0xff);
@@ -559,7 +557,7 @@ public class UDPCommunication {
 
         }
 
-    public boolean setDeviceTimersUDP(String id, Activity activity){
+    public boolean setDeviceTimersUDP(String id, Context activity){
         UDPListenerService.code = 1;
         boolean toReturn = true;
         String ip = M1.ip;
@@ -688,7 +686,7 @@ public class UDPCommunication {
             for (int j = 0; j < c.getCount(); j++) {
                 int serviceId = c.getInt(2);
                 System.out.println("SERVICE ID: "+serviceId);
-                if(serviceId == gb.ALARM_RELAY_SERVICE || serviceId == gb.ALARM_NIGHLED_SERVICE) {
+                if(serviceId == GlobalVariables.ALARM_RELAY_SERVICE || serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
                     if (protocol == 0) {
                         timer[17] = (byte) (serviceId & 0xff);
                         timer[16] = (byte) ((serviceId >> 8) & 0xff);

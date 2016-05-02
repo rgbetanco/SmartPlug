@@ -204,7 +204,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
                     }
                 }
 
-                if(udp.delayTimer(snooze, 1, getOwnerActivity(), service_id, 0)) {   //SENDING SNOOZE OF 5 MINUTES TO THE DEVICE
+                if(udp.delayTimer(snooze, 1, getContext(), service_id, 0)) {   //SENDING SNOOZE OF 5 MINUTES TO THE DEVICE
                     int counter = 10000;
                     while (!deviceStatusChangedFlag && counter > 0) {
                         counter--;
