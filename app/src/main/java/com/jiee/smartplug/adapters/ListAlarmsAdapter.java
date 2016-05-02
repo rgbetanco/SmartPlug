@@ -23,16 +23,18 @@ public class ListAlarmsAdapter extends ArrayAdapter<AlarmList> {
     private final List<AlarmList> values;
     MySQLHelper sql;
 
+    private final LayoutInflater inflater;
+
     public ListAlarmsAdapter(Context c, List<AlarmList> values){
         super(c, R.layout.alarmrowlayout, values);
         this.context = c;
         this.values = values;
 
+        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public View getView(final int position, View v, ViewGroup vg){
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View row = inflater.inflate(R.layout.alarmrowlayout, vg, false);
 
         ImageButton btn_close = (ImageButton)row.findViewById(R.id.btn_warn_close);

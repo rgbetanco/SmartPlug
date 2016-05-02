@@ -17,7 +17,8 @@
             android:id="@+id/btn_delete_device"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:background="@null"/>
+            android:background="@color/icon"
+            />
 
     </LinearLayout>
     <!-- Bottom View End-->

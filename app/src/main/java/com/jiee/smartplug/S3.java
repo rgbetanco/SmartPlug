@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.jiee.smartplug.objects.Alarm;
 import com.jiee.smartplug.utils.GlobalVariables;
+import com.jiee.smartplug.utils.Miscellaneous;
 import com.jiee.smartplug.utils.MySQLHelper;
 import com.jiee.smartplug.utils.UDPCommunication;
 
@@ -237,7 +238,7 @@ public class S3 extends AppCompatActivity {
 
         init_time = (Button) findViewById(R.id.init_time);
         if(alarm_id != -1){
-            init_time.setText(init_hour+":"+init_minute);
+            init_time.setText( Miscellaneous.getTime(init_hour,init_minute));
         }
         init_time.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -248,7 +249,7 @@ public class S3 extends AppCompatActivity {
 
         end_time = (Button) findViewById(R.id.end_time);
         if(alarm_id != -1){
-            end_time.setText(end_hour+":"+end_minute);
+            end_time.setText(Miscellaneous.getTime(end_hour,end_minute));
         }
         end_time.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -449,18 +450,10 @@ public class S3 extends AppCompatActivity {
                     init_hour = selectedHour;
                     init_minute = selectedMinute;
 
-                    init_time.setText(new StringBuilder().append(pad(init_hour))
-                            .append(":").append(pad(init_minute)));
+                    init_time.setText(Miscellaneous.getTime(init_hour, init_minute));
 
                 }
             };
-
-    private static String pad(int c) {
-        if (c >= 10)
-            return String.valueOf(c);
-        else
-            return "0" + String.valueOf(c);
-    }
 
     private TimePickerDialog.OnTimeSetListener timePickerListenerEnd =
             new TimePickerDialog.OnTimeSetListener() {
@@ -471,8 +464,7 @@ public class S3 extends AppCompatActivity {
                     end_minute = selectedMinute;
 
                     // set current time into textview
-                    end_time.setText(new StringBuilder().append(pad(end_hour))
-                            .append(":").append(pad(end_minute)));
+                    end_time.setText(Miscellaneous.getTime(end_hour, end_minute));
 
                 }
             };

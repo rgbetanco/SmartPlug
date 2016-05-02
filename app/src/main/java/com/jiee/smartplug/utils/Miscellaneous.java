@@ -16,6 +16,8 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jiee.smartplug.R;
+
 /**
  * Created by ronaldgarcia on 29/12/15.
  */
@@ -54,11 +56,30 @@ public class Miscellaneous {
         return alarms;
     }
 
+    public static String getDOWList(int dowFlags, String[] DOWs) {
+        String dow = "";
+
+        for( int dowCurr=0; dowCurr<7; dowCurr++ ) {
+            if( (dowFlags & (1<<dowCurr)) != 0 ) {
+                dow += DOWs[dowCurr];
+            }
+        }
+
+        return dow;
+    }
+
+    public static String getTime( int h, int m) {
+        return String.format("%02d:%02d", h, m);
+    }
+
     public List<AlarmList> populateAlarmList(Activity activity, String device_id, int service_id){
         List<AlarmList> alarmList = new ArrayList<AlarmList>();
         int i = 0;
         sql = new MySQLHelper(activity);
         c = sql.getAlarmData(device_id, service_id);
+
+        final String[] DOWs = activity.getResources().getStringArray(R.array.dow);
+
         if(c.getCount()> 0) {
             c.moveToFirst();
             while(i < c.getCount() ) {
@@ -69,37 +90,13 @@ public class Miscellaneous {
                 } else if(c.getInt(2) == gb.ALARM_NIGHLED_SERVICE) {
                     service = "Nightlight";
                 }
-                dow = "";
-                int intdow = c.getInt(3);
-                /* returns 1-7. Sun-1, Mon-2 ... Sat-7 */
-                if(((intdow >> 1) & 1) == 1){
-                    dow += "Su";
-                }
-                if(((intdow >> 2) & 1) == 1){
-                    dow += "Mo";
-                }
-                if(((intdow >> 3) & 1) == 1){
-                    dow += "Tu";
-                }
-                if(((intdow >> 4) & 1) == 1){
-                    dow += "We";
-                }
-                if(((intdow >> 5) & 1) == 1){
-                    dow += "Th";
-                }
-                if(((intdow >> 6) & 1) == 1){
-                    dow += "Fr";
-                }
-                if(((intdow >> 7) & 1) == 1){
-                    dow += "Sa";
-                }
+                /* c.getInt(3) returns 1-7. Sun-1, Mon-2 ... Sat-7 */
+                dow = getDOWList(c.getInt(3), DOWs);
 
-                String iH = String.format("%02d", c.getInt(4));
-                String iM = String.format("%02d", c.getInt(5));
-                String eH = String.format("%02d", c.getInt(6));
-                String eM = String.format("%02d", c.getInt(7));
+                String iHM = getTime( c.getInt(4), c.getInt(5));
+                String eHM = getTime( c.getInt(6), c.getInt(7));
 
-                a.setName(iH + ":" + iM + "   " + eH + ":" + eM + "   " + service + "   " + dow);
+                a.setName( iHM + "-" + eHM /* +"   " + service*/ + "   " + dow);
                 a.setAlarm_id(c.getInt(0));
                 if(background > 3){
                     background = 0;

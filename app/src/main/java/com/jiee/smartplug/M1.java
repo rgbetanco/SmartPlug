@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -575,8 +576,8 @@ public class M1 extends AppCompatActivity {
             switch (u.getInt(13)) {                                                                  //HALL EFFECT SENSOR
                 case 0:
                     warning_icon.setVisibility(View.GONE);
-                    warning_icon.setImageResource(R.drawable.marker_warn);
-                    warning_icon.clearAnimation();
+                    //warning_icon.setImageResource(R.drawable.marker_warn);
+                    //warning_icon.clearAnimation();
                     warning_text.setText("");
                     img_warn2.setVisibility(View.GONE);
                     btn_warning.setVisibility(View.GONE);
@@ -584,8 +585,9 @@ public class M1 extends AppCompatActivity {
                 case 1:
                     warning_icon.setVisibility(View.VISIBLE);
                     warning_text.setVisibility(View.VISIBLE);
-                    warning_icon.setImageResource(R.drawable.marker_warn2);
-                    warning_icon.startAnimation(animation);
+                    //warning_icon.setImageResource(R.drawable.marker_warn2);
+                    //warning_icon.startAnimation(animation);
+                    ((AnimationDrawable)warning_icon.getDrawable()).start();
                     warning_layout.setVisibility(View.VISIBLE);
                     img_warn2.setVisibility(View.VISIBLE);
                     btn_warning.setVisibility(View.VISIBLE);
@@ -595,22 +597,23 @@ public class M1 extends AppCompatActivity {
             switch (u.getInt(14)) {                                                                  //CO SENSOR
                 case 0:
                     warning_icon_co.setVisibility(View.GONE);
-                    warning_icon_co.setImageResource(R.drawable.marker_warn);
-                    warning_icon_co.clearAnimation();
+                    //warning_icon_co.setImageResource(R.drawable.marker_warn);
+                    //warning_icon_co.clearAnimation();
                     btn_co.setImageResource(R.drawable.svc_3_big);
                     break;
                 case 1:
                     warning_layout.setVisibility(View.VISIBLE);
                     btn_co.setImageResource(R.drawable.svc_3_big);
                     warning_icon_co.setVisibility(View.VISIBLE);
+                    ((AnimationDrawable)warning_icon_co.getDrawable()).start();
 
                     img_warn2.setVisibility(View.VISIBLE);
                     warning_text.setText(getApplicationContext().getString(R.string.msg_co_warning));
                     warning_text.setVisibility(View.VISIBLE);
                     btn_warning.setVisibility(View.VISIBLE);
 
-                    warning_icon_co.setImageResource(R.drawable.marker_warn2);
-                    warning_icon_co.startAnimation(animation);
+                    //warning_icon_co.setImageResource(R.drawable.marker_warn2);
+                    //warning_icon_co.startAnimation(animation);
                     img_warn2.setVisibility(View.VISIBLE);
                     btn_warning.setVisibility(View.VISIBLE);
                     warning_text.setText(R.string.msg_co_warning);

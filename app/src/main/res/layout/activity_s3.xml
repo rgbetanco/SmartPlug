@@ -42,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="S"
+                android:text="@string/sunday"
                 android:background="@drawable/btn_bkgnd"/>
 
             <Button
@@ -50,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="M"
+                android:text="@string/monday"
                 android:background="@drawable/btn_bkgnd"/>
 
             <Button
@@ -58,7 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="T"
+                android:text="@string/tuesday"
                 android:background="@drawable/btn_bkgnd"/>
 
             <Button
@@ -66,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="W"
+                android:text="@string/wednesday"
                 android:background="@drawable/btn_bkgnd"/>
 
             <Button
@@ -74,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="T"
+                android:text="@string/thursday"
                 android:background="@drawable/btn_bkgnd"/>
 
             <Button
@@ -82,7 +82,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="F"
+                android:text="@string/friday"
                 android:background="@drawable/btn_bkgnd"/>
 
             <Button
@@ -90,7 +90,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="S"
+                android:text="@string/saturday"
                 android:background="@drawable/btn_bkgnd"/>
 
         </LinearLayout>

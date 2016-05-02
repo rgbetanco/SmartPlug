@@ -26,8 +26,12 @@ public class ListIconsAdapter extends BaseAdapter {
     MySQLHelper sql;
     ArrayList<String> icons = new ArrayList<>();
     ImageView iv;
+
+    final LayoutInflater inflate;
+
     public ListIconsAdapter(Activity a){
         this.a = a;
+        inflate = (LayoutInflater)a.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         populateIcons();
     }
 
@@ -49,7 +53,6 @@ public class ListIconsAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         if(convertView == null){
-            LayoutInflater inflate = (LayoutInflater)a.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflate.inflate(R.layout.list_icons, parent, false);
         }
 

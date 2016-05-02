@@ -153,6 +153,7 @@ public class M2A_Item_Settings extends Activity {
                 System.out.println("IP IS NOT NULL :" + M1.ip);
                 inrange = true;
                 txt_jsname.setEnabled(true);
+                btn_icon.setEnabled(true);
                 l1.setVisibility(View.VISIBLE);
                 l2.setVisibility(View.VISIBLE);
                 l3.setVisibility(View.VISIBLE);
@@ -164,6 +165,7 @@ public class M2A_Item_Settings extends Activity {
                 System.out.println("IP iS NULL ");
                 inrange = false;
                 txt_jsname.setEnabled(false);
+                btn_icon.setEnabled(false);
                 save.setVisibility(View.GONE);
                 l1.setVisibility(View.GONE);
                 l2.setVisibility(View.GONE);
