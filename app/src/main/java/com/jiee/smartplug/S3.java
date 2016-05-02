@@ -154,7 +154,7 @@ public class S3 extends AppCompatActivity {
             }
         });
 
-        if(service_id != gb.ALARM_IR_SERVICE){
+        if(service_id != GlobalVariables.ALARM_IR_SERVICE){
             init_IR.setVisibility(View.GONE);
             end_IR.setVisibility(View.GONE);
         }
