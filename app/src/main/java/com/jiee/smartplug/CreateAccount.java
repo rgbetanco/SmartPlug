@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jiee.smartplug.utils.HTTPHelper;
+import com.jiee.smartplug.utils.Miscellaneous;
 
 import org.json.JSONObject;
 
@@ -84,10 +85,13 @@ public class CreateAccount extends AppCompatActivity {
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(txt_confirm_password.getText().toString().equals(txt_password.getText().toString())){
+                final String pwdNew = txt_password.getText().toString().trim();
+                final String pwdNewConfirm = txt_confirm_password.getText().toString().trim();
+
+                if(Miscellaneous.validatePassword( CreateAccount.this, pwdNew, pwdNewConfirm ) ){
                     HTTPHelper http = new HTTPHelper(CreateAccount.this);
                     try {
-                        response = http.createAccount("newuser?user="+txt_username.getText().toString().trim()+"&pwd="+txt_password.getText().toString().trim()+"&email="+txt_email.getText().toString().trim()+"&hl="+ Locale.getDefault().getLanguage());
+                        response = http.createAccount("newuser?user="+txt_username.getText().toString().trim()+"&pwd="+pwdNew+"&email="+txt_email.getText().toString().trim()+"&hl="+ Locale.getDefault().getLanguage());
                         if(response){
                             Toast.makeText(CreateAccount.this, getResources().getString(R.string.account_sent), Toast.LENGTH_SHORT).show();
                         } else {
@@ -96,8 +100,6 @@ public class CreateAccount extends AppCompatActivity {
                     } catch (Exception e){
                         e.printStackTrace();
                     }
-                } else {
-                    Toast.makeText(CreateAccount.this, getResources().getString(R.string.password_compare_error), Toast.LENGTH_SHORT).show();
                 }
             }
         });

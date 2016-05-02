@@ -210,5 +210,14 @@
     <string name="minutes">分</string>
     <string name="timer">定時</string>
     <string name="snooze">已延時</string>
+    <string name="error_adding_new_device">增加裝置失敗，請稍候再試</string>
+    <string name="error_adding_device">增加裝置失敗，請確認裝置沒跟其他帳號配對</string>
+    <string name="general_error">發生錯誤，請稍候再試</string>
+    <string name="error_logout">警告: 登出伺服器失敗</string>
+    <string name="password_badchar_error"><![CDATA[密碼不能有 # or &]]></string>
+    <string name="password_length_error">密碼至少要六個字以上</string>
+    <string name="warning">注意</string>
+    <string name="warning_logout_baduser">已被登出，因為您的帳號或密碼已經無效了</string>
+    <string name="warning_logout_changepwd">已被登出，因為您更改您的密碼了</string>
 
 </resources>

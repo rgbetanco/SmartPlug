@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.jiee.smartplug.utils.HTTPHelper;
+import com.jiee.smartplug.utils.Miscellaneous;
 
 import java.security.spec.ECField;
 
@@ -51,21 +52,28 @@ public class S1 extends AppCompatActivity {
         btn_settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HTTPHelper httpHelper = new HTTPHelper(S1.this);
-                try {
-                    if(newpass.getText().toString().equals(confirmpass.getText().toString())) {
-                        httpHelper.resetPassword( oldpass.getText().toString(), newpass.getText().toString());
-                    } else {
-                        Toast.makeText(S1.this, R.string.password_compare_error, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
 
-                //instantiate dialog
-                final CustomDialog cd = new CustomDialog(S1.this, 3);   // 1 = create Account
-                cd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                cd.show();
+                final String pwdNew = newpass.getText().toString().trim();
+                final String pwdNewConfirm = confirmpass.getText().toString().trim();
+
+                if(Miscellaneous.validatePassword( S1.this, pwdNew, pwdNewConfirm ) ) {
+                    HTTPHelper httpHelper = new HTTPHelper(S1.this);
+
+                    try {
+                        if( !httpHelper.resetPassword( oldpass.getText().toString(), pwdNew) ) {
+                            throw new Exception();
+                        }
+
+                        //instantiate dialog
+                        final CustomDialog cd = new CustomDialog(S1.this, 3);   // 1 = create Account
+                        cd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        cd.show();
+
+                    } catch (Exception e){
+                        e.printStackTrace();
+                        Toast.makeText(S1.this, getResources().getString(R.string.password_change_failed), Toast.LENGTH_SHORT).show();
+                    }
+                }
 
             }
         });

@@ -287,4 +287,19 @@ public class Miscellaneous {
 
     }
 
+    public static boolean validatePassword( final Context context, final String pwdNew, final String pwdNewConfirm ) {
+        if( pwdNew==null || pwdNew.length() < 6 ) {
+            Toast.makeText( context, context.getResources().getString(R.string.password_length_error), Toast.LENGTH_SHORT).show();
+        } else if( pwdNew.contains("&#") ) {
+            // illegal characters
+            Toast.makeText( context, context.getResources().getString(R.string.password_badchar_error), Toast.LENGTH_SHORT).show();
+        } else if( !pwdNew.equals(pwdNewConfirm)) {
+            Toast.makeText( context, context.getResources().getString(R.string.password_compare_error), Toast.LENGTH_SHORT).show();
+        } else {
+            return true;    // validated
+        }
+
+        return false;
+    }
+
 }

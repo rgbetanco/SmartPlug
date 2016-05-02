@@ -141,6 +141,9 @@
     <!--<string name="gcm_defaultSenderId">725253730549</string>-->
     <string name="create_account_error">Error Creating New Account</string>
     <string name="password_compare_error">Passwords are not the same</string>
+    <string name="password_length_error">Passwords must be 6 characters or longer</string>
+    <string name="password_badchar_error">Passwords must not contain # or &amp;</string>
+    <string name="password_change_failed">Server error occurred while changing the password</string>
     <string name="no_udp_Connection">No UDP Connection</string>
     <string name="new_device_found">New Device Found</string>
     <string name="USB_not_plugged_in">USB not plugged in</string>
@@ -214,7 +217,7 @@
     <string name="timer_set">Set Timer</string>
     <string name="timer_set_snoozing">Set Timer Snoozing </string>
 
-    <string name="warning">題型</string>
+    <string name="warning">Warning</string>
     <string name="warning_logout_baduser">You will be logged out because your user/password is no longer valid.</string>
     <string name="warning_logout_changepwd">You will need to log in again because you changed your password.</string>
     <string name="error_logout">Warning: Failed to unregister from server.</string>
