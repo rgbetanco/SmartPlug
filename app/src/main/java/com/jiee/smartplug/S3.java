@@ -50,6 +50,8 @@ public class S3 extends AppCompatActivity {
 
     private String device_id;
     private String name;
+    private String init_ir_name;
+    private String end_ir_name;
     private int service_id;
     private int alarm_id = -1;
 
@@ -67,8 +69,8 @@ public class S3 extends AppCompatActivity {
     MySQLHelper sql;
 
     byte dow = 0b00000000;
-    byte init_ir_code = 0;
-    byte end_ir_code = 0;
+    byte init_ir_code = -1;
+    byte end_ir_code = -1;
 
     UDPCommunication udp;
     BroadcastReceiver timers_sent_successfully;
@@ -154,6 +156,11 @@ public class S3 extends AppCompatActivity {
             }
         });
 
+        if(service_id != gb.ALARM_IR_SERVICE){
+            init_IR.setVisibility(View.GONE);
+            end_IR.setVisibility(View.GONE);
+        }
+
         monday = (Button) findViewById(R.id.btn_monday);
         tuesday = (Button) findViewById(R.id.btn_tuesday);
         wednesday = (Button) findViewById(R.id.btn_wednesday);
@@ -170,11 +177,15 @@ public class S3 extends AppCompatActivity {
             init_minute = s.getInt(5);
             end_hour = s.getInt(6);
             end_minute = s.getInt(7);
+            init_ir_code = (byte)s.getInt(9);
+            end_ir_code = (byte)s.getInt(10);
             dow = (byte)s.getInt(3);
             setDOW();
             s.close();
         } else {
-            dow |= (1 << 1);
+            if(dow == 0) {
+                dow |= (1 << 1);
+            }
             setDOW();
         }
 
@@ -258,6 +269,27 @@ public class S3 extends AppCompatActivity {
             }
         });
 
+        if(alarm_id != -1){
+            System.out.println("init_ir_code: "+init_ir_code);
+            String init_name = "";
+            Cursor r = sql.getIRCodeById(init_ir_code);
+            if(r.getCount()>0){
+                r.moveToFirst();
+                init_name = r.getString(0);
+            }
+            r.close();
+            init_IR.setText(init_name);
+
+            String end_name = "";
+            Cursor d = sql.getIRCodeById(end_ir_code);
+            if(d.getCount()>0){
+                d.moveToFirst();
+                end_name = d.getString(0);
+            }
+            r.close();
+            end_IR.setText(end_name);
+        }
+
         btn_settings = (Button) findViewById(R.id.btn_settings);
         btn_settings.setText(R.string.btn_save);
         btn_settings.setOnClickListener(new View.OnClickListener() {
@@ -282,9 +314,10 @@ public class S3 extends AppCompatActivity {
                     public void run() {
                         sql = new MySQLHelper(context);
                         if(alarm_id >= 0) {
-                            System.out.println("dOW:"+dow+"Init Hour: "+init_hour+" Init Minute: "+init_minute+" End Hour: "+end_hour+" End Minute: "+end_minute+" MAC:"+M1.mac);
+                            System.out.println("updating - dOW:"+dow+"Init Hour: "+init_hour+" Init Minute: "+init_minute+" End Hour: "+end_hour+" End Minute: "+end_minute+" MAC:"+M1.mac);
                             sql.updateAlarm(a);
                         } else {
+                            System.out.println("inserting - dOW:"+dow+"Init Hour: "+init_hour+" Init Minute: "+init_minute+" End Hour: "+end_hour+" End Minute: "+end_minute+" MAC:"+M1.mac);
                             sql.insertAlarm(a);
                         }
                         Intent i = new Intent("device_not_reached");
@@ -318,6 +351,50 @@ public class S3 extends AppCompatActivity {
 
             }
         });
+
+        if( savedInstanceState != null ) {
+            alarm_id = savedInstanceState.getInt("alarmId");
+            dow = savedInstanceState.getByte("dow");
+            init_hour = savedInstanceState.getInt("init_hour");
+            init_minute = savedInstanceState.getInt("init_minute");
+            end_hour = savedInstanceState.getInt("end_hour");
+            end_minute = savedInstanceState.getInt("end_minute");
+            init_ir_code = savedInstanceState.getByte("init_ir_code");
+            end_ir_code = savedInstanceState.getByte("end_ir_code");
+            service_id = savedInstanceState.getInt("serviceId");
+            device_id = savedInstanceState.getString("deviceId");
+            init_ir_name = savedInstanceState.getString("init_ir_name");
+            end_ir_name = savedInstanceState.getString("end_ir_name");
+            if(init_time != null) {
+                init_time.setText(Miscellaneous.getTime(init_hour, init_minute));
+            }
+            if(end_time != null) {
+                end_time.setText(Miscellaneous.getTime(end_hour, end_minute));
+            }
+            if(init_ir_code >= 0) {
+                init_IR.setText(init_ir_name);
+            }
+            if(end_ir_code >= 0) {
+                end_IR.setText(end_ir_name);
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putByte("dow", dow);
+        outState.putInt("init_hour", init_hour);
+        outState.putInt("end_hour", end_hour);
+        outState.putInt("init_minute", init_minute);
+        outState.putInt("end_minute", end_minute);
+        outState.putByte("init_ir_code", init_ir_code);
+        outState.putByte("end_ir_code", end_ir_code);
+        outState.putInt("serviceId", service_id);
+        outState.putString("deviceId", device_id);
+        outState.putInt("alarmId", alarm_id);
+        outState.putString("init_ir_name", init_ir_name);
+        outState.putString("end_ir_name", end_ir_name);
     }
 
     @Override
@@ -354,10 +431,12 @@ public class S3 extends AppCompatActivity {
 
             switch (localStatus){
                 case 0:
+                    init_ir_name = IRName;
                     init_IR.setText(IRName);
                     init_ir_code = (byte)IRId;
                     break;
                 case 1:
+                    end_ir_name = IRName;
                     end_IR.setText(IRName);
                     end_ir_code = (byte)IRId;
                     break;

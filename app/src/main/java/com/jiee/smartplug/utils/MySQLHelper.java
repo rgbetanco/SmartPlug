@@ -261,7 +261,7 @@ public class MySQLHelper extends SQLiteOpenHelper {
 
     public Cursor getIRGroupByName(String groupName){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("select * from "+TABLE_IRGROUPS+" where "+COLUMN_NAME+" = '"+groupName+"'", null);
+        Cursor res = db.rawQuery("select * from " + TABLE_IRGROUPS + " where " + COLUMN_NAME + " = '" + groupName + "'", null);
         return res;
     }
 
@@ -280,6 +280,12 @@ public class MySQLHelper extends SQLiteOpenHelper {
             toreturn = false;
         }
         return toreturn;
+    }
+
+    public Cursor getIRCodeById(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("select "+COLUMN_NAME+" from "+TABLE_IRCODES+" where "+COLUMN_FILENAME+" = "+id, null);
+        return res;
     }
 
     public boolean deleteIRGroup(int id){

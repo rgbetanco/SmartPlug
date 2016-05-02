@@ -581,7 +581,7 @@ public class HTTPHelper {
                 }
                 OkHttpClient c = new OkHttpClient();
                 String url = GlobalVariables.DOMAIN+param;
-                System.out.println(url);
+                System.out.println("ALARMS FROM THE SERVER: "+url);
                 RequestBody body = RequestBody.create(TEXT, GlobalVariables.DOMAIN + param);
                 Request request = new Request.Builder().url(url).post(body).build();
                 Response response = null;
@@ -605,7 +605,7 @@ public class HTTPHelper {
                 int j = 0;
                 while(data != -1) {
                     array[j] = (byte)data;
-                    System.out.printf("0x%02X",data);
+                    System.out.printf("0x%2X",data);
                     try {
                         data = bstream.read();
                     } catch (Exception e){
@@ -630,6 +630,8 @@ public class HTTPHelper {
 
                         System.out.println("SERVICE FROM SERVER: "+a.getService_id());
 
+                        a.setInit_ir(array[i + 5]);
+                        a.setEnd_ir(array[i + 6]);
                         a.setDow(array[i + 7]);
                         a.setInit_hour(array[i + 8]);
                         a.setInit_minute(array[i + 9]);
