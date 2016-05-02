@@ -75,6 +75,7 @@ public class MySQLHelper extends SQLiteOpenHelper {
     public static final String COLUMN_SIZE = "size";
     public static final String COLUMN_RELAY_SNOOZE = "relay_snooze";
     public static final String COLUMN_LED_SNOOZE = "led_snooze";
+    public static final String COLUMN_IR_SNOOZE = "ir_snooze";
 
     private static final String DATABASE_NAME = "jsplugs.db";
     private static final int DATABASE_VERSION = 1;
@@ -98,7 +99,8 @@ public class MySQLHelper extends SQLiteOpenHelper {
             + COLUMN_FLAG+" integer, "+COLUMN_RELAY+" integer, "+COLUMN_HSENSOR+" integer, "
             + COLUMN_CSENSOR+" integer, "+COLUMN_NIGHTLIGHT+" integer, "+COLUMN_ACTIVE+" integer, "
             + COLUMN_ICON +" text, "+ COLUMN_NOTIFY_POWER +" integer, "+ COLUMN_NOTIFY_CO +" integer, "
-            + COLUMN_NOTIFY_TIMER +" integer, "+ COLUMN_GIVEN_NAME +" text, "+ COLUMN_SNOOZE+" integer, "+COLUMN_LED_SNOOZE+" integer );";
+            + COLUMN_NOTIFY_TIMER +" integer, "+ COLUMN_GIVEN_NAME +" text, "+ COLUMN_SNOOZE+" integer, "
+            + COLUMN_LED_SNOOZE+" integer, "+COLUMN_IR_SNOOZE+" integer );";
 
     // Database creation sql statement
     private static final String TABLE_CREATE_ALARM = "create table "
@@ -159,6 +161,9 @@ public class MySQLHelper extends SQLiteOpenHelper {
         if (service_id == gb.ALARM_NIGHLED_SERVICE){
             cv.put(COLUMN_LED_SNOOZE, v);
         }
+        if(service_id == gb.ALARM_IR_SERVICE){
+            cv.put(COLUMN_IR_SNOOZE, v);
+        }
         String filter = COLUMN_SID+" = '"+device_id+"'";
         int i = db.update(TABLE_SMARTPLUGS, cv, filter, null);
         if(i > 0){
@@ -182,6 +187,18 @@ public class MySQLHelper extends SQLiteOpenHelper {
     public int getLedSnooze(String deviceId){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery("select " + COLUMN_LED_SNOOZE + " from " + TABLE_SMARTPLUGS + " where " + COLUMN_SID + " = '" + deviceId+"'", null);
+        int snooze = 0;
+        if(c.getCount()>0){
+            c.moveToFirst();
+            snooze = c.getInt(0);
+        }
+        c.close();
+        return snooze;
+    }
+
+    public int getIRSnooze(String deviceId){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery("select " + COLUMN_IR_SNOOZE + " from " + TABLE_SMARTPLUGS + " where " + COLUMN_SID + " = '" + deviceId+"'", null);
         int snooze = 0;
         if(c.getCount()>0){
             c.moveToFirst();

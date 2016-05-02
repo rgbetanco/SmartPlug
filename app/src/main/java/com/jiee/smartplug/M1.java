@@ -110,6 +110,7 @@ public class M1 extends AppCompatActivity {
     Handler mHandler;
     int relaySnooze = 0;
     int ledSnooze = 0;
+    int irSnooze = 0;
     public static boolean deviceStatusChangedFlag = false;
     String token;
     Miscellaneous misc;
@@ -179,7 +180,6 @@ public class M1 extends AppCompatActivity {
         warning_icon_co.setVisibility(View.GONE);
 
         btn_ir_alarm = (ImageButton)findViewById(R.id.btn_ir_alarm);
-        btn_ir_alarm.setVisibility(View.GONE);
 
         Intent i = getIntent();
         mac = i.getStringExtra("mac");
@@ -406,6 +406,23 @@ public class M1 extends AppCompatActivity {
                     m1d.show();
                 } else {
                     final YesNoDialog cd = new YesNoDialog(activity, 2, mac, gb.ALARM_NIGHLED_SERVICE);   // 1 = logout, 2 = M1 : device_id : service_id
+                    cd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    cd.show();
+                }
+                c.close();
+            }
+        });
+
+        btn_ir_alarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Cursor c = sql.getAlarmData(mac, gb.ALARM_IR_SERVICE);
+                if(c.getCount() > 0){
+                    final M1SnoozeDialog m1d = new M1SnoozeDialog(activity, mac, irSnooze, gb.ALARM_IR_SERVICE);
+                    m1d.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    m1d.show();
+                } else {
+                    final YesNoDialog cd = new YesNoDialog(activity, 2, mac, gb.ALARM_IR_SERVICE);   // 1 = logout, 2 = M1 : device_id : service_id
                     cd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     cd.show();
                 }
@@ -661,6 +678,19 @@ public class M1 extends AppCompatActivity {
                 e.close();
             } else {
                 btn_nightled_alarm.setImageResource(R.drawable.btn_timer_delay);
+            }
+
+            irSnooze = u.getInt(24);
+            if(irSnooze == 0){
+                Cursor f = sql.getAlarmData(mac, gb.ALARM_IR_SERVICE);
+                if(f.getCount() > 0){
+                    btn_ir_alarm.setImageResource(R.drawable.btn_timer_on);
+                } else {
+                    btn_ir_alarm.setImageResource(R.drawable.btn_timer_off);
+                }
+                f.close();
+            } else {
+                btn_ir_alarm.setImageResource(R.drawable.btn_timer_delay);
             }
 
             if(u.getString(17)!=null && !u.getString(17).isEmpty()){

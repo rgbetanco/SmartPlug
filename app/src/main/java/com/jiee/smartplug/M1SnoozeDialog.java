@@ -176,7 +176,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
         dismiss();
     }
 
-    public void sendSnooze(int min){
+    public void sendSnooze(final int min){
         final int minutes = min;
 
         new Thread(new Runnable() {
@@ -193,6 +193,14 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
                 if(service_id == gb.ALARM_NIGHLED_SERVICE){
                     snooze = sql.getLedSnooze(device_id);
                     if(minutes > 0) {
+                        snooze += minutes;
+                    } else {
+                        snooze = 0;
+                    }
+                }
+                if(service_id == gb.ALARM_IR_SERVICE){
+                    snooze = sql.getIRSnooze(device_id);
+                    if(minutes > 0){
                         snooze += minutes;
                     } else {
                         snooze = 0;
@@ -248,6 +256,15 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
                         }
                     }
                     if(service_id == gb.ALARM_NIGHLED_SERVICE){
+                        if(minutes > 0) {
+                            sql.updateDeviceSnooze(device_id, service_id, snooze);
+                            snooze += minutes;
+                        } else {
+                            sql.updateDeviceSnooze(device_id, service_id, 0);
+                            snooze = 0;
+                        }
+                    }
+                    if(service_id == gb.ALARM_IR_SERVICE){
                         if(minutes > 0) {
                             sql.updateDeviceSnooze(device_id, service_id, snooze);
                             snooze += minutes;
