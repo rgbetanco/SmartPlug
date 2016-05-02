@@ -72,7 +72,7 @@
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
                     android:src="@drawable/ic_edit"
-                    android:background="@null"
+                    android:background="@color/gray"
                     />
                 <ImageView
                     android:layout_marginTop="15dp"

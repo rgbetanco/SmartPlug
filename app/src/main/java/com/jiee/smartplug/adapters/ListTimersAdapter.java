@@ -57,11 +57,19 @@ public class ListTimersAdapter extends BaseAdapter {
     MySQLHelper sql;
     int globalposition;
 
+    final String[] DOWs;
+
+    final LayoutInflater inflater;
+
     public ListTimersAdapter(Activity c, String device_id, int service_id){
+        inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
         this.context = c;
         this.device_id = device_id;
         this.service_id = service_id;
         getAlarms();
+
+        DOWs = c.getResources().getStringArray(R.array.dow);
     }
 
     public void getAlarms(){
@@ -88,7 +96,6 @@ public class ListTimersAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent){
         globalposition = position;
         if(convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.s2_schedule_adapter, parent, false);
         }
 
@@ -98,35 +105,12 @@ public class ListTimersAdapter extends BaseAdapter {
         btn_service = (ImageButton) convertView.findViewById(R.id.btn_service);
         btn_edit_timer = (ImageButton) convertView.findViewById(R.id.btn_edit_timer);
         btn_delete_timer = (ImageButton) convertView.findViewById(R.id.btn_delete_timer);
-        String name = "";
-        if(((alarms.get(position).getDow() >> 1) & 1) == 1){
-            name += "Sun,";
-        }
-        if(((alarms.get(position).getDow() >> 2) & 1) == 1){
-            name += "Mon,";
-        }
-        if(((alarms.get(position).getDow() >> 3) & 1) == 1){
-            name += "Tue,";
-        }
-        if(((alarms.get(position).getDow() >> 4) & 1) == 1){
-            name += "Wed,";
-        }
-        if(((alarms.get(position).getDow() >> 5) & 1) == 1){
-            name += "Thu,";
-        }
-        if(((alarms.get(position).getDow() >> 6) & 1) == 1){
-            name += "Fri,";
-        }
-        if(((alarms.get(position).getDow() >> 7) & 1) == 1){
-            name += "Sat,";
-        }
+        String name = Miscellaneous.getDOWList( alarms.get(position).getDow(), DOWs );
 
-        String iH = String.format("%02d", alarms.get(position).getInit_hour());
-        String iM = String.format("%02d", alarms.get(position).getInit_minute());
-        String eH = String.format("%02d", alarms.get(position).getEnd_hour());
-        String eM = String.format("%02d", alarms.get(position).getEnd_minute());
-
-        name += " "+iH+":"+iM+" to "+eH+":"+eM;
+        name =  Miscellaneous.getTime( alarms.get(position).getInit_hour(), alarms.get(position).getInit_minute() )
+                + "-"
+                + Miscellaneous.getTime( alarms.get(position).getEnd_hour(), alarms.get(position).getEnd_minute() )
+                + "  " + name;
 
         txt_timer.setText(name);
         if(service_id == gb.ALARM_RELAY_SERVICE){

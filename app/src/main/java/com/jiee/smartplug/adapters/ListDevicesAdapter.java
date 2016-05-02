@@ -68,8 +68,13 @@ public class ListDevicesAdapter extends BaseAdapter {
     boolean deviceStatusChangedFlag = false;
     Miscellaneous misc;
 
+    final LayoutInflater inflater;
+
     public ListDevicesAdapter(Activity a, MySQLHelper o, UDPListenerService UDPBinding){
         udp = new UDPCommunication();
+
+        inflater = (LayoutInflater) a.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
         this.act = a;
         this.mySQLHelper = o;
         this.UDPBinding = UDPBinding;
@@ -104,7 +109,6 @@ public class ListDevicesAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, final ViewGroup parent) {
 
         if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.list_devices, parent, false);
         }
 

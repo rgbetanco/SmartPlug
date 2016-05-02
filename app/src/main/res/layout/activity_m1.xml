@@ -29,7 +29,8 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:src="@drawable/lamp" />
+            android:src="@drawable/lamp"
+            android:background="@color/icon" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -69,7 +70,7 @@
                         android:layout_width="wrap_content"
                         android:id="@+id/warning_icon"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/marker_warn"
+                        android:src="@drawable/marker_warn_flash"
                         android:layout_margin="5dp"/>
                     <ImageButton
                         android:id="@+id/plug_alarm_icon"
@@ -185,7 +186,7 @@
                         android:layout_width="wrap_content"
                         android:id="@+id/warning_icon_co"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/marker_warn"
+                        android:src="@drawable/marker_warn_flash"
                         android:layout_margin="5dp"/>
 
                     <ImageButton
@@ -220,7 +221,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/img_warn2"
-                android:src="@drawable/marker_warn2"/>
+                android:src="@drawable/marker_warn_flash"/>
             <TextView
                 android:layout_toRightOf="@+id/img_warn2"
                 android:layout_marginLeft="20dp"

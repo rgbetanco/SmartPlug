@@ -15,117 +15,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:gravity="center"
+        android:gravity="left"
         android:textColor="@color/black" />
 
     <ListView
         android:layout_marginTop="0dp"
         android:id="@+id/alarm_list_view"
         android:layout_width="match_parent"
-        android:layout_height="50dp" />
-
-    <Button
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="5dp"
-        android:id="@+id/btn_add_new_timer"
-        android:text="@string/add_new_timer"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:layout_width="138dp"
-        android:layout_height="49dp"
-        android:background="@drawable/buttonshape"
-        android:layout_gravity="center"
+        android:layout_height="match_parent"
         />
 
-    <Button
-        android:layout_marginTop="2dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="5dp"
-        android:id="@+id/btn_show_modify_timer"
-        android:text="@string/show_modify_timer"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:layout_width="138dp"
-        android:layout_height="49dp"
-        android:background="@drawable/buttonshape"
-        android:layout_gravity="center"
-        />
-
-    <Button
-        android:layout_marginTop="2dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="5dp"
-        android:id="@+id/btn_snooze_five"
-        android:text="@string/Snooze_5_Minutes"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:layout_width="138dp"
-        android:layout_height="49dp"
-        android:background="@drawable/buttonshape"
-        android:layout_gravity="center"
-        />
-
-    <Button
-        android:layout_marginTop="2dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="5dp"
-        android:id="@+id/btn_snooze_ten"
-        android:text="@string/Snooze_10_Minutes"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:layout_width="138dp"
-        android:layout_height="49dp"
-        android:background="@drawable/buttonshape"
-        android:layout_gravity="center"
-        />
-
-    <Button
-        android:layout_marginTop="2dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="5dp"
-        android:id="@+id/btn_snooze_thirty"
-        android:text="@string/Snooze_30_Minutes"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:layout_width="138dp"
-        android:layout_height="49dp"
-        android:background="@drawable/buttonshape"
-        android:layout_gravity="center"
-        />
-
-    <Button
-        android:layout_marginTop="2dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="10dp"
-        android:id="@+id/btn_snooze_sixty"
-        android:text="@string/Snooze_1_Hour"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:layout_width="138dp"
-        android:layout_height="49dp"
-        android:background="@drawable/buttonshape"
-        android:layout_gravity="center"
-        />
-    <Button
-        android:layout_marginTop="2dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="10dp"
-        android:id="@+id/btn_snooze_cancel"
-        android:text="@string/delay_cancel"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:layout_width="138dp"
-        android:layout_height="49dp"
-        android:background="@drawable/buttonshape"
-        android:layout_gravity="center"
-        android:visibility="invisible"
-        />
-    </LinearLayout>
+</LinearLayout>

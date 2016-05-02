@@ -70,7 +70,7 @@
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
                     android:src="@drawable/lamp"
-                    android:background="@null"
+                    android:background="@color/icon"
                     />
                 <ImageView
                     android:layout_marginTop="5dp"
@@ -247,6 +247,7 @@
                     />
             </LinearLayout>
 
+            <!--
             <LinearLayout
                 android:id="@+id/layout_notify_power"
                 android:layout_marginTop="16dp"
@@ -309,6 +310,7 @@
                     android:background="@null"
                     />
             </LinearLayout>
+            -->
 
             <LinearLayout
                 android:layout_marginTop="16dp"

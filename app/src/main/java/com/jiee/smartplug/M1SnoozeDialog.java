@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -78,39 +80,43 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
         mi = new Miscellaneous();
         values = mi.populateAlarmList(activity, device_id, service_id);
 
-        s5 = (Button)findViewById(R.id.btn_snooze_five);
+        LayoutInflater inflater = getLayoutInflater();
+        ViewGroup footer = (ViewGroup) inflater.inflate(R.layout.m1_snooze_dialog_buttons, listView,
+                false);
+
+        s5 = (Button)footer.findViewById(R.id.btn_snooze_five);
         if(snooze > 0) {
             s5.setText(R.string.delay_plus_five);
         }
         s5.setOnClickListener(this);
 
-        s10 = (Button)findViewById(R.id.btn_snooze_ten);
+        s10 = (Button)footer.findViewById(R.id.btn_snooze_ten);
         if(snooze > 0) {
             s10.setText(R.string.delay_plus_ten);
         }
         s10.setOnClickListener(this);
-        s30 = (Button)findViewById(R.id.btn_snooze_thirty);
+        s30 = (Button)footer.findViewById(R.id.btn_snooze_thirty);
         if(snooze > 0) {
             s30.setText(R.string.delay_plus_thirty);
         }
         s30.setOnClickListener(this);
 
-        s59 = (Button)findViewById(R.id.btn_snooze_sixty);
+        s59 = (Button)footer.findViewById(R.id.btn_snooze_sixty);
         if(snooze > 0) {
             s59.setText(R.string.delay_plus_sixty);
         }
         s59.setOnClickListener(this);
 
-        sCancel = (Button)findViewById(R.id.btn_snooze_cancel);
+        sCancel = (Button)footer.findViewById(R.id.btn_snooze_cancel);
         if(snooze > 0) {
             sCancel.setVisibility(View.VISIBLE);
         }
         sCancel.setOnClickListener(this);
 
-        s2_schedule = (Button)findViewById(R.id.btn_show_modify_timer);
+        s2_schedule = (Button)footer.findViewById(R.id.btn_show_modify_timer);
         s2_schedule.setOnClickListener(this);
 
-        add_new_timerl = (Button)findViewById(R.id.btn_add_new_timer);
+        add_new_timerl = (Button)footer.findViewById(R.id.btn_add_new_timer);
         add_new_timerl.setOnClickListener(this);
 
         TextView sub_toolbar = (TextView) findViewById(R.id.sub_toolbar);
@@ -121,9 +127,10 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
             sub_toolbar.setText(snoozing.toString());
         }
 
+        listView = (ListView)findViewById(R.id.alarm_list_view);
+        listView.addFooterView(footer);
         ListAlarmsAdapter listAlarmsAdapter = new ListAlarmsAdapter(activity, values);
 
-        listView = (ListView)findViewById(R.id.alarm_list_view);
         listView.setAdapter(listAlarmsAdapter);
 
     }

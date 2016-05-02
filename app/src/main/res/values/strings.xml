@@ -117,13 +117,12 @@
     1.Press the “power” button</br>
 2.Press the “Volume” button
 3.Device recognized as: Hitachi A/C</string>
-    "
     <string name="btn_addNow">Add now</string>
     <string name="title_customCommand">Custom Command</string>
     <string name="id_recordIrCommand">Record IR command</string>
-    "<string name="msg_recordIr">Please point your remote at the JSPlug and press the button you wish to record.
+    <string name="msg_recordIr">Please point your remote at the JSPlug and press the button you wish to record.
 
-1.Button recorded.</string>"
+1.Button recorded.</string>
     <string name="btn_recordAgain">Record again</string>
     <string name="btn_testCommand">Test command</string>
     <string name="msg_co_warning">CO Warning</string>
@@ -171,6 +170,24 @@
         <item>Initialize the Device</item>
         <item>Add the Device</item>
         <item>Ready to Begin !</item>
+    </string-array>
+
+    <string name="sunday">Su</string>
+    <string name="monday">Mo</string>
+    <string name="tuesday">Tu</string>
+    <string name="wednesday">We</string>
+    <string name="thursday">Th</string>
+    <string name="friday">Fr</string>
+    <string name="saturday">Sa</string>
+
+    <string-array name="dow">
+        <item>@string/sunday</item>
+        <item>@string/monday</item>
+        <item>@string/tuesday</item>
+        <item>@string/wednesday</item>
+        <item>@string/thursday</item>
+        <item>@string/friday</item>
+        <item>@string/saturday</item>
     </string-array>
 
     <string name="help1">Using this app, you can easily access your new JSPlug from anywhere in the world !</string>

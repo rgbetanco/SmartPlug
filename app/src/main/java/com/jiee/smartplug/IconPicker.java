@@ -5,6 +5,7 @@ import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Adapter;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 
 public class IconPicker extends Activity {
 
-    ListView list;
+    GridView list;
     ImageButton btn_setting;
 
     @Override
@@ -26,7 +27,7 @@ public class IconPicker extends Activity {
         btn_setting = (ImageButton)findViewById(R.id.btn_settings);
         btn_setting.setVisibility(View.GONE);
 
-        list = (ListView)findViewById(R.id.listViewIcons);
+        list = (GridView)findViewById(R.id.listViewIcons);
         ListIconsAdapter adapter = new ListIconsAdapter(this);
         list.setAdapter(adapter);
 

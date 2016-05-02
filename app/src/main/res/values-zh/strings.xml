@@ -118,13 +118,12 @@
     1.按電源按鈕</br>
 2.按音量按紐
 3.裝置已認出 as: Hitachi 冷氣機</string>
-    "
     <string name="btn_addNow">現在加入</string>
     <string name="title_customCommand">客製指示</string>
     <string name="id_recordIrCommand">紅外線指令錄製</string>
-    "<string name="msg_recordIr">請對應遙控器至智慧插座,並按錄製
+    <string name="msg_recordIr">請對應遙控器至智慧插座,並按錄製
 
-1.按鈕已錄製.</string>"
+1.按鈕已錄製.</string>
     <string name="btn_recordAgain">重新錄製</string>
     <string name="btn_testCommand">測試指令</string>
     <string name="msg_co_warning">一氧化碳警告</string>
@@ -173,6 +172,14 @@
         <item>增加新裝置</item>
         <item>準備開始囉!</item>
     </string-array>
+
+    <string name="sunday">日</string>
+    <string name="monday">一</string>
+    <string name="tuesday">二</string>
+    <string name="wednesday">三</string>
+    <string name="thursday">四</string>
+    <string name="friday">五</string>
+    <string name="saturday">六</string>
 
     <string name="help1">不論您在何處，都可藉由此APP操控您的智慧型插座喔! </string>
     <string name="help2">創建一個帳戶或登錄您已有的帳戶</string>
