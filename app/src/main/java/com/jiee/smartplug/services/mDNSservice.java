@@ -15,6 +15,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.jiee.smartplug.objects.JSmartPlug;
+import com.jiee.smartplug.utils.HTTPHelper;
 import com.jiee.smartplug.utils.MySQLHelper;
 import com.jiee.smartplug.utils.UDPCommunication;
 
@@ -40,7 +41,7 @@ public class mDNSservice extends Service implements ServiceListener, ServiceType
     public static final String SMARTCONFIG_IDENTIFIER = "JSPlug";
     //UDPCommunication udp = new UDPCommunication();
     boolean runThread = false;
-    MySQLHelper sql = new MySQLHelper(this);
+    MySQLHelper sql;
     int count_max = 10;
     Thread mDNSBroadcastThread;
 
@@ -237,6 +238,12 @@ public class mDNSservice extends Service implements ServiceListener, ServiceType
 
     @Override
     public void subTypeForServiceTypeAdded(ServiceEvent event) {}
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        sql = HTTPHelper.getDB(this);
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {

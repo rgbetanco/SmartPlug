@@ -22,9 +22,6 @@ import org.w3c.dom.Text;
 
 public class S0 extends AppCompatActivity {
 
-    final Context context = this;
-    final Activity activity = this;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,8 +36,7 @@ public class S0 extends AppCompatActivity {
         img_view1.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                startActivity(new Intent(context, S1.class));
-                finish();
+                startActivity(new Intent(S0.this, S1.class));
             }
         });
 
@@ -48,8 +44,7 @@ public class S0 extends AppCompatActivity {
         txt_changePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(context, S1.class));
-                finish();
+                startActivity(new Intent(S0.this, S1.class));
             }
         });
 
@@ -57,7 +52,7 @@ public class S0 extends AppCompatActivity {
         txt_view1.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                final YesNoDialog cd = new YesNoDialog(activity, 1);   // 1 = logout
+                final YesNoDialog cd = new YesNoDialog(S0.this, 1);   // 1 = logout
                 cd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 cd.show();
             }
@@ -65,9 +60,18 @@ public class S0 extends AppCompatActivity {
 
     }
 
-    public boolean onOptionsItemSelected(MenuItem item){
-        Intent myIntent = new Intent(getApplicationContext(), ListDevices.class);
-        startActivityForResult(myIntent, 0);
-        return true;
-    }
-}
+    /**
+     * react to the user tapping the back/up icon in the action bar
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // this takes the user 'back', as if they pressed the left-facing triangle icon on the main android toolbar.
+                // if this doesn't work as desired, another possibility is to call `finish()` here.
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }}

@@ -41,26 +41,34 @@ import okhttp3.Response;
 public class HTTPHelper {
     public static final MediaType TEXT = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
     OkHttpClient client;
-    Activity a;
-    MySQLHelper sql;
+    Context a;
+    protected static MySQLHelper mSQL;
     byte[] sMsg = new byte[24];
-    Miscellaneous misc;
     UDPCommunication udp;
     ArrayList<Alarm> alarms = new ArrayList<>();
-    GlobalVariables gb = new GlobalVariables();
     String json;
     String idLocal;
 
-    public HTTPHelper(Activity a){
-        this.a = a;
+    public HTTPHelper(Context a){
+        this.a = a.getApplicationContext();
         this.client = new OkHttpClient();
-        sql = new MySQLHelper(a);
-        misc = new Miscellaneous();
         udp = new UDPCommunication();
+        getDB();
     }
 
     public HTTPHelper(){
         this.client = new OkHttpClient();
+    }
+
+    public static MySQLHelper getDB(Context context) {
+        if( mSQL==null )
+            mSQL = new MySQLHelper(context);
+
+        return mSQL;
+    }
+
+    public MySQLHelper getDB() {
+        return getDB(a);
     }
 
     public boolean sendDeviceActivationKey(String param, String ip, String id, String name) throws Exception {
@@ -95,7 +103,7 @@ public class HTTPHelper {
             for(int i = 0; i < 4; i++) {
                 headerArray[i] = inputStream.read();
             }
-            int header = misc.process_long((byte)headerArray[3], (byte)headerArray[2], (byte)headerArray[1], (byte)headerArray[0]);
+            int header = Miscellaneous.process_long((byte)headerArray[3], (byte)headerArray[2], (byte)headerArray[1], (byte)headerArray[0]);
 //            if(header == 1397576275){
                 for(int j = 0; j < 8; j++){
                     inputStream.read();                     //This right now is not doing anything, the MSGID and SEQ are zero
@@ -105,16 +113,16 @@ public class HTTPHelper {
             sizeArray[0] = inputStream.read();
             sizeArray[1] = inputStream.read();
 
-            short size = misc.process_short((byte)sizeArray[1], (byte)sizeArray[0]);
+            short size = Miscellaneous.process_short((byte)sizeArray[1], (byte)sizeArray[0]);
 
             int[] responseArray = new int[2];
             responseArray[0] = inputStream.read();
             responseArray[1] = inputStream.read();
-            short server_response = misc.process_short((byte)responseArray[1], (byte)responseArray[0]);
+            short server_response = Miscellaneous.process_short((byte)responseArray[1], (byte)responseArray[0]);
             int[] dataSizeArray = new int[2];
             dataSizeArray[0] = inputStream.read();
             dataSizeArray[1] = inputStream.read();
-            short dataSize = misc.process_short((byte)dataSizeArray[1], (byte)dataSizeArray[0]);
+            short dataSize = Miscellaneous.process_short((byte)dataSizeArray[1], (byte)dataSizeArray[0]);
 
             byte[] dataArray = new byte[dataSize];
             for (int k = 0; k < dataSize; k++){
@@ -146,6 +154,7 @@ public class HTTPHelper {
     }
 
     public boolean saveGallery(String param) throws Exception {
+        MySQLHelper sql = getDB();
         boolean toReturn = false;
         OkHttpClient c = new OkHttpClient();
         String url = GlobalVariables.DOMAIN+param;
@@ -197,6 +206,7 @@ public class HTTPHelper {
     }
 
     public boolean getDeviceList(String param){
+        MySQLHelper sql = getDB();
         boolean toReturn = false;
         ArrayList<JSmartPlug> jsplugs = new ArrayList<>();
         try {
@@ -271,7 +281,6 @@ public class HTTPHelper {
             sql.deletePlugs();
         }
 
-        sql.close();
         return toReturn;
     }
 
@@ -300,17 +309,14 @@ public class HTTPHelper {
         if(devid != null && !devid.isEmpty()) {
             json = getJSONData(param);
             JSONObject job = new JSONObject(json);
-            int r = job.getInt("r");
-            if (r == 0) {
-                toReturn = true;
-            }
-
+            toReturn = checkReturn(job);
         }
         System.out.println(json);
         return toReturn;
     }
 
     public boolean login(String param) throws IOException {
+        MySQLHelper sql = getDB();
         boolean toReturn = false;
         try {
             String jsonData = getJSONData(param);
@@ -333,18 +339,28 @@ public class HTTPHelper {
         return toReturn;
     }
 
-    public boolean logout(String param) throws Exception {
+    public boolean checkReturn(JSONObject Jobject) {
+        String r = optString(Jobject, "r");
+        if (r != null && !r.isEmpty()) {
+            int ret = Integer.parseInt(r);
+            if (ret == 0) {
+                return true;
+            } else if( ret==1 ) {
+                Miscellaneous.logout(a, Miscellaneous.LogoutType.WARN_BADUSER);
+            }
+        }
+
+        return false;
+    }
+
+    public boolean logout() throws Exception {
         boolean toReturn = false;
+        String param = "logout?token="+Miscellaneous.getToken(a)+"&hl="+ Locale.getDefault().getLanguage()+"&devtoken="+ RegistrationIntentService.regToken;
         String json = getJSONData(param);
         System.out.println(json);
         try {
             JSONObject Jobject = new JSONObject(json);
-            String r = optString(Jobject, "r");
-            if(r != null && !r.isEmpty()) {
-                if (Integer.parseInt(r) == 0) {
-                    toReturn = true;
-                }
-            }
+            toReturn = checkReturn(Jobject);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -369,27 +385,15 @@ public class HTTPHelper {
         return toReturn;
     }
 
-    public boolean resetPassword(String newpass) throws Exception {
+    public boolean resetPassword(String oldpass, String newpass) throws Exception {
         boolean toReturn = false;
-        String token = "";
-        Cursor d = sql.getToken();
-        if(d.getCount() > 0){
-            d.moveToFirst();
-            token = d.getString(1);
-        }
-        d.close();
 
-        String param = "changepwd?token="+token+"&hl="+Locale.getDefault().getLanguage()+"&newpwd="+newpass;
+        String param = "changepwd?token="+Miscellaneous.getToken(a)+"&hl="+Locale.getDefault().getLanguage()+"&pwd="+oldpass+"&newpwd="+newpass;
         String json = getJSONData(param);
         System.out.println(json);
         try {
             JSONObject Jobject = new JSONObject(json);
-            String r = optString(Jobject, "r");
-            if (r != null && !r.isEmpty()) {
-                if (Integer.parseInt(r) == 0) {
-                    toReturn = true;
-                }
-            }
+            toReturn = checkReturn(Jobject);
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -419,7 +423,6 @@ public class HTTPHelper {
 
     public boolean getDeviceStatus(String param, String id, Context context) throws IOException{
         boolean toReturn = false;
-        sql = new MySQLHelper(context);
         this.idLocal = id;
         try {
             json = getJSONData(param);
@@ -428,12 +431,13 @@ public class HTTPHelper {
             e.printStackTrace();
         }
 
-                try {
+        MySQLHelper sql = getDB();
+
+        try {
 
                     JSONObject Jobject = new JSONObject(json);
-                    int r = Jobject.getInt("r");
-                    if(r == 0){
-                        toReturn = true;
+                    toReturn = checkReturn(Jobject);
+                    if(toReturn) {
                         String relay = optString(Jobject, "relay");
                         String nightlight = optString(Jobject, "nightlight");
                         String co_sensor = optString(Jobject, "cosensor");
@@ -462,14 +466,14 @@ public class HTTPHelper {
                             sql.updatePlugHallSensorService(0, idLocal);
                         }
                         if(snooze != null && !snooze.isEmpty()) {
-                            sql.updateDeviceSnooze(idLocal, gb.ALARM_RELAY_SERVICE, Integer.parseInt(snooze));
+                            sql.updateDeviceSnooze(idLocal, GlobalVariables.ALARM_RELAY_SERVICE, Integer.parseInt(snooze));
                         } else {
-                            sql.updateDeviceSnooze(idLocal, gb.ALARM_RELAY_SERVICE, 0);
+                            sql.updateDeviceSnooze(idLocal, GlobalVariables.ALARM_RELAY_SERVICE, 0);
                         }
                         if(ledsnooze != null && !ledsnooze.isEmpty()) {
-                            sql.updateDeviceSnooze(idLocal, gb.ALARM_NIGHLED_SERVICE, Integer.parseInt(ledsnooze));
+                            sql.updateDeviceSnooze(idLocal, GlobalVariables.ALARM_NIGHLED_SERVICE, Integer.parseInt(ledsnooze));
                         } else {
-                            sql.updateDeviceSnooze(idLocal, gb.ALARM_NIGHLED_SERVICE, 0);
+                            sql.updateDeviceSnooze(idLocal, GlobalVariables.ALARM_NIGHLED_SERVICE, 0);
                         }
 
                     }
@@ -534,33 +538,22 @@ public class HTTPHelper {
         try {
 
             JSONObject Jobject = new JSONObject(jsonData);
-            int r = Jobject.getInt("r");
-            if(r == 0){
-                toReturn = true;
-            } else {
-                toReturn = false;
-            }
-
+            toReturn = checkReturn(Jobject);
         }catch(Exception e){
             e.printStackTrace();
         }
         return toReturn;
     }
 
-    public boolean delDeviceTimers(String mac, Activity activity){
+    public boolean delDeviceTimers(String mac){
         boolean toReturn = false;
-        String param = "alarmdel?token="+ misc.getToken(activity)+"&hl="+Locale.getDefault().getLanguage()+"&devid="+mac;
+        String param = "alarmdel?token="+ Miscellaneous.getToken(a)+"&hl="+Locale.getDefault().getLanguage()+"&devid="+mac;
         System.out.println(param);
         String jsonData = "";
         try {
             jsonData = getJSONData(param);
             JSONObject job = new JSONObject(jsonData);
-            int r = job.getInt("r");
-            if(r != 0){
-                toReturn = false;
-            } else {
-                toReturn = true;
-            }
+            toReturn = checkReturn(job);
             System.out.println(jsonData);
         } catch (Exception e){
             e.printStackTrace();
@@ -568,13 +561,13 @@ public class HTTPHelper {
         return toReturn;
     }
 
-    public boolean updateAlarms(final String token, final String devId, Context context) throws Exception {
+    public boolean updateAlarms(final String devId) throws Exception {
 
     //    new Thread(new Runnable() {
     //        @Override
     //        public void run() {
-                sql = new MySQLHelper(context);
-                String param = "alarmget?token="+token+"&hl="+Locale.getDefault().getLanguage()+"&devid="+devId;
+        MySQLHelper sql = getDB();
+                String param = "alarmget?token="+Miscellaneous.getToken(a)+"&hl="+Locale.getDefault().getLanguage()+"&devid="+devId;
                 alarms.clear();
                 if(!sql.removeAlarms(devId)){
                     System.out.println("ALARM WAS NOT ABLE TO BE REMOVED WITH DEVID: "+devId);
@@ -620,12 +613,12 @@ public class HTTPHelper {
                     if(serviceId != 0) {
                         Alarm a = new Alarm();
                         a.setDevice_id(devId);
-                        if(serviceId == gb.ALARM_RELAY_SERVICE) {
-                            a.setService_id(gb.ALARM_RELAY_SERVICE);
-                        } else if(serviceId == gb.ALARM_NIGHLED_SERVICE){
-                            a.setService_id(gb.ALARM_NIGHLED_SERVICE);
-                        } else if(serviceId == gb.ALARM_IR_SERVICE){
-                            a.setService_id(gb.ALARM_IR_SERVICE);
+                        if(serviceId == GlobalVariables.ALARM_RELAY_SERVICE) {
+                            a.setService_id(GlobalVariables.ALARM_RELAY_SERVICE);
+                        } else if(serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE){
+                            a.setService_id(GlobalVariables.ALARM_NIGHLED_SERVICE);
+                        } else if(serviceId == GlobalVariables.ALARM_IR_SERVICE){
+                            a.setService_id(GlobalVariables.ALARM_IR_SERVICE);
                         }
 
                         System.out.println("SERVICE FROM SERVER: "+a.getService_id());
@@ -663,7 +656,7 @@ public class HTTPHelper {
 
     public boolean setDeviceTimers(byte[] array, int send) throws Exception{
         boolean toReturn = false;
-        String param = "devctrl?token=" + ListDevices.token + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + M1.mac +"&send="+send+"&ignoretoken="+ RegistrationIntentService.regToken;
+        String param = "devctrl?token=" + Miscellaneous.getToken(a) + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + M1.mac +"&send="+send+"&ignoretoken="+ RegistrationIntentService.regToken;
         String url = GlobalVariables.DOMAIN+param;
         Log.i("SET DEVICE TIMES", url);
         RequestBody body = RequestBody.create(TEXT, array);
@@ -673,19 +666,14 @@ public class HTTPHelper {
             response = client.newCall(request).execute();
         } catch (Exception e){
             toReturn = false;
+            return toReturn;
         }
         String jsonData = response.body().string().toString();
         System.out.println(jsonData);
         try {
 
             JSONObject Jobject = new JSONObject(jsonData);
-            int r = Jobject.getInt("r");
-            if(r == 0){
-                toReturn = true;
-            } else {
-                toReturn = false;
-            }
-
+            toReturn = checkReturn(Jobject);
         }catch(Exception e){
             toReturn = false;
             e.printStackTrace();
@@ -696,7 +684,7 @@ public class HTTPHelper {
 
     public boolean setTimerDelay(byte[] array, int send) throws Exception {
         boolean toReturn = false;
-        String param = "devctrl?token=" + ListDevices.token + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + M1.mac +"&send="+send+"&ignoretoken="+ RegistrationIntentService.regToken;
+        String param = "devctrl?token=" + Miscellaneous.getToken(a) + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + M1.mac +"&send="+send+"&ignoretoken="+ RegistrationIntentService.regToken;
         System.out.println(param);
 
         String url = GlobalVariables.DOMAIN+param;
@@ -709,11 +697,7 @@ public class HTTPHelper {
         try {
 
             JSONObject Jobject = new JSONObject(json);
-            int r = Jobject.getInt("r");
-            if(r == 0){
-                toReturn = true;
-            }
-
+            toReturn = checkReturn(Jobject);
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -741,15 +725,16 @@ public class HTTPHelper {
         return buffer.getShort(0);
     }
 
-    public void manageIRGroup(String token, String devid, int serviceId, String type, String action, int groupId, String name, int icon, int res, int tempId){
-        String param = "devirset?token="+token+"&hl="+Locale.getDefault().getLanguage()+"&devid="+devid+"&serviceid="+serviceId+"&type="+type+"&action="+action+"&groupid="+groupId+"&name="+name+"&icon="+icon+"&res="+res;
+    public void manageIRGroup( String devid, int serviceId, String type, String action, int groupId, String name, int icon, int res, int tempId){
+        MySQLHelper sql = getDB();
+        String param = "devirset?token="+Miscellaneous.getToken(a)+"&hl="+Locale.getDefault().getLanguage()+"&devid="+devid+"&serviceid="+serviceId+"&type="+type+"&action="+action+"&groupid="+groupId+"&name="+name+"&icon="+icon+"&res="+res;
         System.out.println(param);
         String jsonData = "";
         try {
             jsonData = getJSONData(param);
             JSONObject job = new JSONObject(jsonData);
-            int r = job.getInt("r");
-            if(r == 0){
+            boolean toReturn = checkReturn(job);
+            if(toReturn){
                 int id = job.getInt("id");
                 sql.updateIRGroupID(tempId, id);
             }
@@ -759,8 +744,9 @@ public class HTTPHelper {
         }
     }
 
-    public void getServerIR(String token, String hl, String devid, int serviceId, int res){
-        String param = "devirget?token="+token+"&hl="+hl+"&devid="+devid+"&serviceid="+serviceId+"&res="+res;
+    public void getServerIR( String devid, int serviceId, int res){
+        MySQLHelper sql = getDB();
+        String param = "devirget?token="+Miscellaneous.getToken(a)+"&hl="+Locale.getDefault().getLanguage()+"&devid="+devid+"&serviceid="+serviceId+"&res="+res;
         if(devid == null || devid.isEmpty()){
             devid = M1.mac;
         }
@@ -801,9 +787,10 @@ public class HTTPHelper {
         }
     }
 
-    public boolean manageIRButton(String token, String devId, int serviceId, String type, String action, int groupId, int buttonId, String name, int icon, int code, int res){
+    public boolean manageIRButton(String devId, int serviceId, String type, String action, int groupId, int buttonId, String name, int icon, int code, int res){
+        MySQLHelper sql = getDB();
         boolean toReturn = false;
-        String param = "devirset?token="+token+"&hl="+Locale.getDefault().getLanguage()+"&devid="+devId+"&serviceid="+serviceId+"&type="
+        String param = "devirset?token="+Miscellaneous.getToken(a)+"&hl="+Locale.getDefault().getLanguage()+"&devid="+devId+"&serviceid="+serviceId+"&type="
                 +type+"&action="+action+"&groupid="+groupId+"&buttonid="+buttonId+"&name="+name+"&icon="+icon+"&code="+code+"&res="+res;
         System.out.println(param);
         if(devId == null || devId.isEmpty()){
@@ -814,9 +801,8 @@ public class HTTPHelper {
             if(devId != null && !devId.isEmpty()) {
                 jsonData = getJSONData(param);
                 JSONObject job = new JSONObject(jsonData);
-                int r = job.getInt("r");
-                if (r == 0) {
-                    toReturn = true;
+                toReturn = checkReturn(job);
+                if (toReturn) {
                     int id = job.getInt("id");
                     sql.updateIRCodeSID(code, id);
                    // getServerIR(token, Locale.getDefault().getLanguage(), devId, serviceId, res);

@@ -207,5 +207,8 @@
     <string name="connection_error">Connection error</string>
 
     <string name="timer_set_snoozing">Set Timer Snoozing </string>
+    <string name="minutes">分</string>
+    <string name="timer">定時</string>
+    <string name="snooze">已延時</string>
 
 </resources>

@@ -15,7 +15,6 @@ import java.util.Locale;
  */
 public class gcmNotificationService extends IntentService {
 
-    public static Activity activity;
     public static String mac;
 
     Miscellaneous misc = new Miscellaneous();
@@ -23,7 +22,6 @@ public class gcmNotificationService extends IntentService {
 
     public gcmNotificationService(){
         super("gcmNotificationService");
-        httpHelper = new HTTPHelper(activity);
     }
 
     @Override
@@ -32,8 +30,11 @@ public class gcmNotificationService extends IntentService {
         String getAlarmFlag = intent.getStringExtra("getAlarmFlag");
         System.out.println(getDataFlag);
         if(getAlarmFlag.equals("true")) {
+            if( httpHelper==null )
+                httpHelper = new HTTPHelper(this);
+
             try {
-                httpHelper.updateAlarms(misc.getToken(activity), mac, getApplicationContext());
+                httpHelper.updateAlarms(mac);
             } catch (Exception e) {
                 e.printStackTrace();
             }

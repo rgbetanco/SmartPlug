@@ -41,8 +41,7 @@ import java.util.Locale;
 public class MyGcmListenerService extends GcmListenerService {
 
 //    MySQLHelper sql = new MySQLHelper(getApplicationContext());
-    HTTPHelper http = new HTTPHelper();
-    Miscellaneous misc = new Miscellaneous();
+    HTTPHelper http;
 
     private static final String TAG = "MyGcmListenerService";
 
@@ -56,8 +55,12 @@ public class MyGcmListenerService extends GcmListenerService {
     // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
+
+        if( http==null )
+            http = new HTTPHelper(this);
+
         System.out.println(data);
-        MySQLHelper sql = new MySQLHelper(getApplicationContext());
+        MySQLHelper sql = HTTPHelper.getDB(this);
         String message = data.getString("message");
         String showFlag = data.getString("showFlag");
         String getDataFlag = data.getString("getDataFlag");
@@ -73,7 +76,7 @@ public class MyGcmListenerService extends GcmListenerService {
         Log.d(TAG, "Device Id: "+devId);
 
         if(getDataFlag.equals("true")){
-            String param = "devget?token=" + misc.getToken(getApplicationContext()) + "&hl=" + Locale.getDefault().getLanguage() + "&res=0&devid=" + devId;
+            String param = "devget?token=" + Miscellaneous.getToken(getApplicationContext()) + "&hl=" + Locale.getDefault().getLanguage() + "&res=0&devid=" + devId;
             try {
                 if(devId != null && !devId.isEmpty() && !devId.equals("null")) {
                     http.getDeviceStatus(param, devId, getApplicationContext());
@@ -86,7 +89,7 @@ public class MyGcmListenerService extends GcmListenerService {
         if(getAlarmFlag.equals("true")){
             try {
                 if(devId != null && !devId.isEmpty() && !devId.equals("null")) {
-                    http.updateAlarms(misc.getToken(getApplicationContext()), devId, getApplicationContext());
+                    http.updateAlarms(devId);
                 }
             } catch (Exception e){
                 e.printStackTrace();

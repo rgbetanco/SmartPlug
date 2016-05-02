@@ -22,7 +22,6 @@ import java.util.Locale;
 
 public class CreateAccount extends AppCompatActivity {
 
-    final Activity context = this;
     boolean response;
 
     @Override
@@ -90,15 +89,15 @@ public class CreateAccount extends AppCompatActivity {
                     try {
                         response = http.createAccount("newuser?user="+txt_username.getText().toString().trim()+"&pwd="+txt_password.getText().toString().trim()+"&email="+txt_email.getText().toString().trim()+"&hl="+ Locale.getDefault().getLanguage());
                         if(response){
-                            Toast.makeText(context, getResources().getString(R.string.account_sent), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CreateAccount.this, getResources().getString(R.string.account_sent), Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(context, getResources().getString(R.string.create_account_error), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CreateAccount.this, getResources().getString(R.string.create_account_error), Toast.LENGTH_SHORT).show();
                         }
                     } catch (Exception e){
                         e.printStackTrace();
                     }
                 } else {
-                    Toast.makeText(context, getResources().getString(R.string.password_compare_error), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CreateAccount.this, getResources().getString(R.string.password_compare_error), Toast.LENGTH_SHORT).show();
                 }
             }
         });

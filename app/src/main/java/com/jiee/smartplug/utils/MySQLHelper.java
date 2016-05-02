@@ -80,8 +80,6 @@ public class MySQLHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "jsplugs.db";
     private static final int DATABASE_VERSION = 1;
 
-    private GlobalVariables gb = new GlobalVariables();
-
     //create table for IR Codes
     private static final String TABLE_CREATE_IRCODE = "create table "
             + TABLE_IRCODES + "( "+COLUMN_ID+" integer primary key autoincrement, "
@@ -155,13 +153,13 @@ public class MySQLHelper extends SQLiteOpenHelper {
         boolean toReturn = false;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        if(service_id == gb.ALARM_RELAY_SERVICE) {
+        if(service_id == GlobalVariables.ALARM_RELAY_SERVICE) {
             cv.put(COLUMN_SNOOZE, v);
         }
-        if (service_id == gb.ALARM_NIGHLED_SERVICE){
+        if (service_id == GlobalVariables.ALARM_NIGHLED_SERVICE){
             cv.put(COLUMN_LED_SNOOZE, v);
         }
-        if(service_id == gb.ALARM_IR_SERVICE){
+        if(service_id == GlobalVariables.ALARM_IR_SERVICE){
             cv.put(COLUMN_IR_SNOOZE, v);
         }
         String filter = COLUMN_SID+" = '"+device_id+"'";
@@ -560,8 +558,10 @@ public class MySQLHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_TOKEN, "");
         if (db.update(TABLE_PARAMS, cv, null, null) == 1){
+            db.close();
             return true;
         } else {
+            db.close();
             return false;
         }
     }

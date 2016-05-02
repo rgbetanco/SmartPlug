@@ -29,7 +29,7 @@ import java.util.Locale;
 public class IREditMode extends Activity {
 
     Context context = this;
-    MySQLHelper sql = new MySQLHelper(this);
+    MySQLHelper sql;
     ImageButton btn[] = new ImageButton[254];
     ImageButton btn_close[] = new ImageButton[254];
     ImageButton btn_edit;
@@ -51,6 +51,7 @@ public class IREditMode extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_iredit_mode);
 
+        sql = HTTPHelper.getDB(this);
         btn_edit = (ImageButton)findViewById(R.id.btn_ic_new);
 
         ip = getIntent().getStringExtra("ip");
@@ -95,10 +96,16 @@ public class IREditMode extends Activity {
         btn_add_ir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent i = new Intent(context, R2_EditItem.class);
+                i.putExtra("devid", devid);
+                startActivity(i);
+
+                /*
                 Intent i = new Intent(context, IRAddNew.class);
                     i.putExtra("ip", ip);
                     i.putExtra("devid", devid);
                     startActivity(i);
+                    */
             }
         });
 
@@ -124,7 +131,6 @@ public class IREditMode extends Activity {
         unregisterReceiver(serverReplied);
         unregisterReceiver(gcm_notification);
         cs.close();
-        sql.close();
     }
 
     public class IRGOOnClickListener implements View.OnClickListener
@@ -167,7 +173,7 @@ public class IREditMode extends Activity {
                     c.moveToFirst();
                     newIndex = c.getInt(4);
                 }
-                MySQLHelper sql = new MySQLHelper(context);
+                MySQLHelper sql =  HTTPHelper.getDB(IREditMode.this);
                 if (sql.deleteIRGroup(i)) {
                     sql.deleteIRCodesBySID(i);
                     System.out.println("Successfully deleted");
@@ -192,10 +198,9 @@ public class IREditMode extends Activity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        GlobalVariables gb = new GlobalVariables();
                         HTTPHelper http = new HTTPHelper(IREditMode.this);
                         int res = new Miscellaneous().getResolution(IREditMode.this);
-                        http.manageIRGroup(token, devid, gb.IR_SERVICE, type, action, nIndex, groupName, nIconId, res, -1);
+                        http.manageIRGroup( devid, GlobalVariables.IR_SERVICE, type, action, nIndex, groupName, nIconId, res, -1);
                         Intent i = new Intent("serverReplied");
                         sendBroadcast(i);
                     }
@@ -211,8 +216,7 @@ public class IREditMode extends Activity {
             public void run() {
                 HTTPHelper http = new HTTPHelper(IREditMode.this);
                 Miscellaneous misc = new Miscellaneous();
-                GlobalVariables gb = new GlobalVariables();
-                http.getServerIR(token, Locale.getDefault().getLanguage(), devid, gb.IR_SERVICE, misc.getResolution(IREditMode.this));
+                http.getServerIR( devid, GlobalVariables.IR_SERVICE, misc.getResolution(IREditMode.this));
                 Intent i = new Intent("serverReplied");
                 sendBroadcast(i);
             }
@@ -222,9 +226,6 @@ public class IREditMode extends Activity {
     public void updateView(){
         layout.removeAllViews();
         layout.addView(btn_add_ir);
-
-        GlobalVariables gb = new GlobalVariables();
-        Miscellaneous misc = new Miscellaneous();
 
         HTTPHelper http = new HTTPHelper(this);
         if(devid != null && !devid.isEmpty()){

@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.jiee.smartplug.services.RegistrationIntentService;
 import com.jiee.smartplug.services.SmartConfigService;
 import com.jiee.smartplug.utils.HTTPHelper;
+import com.jiee.smartplug.utils.Miscellaneous;
 import com.jiee.smartplug.utils.MySQLHelper;
 import com.jiee.smartplug.utils.NetworkUtil;
 
@@ -24,7 +25,6 @@ import java.util.Locale;
  */
 public class YesNoDialog extends Dialog implements View.OnClickListener {
 
-    public Activity c;
     public Dialog d;
     public Button ok;
     public Button cancel;
@@ -37,21 +37,18 @@ public class YesNoDialog extends Dialog implements View.OnClickListener {
 
     public YesNoDialog(Activity a, int type){        // 1 = S0 , 2 = M1, 3 = M2A_item_settings (delete), 4 = delete timer
         super(a);
-        this.c = a;
         this.type = type;
         http = new HTTPHelper(a);
     }
 
     public YesNoDialog(Activity a, int type, int alarm){        // 1 = S0 , 2 = M1, 3 = M2A_item_settings (delete), 4 = delete timer
         super(a);
-        this.c = a;
         this.type = type;
         this.alarm = alarm;
     }
 
     public YesNoDialog(Activity a, int type, String device_id, int service_id ){        // 1 = S0 , 2 = M1
         super(a);
-        this.c = a;
         this.type = type;
         this.device_id = device_id;
         this.service_id = service_id;
@@ -63,7 +60,7 @@ public class YesNoDialog extends Dialog implements View.OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.yesno_dialog);
 
-        sql = new MySQLHelper(c);
+        sql = HTTPHelper.getDB(getContext());
 
         TextView sub_toolbar = (TextView) findViewById(R.id.sub_toolbar);
         if(type == 1) {
@@ -103,35 +100,25 @@ public class YesNoDialog extends Dialog implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.btn_yes:
                 if(type == 1){
-                    String param = "logout?token="+MainActivity.token+"&hl="+ Locale.getDefault().getLanguage()+"&devtoken="+ RegistrationIntentService.regToken;
-                    try {
-                        http.logout(param);
-                        sql.removeToken();
-                        Intent i = new Intent(c, MainActivity.class);
-                        c.startActivity(i);
-                        dismiss();
-                //        c.finish();
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    }
+                    Miscellaneous.logout(getContext(), Miscellaneous.LogoutType.NO_WARNING);
                 }
                 if(type == 2){
-                    Intent i = new Intent(c, S3.class);
+                    Intent i = new Intent(getContext(), S3.class);
                     i.putExtra("device_id", device_id);
                     i.putExtra("service_id", service_id);
-                    c.startActivity(i);
+                    getContext().startActivity(i);
                 //    c.finish();
                 }
                 if(type == 3){
                     if (M1.mac != null) {
                         sql.deletePlugDataByID(M1.mac);
                     }
-                    c.finish();
+                    getOwnerActivity().finish();
                 }
                 if(type == 4){
                     sql.deleteAlarmData(alarm);
                     Intent i = new Intent("alarm_list_changed");
-                    c.sendBroadcast(i);
+                    getContext().sendBroadcast(i);
                 }
                 break;
             case R.id.btn_no:

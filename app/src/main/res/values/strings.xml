@@ -214,6 +214,10 @@
     <string name="timer_set">Set Timer</string>
     <string name="timer_set_snoozing">Set Timer Snoozing </string>
 
+    <string name="warning">題型</string>
+    <string name="warning_logout_baduser">You will be logged out because your user/password is no longer valid.</string>
+    <string name="warning_logout_changepwd">You will need to log in again because you changed your password.</string>
+    <string name="error_logout">Warning: Failed to unregister from server.</string>
     <string name="error_adding_device">Error adding device, make sure the device was has not been activated in another account.</string>
     <string name="error_adding_new_device">Error adding device, please try again in a few seconds</string>
     <string name="connection_error">Network Error, device unreachable, please make sure you have internet or you are in the same network as your device</string>

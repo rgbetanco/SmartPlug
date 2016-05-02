@@ -58,7 +58,6 @@ public class ListDevicesAdapter extends BaseAdapter {
     ProgressBar pb;
     TextView name;
     String plugname;
-    GlobalVariables gb;
     byte action;
     int serviceId;
     public static String selectedIP;
@@ -66,7 +65,6 @@ public class ListDevicesAdapter extends BaseAdapter {
     Handler mHandler;
     int globlaPosition = 0;
     boolean deviceStatusChangedFlag = false;
-    Miscellaneous misc;
 
     final LayoutInflater inflater;
 
@@ -80,8 +78,6 @@ public class ListDevicesAdapter extends BaseAdapter {
         this.UDPBinding = UDPBinding;
         SmartPlugsList = getSmartPlugsList();
         http = new HTTPHelper(a);
-        gb = new GlobalVariables();
-        misc = new Miscellaneous();
 
         pb = (ProgressBar)a.findViewById(R.id.DeviceListProgress);
     }
@@ -289,7 +285,7 @@ public class ListDevicesAdapter extends BaseAdapter {
                         }
                     }
                     u.close();
-                    serviceId = gb.ALARM_RELAY_SERVICE;
+                    serviceId = GlobalVariables.ALARM_RELAY_SERVICE;
 
                     if (relay == 0) {
                         action = 0x01;
@@ -301,8 +297,6 @@ public class ListDevicesAdapter extends BaseAdapter {
                     ListDevicesServicesService.ip = SmartPlugsList.get(position).getIp();
                     ListDevicesServicesService.serviceId = serviceId;
                     ListDevicesServicesService.action = action;
-                    ListDevicesServicesService.token = misc.getToken(act);
-                    ListDevicesServicesService.activity = act;
                     ListDevicesServicesService.mac = SmartPlugsList.get(position).getId();
                     act.startService(iService);
 

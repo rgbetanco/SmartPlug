@@ -31,7 +31,6 @@ import java.util.List;
  */
 public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
 
-    Activity activity;
     ListView listView;
     String device_id;
     Miscellaneous mi;
@@ -50,12 +49,11 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
     HTTPHelper http;
     int snooze = 0;
     boolean deviceStatusChangedFlag = false;
-    GlobalVariables gb = new GlobalVariables();
 
     public M1SnoozeDialog(Activity a, String device_id, int snooze, int service_id){
         super(a);
         http = new HTTPHelper(a);
-        this.activity = a;
+        sql = HTTPHelper.getDB(a);
         this.device_id = device_id;
         this.snooze = snooze;
         this.service_id = service_id;
@@ -63,7 +61,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
             @Override
             public void onReceive(Context context, Intent intent) {
                 deviceStatusChangedFlag = true;
-                Toast.makeText(activity, "Snooze sent successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(M1SnoozeDialog.this.getContext(), "Snooze sent successfully", Toast.LENGTH_SHORT).show();
             }
         };
     }
@@ -72,13 +70,12 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.m1_snooze_dialog);
-        sql = new MySQLHelper(activity);
         udp = new UDPCommunication();
 
     //    activity.registerReceiver(timer_delay, new IntentFilter("set_timer_delay"));
 
         mi = new Miscellaneous();
-        values = mi.populateAlarmList(activity, device_id, service_id);
+        values = mi.populateAlarmList(this.getContext(), device_id, service_id);
 
         LayoutInflater inflater = getLayoutInflater();
         ViewGroup footer = (ViewGroup) inflater.inflate(R.layout.m1_snooze_dialog_buttons, listView,
@@ -129,7 +126,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
 
         listView = (ListView)findViewById(R.id.alarm_list_view);
         listView.addFooterView(footer);
-        ListAlarmsAdapter listAlarmsAdapter = new ListAlarmsAdapter(activity, values);
+        ListAlarmsAdapter listAlarmsAdapter = new ListAlarmsAdapter(this.getContext(), values);
 
         listView.setAdapter(listAlarmsAdapter);
 
@@ -161,16 +158,16 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
                 break;
 
             case R.id.btn_show_modify_timer:
-                Intent i = new Intent(activity, S2_Schedule.class);
+                Intent i = new Intent(getContext(), S2_Schedule.class);
                 i.putExtra("device_id", device_id);
                 i.putExtra("service_id", service_id);
-                activity.startActivity(i);
+                getContext().startActivity(i);
                 break;
             case R.id.btn_add_new_timer:
-                Intent in = new Intent(activity, S3.class);
+                Intent in = new Intent(getContext(), S3.class);
                 in.putExtra("device_id", device_id);
                 in.putExtra("service_id", service_id);
-                activity.startActivity(in);
+                getContext().startActivity(in);
                 break;
         }
         dismiss();
@@ -182,7 +179,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if(service_id == gb.ALARM_RELAY_SERVICE){
+                if(service_id == GlobalVariables.ALARM_RELAY_SERVICE){
                     snooze = sql.getRelaySnooze(device_id);
                     if(minutes > 0) {
                         snooze += minutes;
@@ -190,7 +187,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
                         snooze = 0;
                     }
                 }
-                if(service_id == gb.ALARM_NIGHLED_SERVICE){
+                if(service_id == GlobalVariables.ALARM_NIGHLED_SERVICE){
                     snooze = sql.getLedSnooze(device_id);
                     if(minutes > 0) {
                         snooze += minutes;
@@ -198,7 +195,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
                         snooze = 0;
                     }
                 }
-                if(service_id == gb.ALARM_IR_SERVICE){
+                if(service_id == GlobalVariables.ALARM_IR_SERVICE){
                     snooze = sql.getIRSnooze(device_id);
                     if(minutes > 0){
                         snooze += minutes;
@@ -207,7 +204,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
                     }
                 }
 
-                if(udp.delayTimer(snooze, 1, activity, service_id, 0)) {   //SENDING SNOOZE OF 5 MINUTES TO THE DEVICE
+                if(udp.delayTimer(snooze, 1, getOwnerActivity(), service_id, 0)) {   //SENDING SNOOZE OF 5 MINUTES TO THE DEVICE
                     int counter = 10000;
                     while (!deviceStatusChangedFlag && counter > 0) {
                         counter--;
@@ -217,44 +214,44 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
 
                 if(!deviceStatusChangedFlag){
                     Intent i = new Intent("device_not_reached");
-                    if(!udp.delayTimer(snooze, 0, activity, service_id, 0)){
+                    if(!udp.delayTimer(snooze, 0, getOwnerActivity(), service_id, 0)){
                         i.putExtra("error", "yes");
-                        activity.sendBroadcast(i);
+                        getContext().sendBroadcast(i);
                     } else {
-                        if(service_id == gb.ALARM_RELAY_SERVICE){
+                        if(service_id == GlobalVariables.ALARM_RELAY_SERVICE){
                             if(minutes > 0) {
-                                sql.updateDeviceSnooze(device_id, gb.ALARM_RELAY_SERVICE, snooze);
+                                sql.updateDeviceSnooze(device_id, GlobalVariables.ALARM_RELAY_SERVICE, snooze);
                                 snooze += minutes;
                             } else {
-                                sql.updateDeviceSnooze(device_id, gb.ALARM_RELAY_SERVICE, 0);
+                                sql.updateDeviceSnooze(device_id, GlobalVariables.ALARM_RELAY_SERVICE, 0);
                                 snooze = 0;
                             }
                         }
-                        if(service_id == gb.ALARM_NIGHLED_SERVICE){
+                        if(service_id == GlobalVariables.ALARM_NIGHLED_SERVICE){
                             if(minutes > 0) {
-                                sql.updateDeviceSnooze(device_id, gb.ALARM_NIGHLED_SERVICE, snooze);
+                                sql.updateDeviceSnooze(device_id, GlobalVariables.ALARM_NIGHLED_SERVICE, snooze);
                                 snooze += minutes;
                             } else {
-                                sql.updateDeviceSnooze(device_id, gb.ALARM_NIGHLED_SERVICE, 0);
+                                sql.updateDeviceSnooze(device_id, GlobalVariables.ALARM_NIGHLED_SERVICE, 0);
                                 snooze = 0;
                             }
                         }
-                        if(service_id == gb.ALARM_IR_SERVICE){
+                        if(service_id == GlobalVariables.ALARM_IR_SERVICE){
                             if(minutes > 0) {
-                                sql.updateDeviceSnooze(device_id, gb.ALARM_IR_SERVICE, snooze);
+                                sql.updateDeviceSnooze(device_id, GlobalVariables.ALARM_IR_SERVICE, snooze);
                                 snooze += minutes;
                             } else {
-                                sql.updateDeviceSnooze(device_id, gb.ALARM_IR_SERVICE, 0);
+                                sql.updateDeviceSnooze(device_id, GlobalVariables.ALARM_IR_SERVICE, 0);
                                 snooze = 0;
                             }
                         }
                         Intent j = new Intent("status_changed_update_ui");
-                        activity.sendBroadcast(j);
+                        getContext().sendBroadcast(j);
                         deviceStatusChangedFlag = false;
                     }
 
                 } else {
-                    if(service_id == gb.ALARM_RELAY_SERVICE){
+                    if(service_id == GlobalVariables.ALARM_RELAY_SERVICE){
                         if(minutes > 0) {
                             sql.updateDeviceSnooze(device_id, service_id, snooze);
                             snooze += minutes;
@@ -263,7 +260,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
                             snooze = 0;
                         }
                     }
-                    if(service_id == gb.ALARM_NIGHLED_SERVICE){
+                    if(service_id == GlobalVariables.ALARM_NIGHLED_SERVICE){
                         if(minutes > 0) {
                             sql.updateDeviceSnooze(device_id, service_id, snooze);
                             snooze += minutes;
@@ -272,7 +269,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
                             snooze = 0;
                         }
                     }
-                    if(service_id == gb.ALARM_IR_SERVICE){
+                    if(service_id == GlobalVariables.ALARM_IR_SERVICE){
                         if(minutes > 0) {
                             sql.updateDeviceSnooze(device_id, service_id, snooze);
                             snooze += minutes;
@@ -282,7 +279,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
                         }
                     }
                     Intent i = new Intent("status_changed_update_ui");
-                    activity.sendBroadcast(i);
+                    getContext().sendBroadcast(i);
         //            udp.delayTimer(snooze, 0, activity, service_id, 1);
         //            Toast.makeText(activity, activity.getApplicationContext().getString(R.string.timer)+" "+getContext().getString(R.string.snooze)+" "+snooze+" "+getContext().getString(R.string.minutes), Toast.LENGTH_SHORT).show();
                     deviceStatusChangedFlag = false;

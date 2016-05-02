@@ -32,7 +32,7 @@ public class Splashscreen extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splashscreen);
 
-        mySQLHelper = new MySQLHelper(this);
+        mySQLHelper = HTTPHelper.getDB(this);
         httpHelper = new HTTPHelper(this);
         misc = new Miscellaneous();
         done = new BroadcastReceiver() {

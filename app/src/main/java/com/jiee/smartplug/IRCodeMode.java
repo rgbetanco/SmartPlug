@@ -34,8 +34,7 @@ public class IRCodeMode extends Activity {
     TextView subToolbarTitle;
     ImageButton btn_ir;
     int gid;
-    Context context = this;
-    MySQLHelper sql = new MySQLHelper(this);
+    MySQLHelper sql;
     Cursor cs;
     ImageButton btn[] = new ImageButton[254];
     ImageButton btn_close[] = new ImageButton[254];
@@ -46,14 +45,17 @@ public class IRCodeMode extends Activity {
     TextView txt[] = new TextView[254];
     UDPCommunication con = new UDPCommunication();
     String ip;
-    HTTPHelper http = new HTTPHelper(this);
-    GlobalVariables gb = new GlobalVariables();
+    HTTPHelper http;
     ViewGroup layout;
     BroadcastReceiver serverReplied;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        http = new HTTPHelper(this);
+        sql = HTTPHelper.getDB(this);
+
         setContentView(R.layout.activity_ircode_mode);
 
         Intent intent = getIntent();
@@ -69,7 +71,7 @@ public class IRCodeMode extends Activity {
             }
         };
 
-        MySQLHelper sql = new MySQLHelper(this);
+        MySQLHelper sql =  HTTPHelper.getDB(this);
         Cursor c = sql.getIRGroupBySID(gid);                              //get all codes per group
         if(c.getCount() > 0){
             c.moveToFirst();
@@ -125,10 +127,10 @@ public class IRCodeMode extends Activity {
                 btn[i].setOnClickListener(new IRGOOnClickListener(cs.getInt(3)));
                 btn[i].setOnTouchListener(new IROnTouchListener(i, j));
                 if(cs.getString(4) != null && !cs.getString(4).isEmpty()) {
-                    Picasso.with(context).load(cs.getString(4)).into(btn[i]);
+                    Picasso.with(IRCodeMode.this).load(cs.getString(4)).into(btn[i]);
                 } else {
                     String filePath = "http://rgbetanco.com/jiEE/icons/btn_power_pressed.png";
-                    Picasso.with(context).load(filePath).into(btn[i]);
+                    Picasso.with(IRCodeMode.this).load(filePath).into(btn[i]);
                 }
                 btn_close[i] = (ImageButton)v[i].findViewById(R.id.ir_close);
                 btn_close[i].setOnClickListener(new IRDELOnClickListener(cs.getInt(9)));
@@ -219,7 +221,7 @@ public class IRCodeMode extends Activity {
                     if(token != null && !token.isEmpty()) {
                         String param = "devctrl?token=" + token + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + M1.mac+"&send=0";
                         try {
-                            http.setDeviceStatus(param, (byte) filename, gb.IR_SERVICE);
+                            http.setDeviceStatus(param, (byte) filename, GlobalVariables.IR_SERVICE);
                         } catch (Exception e) {
                             Log.i("HTTP", "SEND IR CODE EXCEPTION");
                         }
@@ -280,9 +282,8 @@ public class IRCodeMode extends Activity {
 
                         String action = "del";
                         String type = "button";
-                        GlobalVariables gb = new GlobalVariables();
                         if (token != null && !token.isEmpty()) {
-                            http.manageIRButton(token, M1.mac, gb.IR_SERVICE, type, action, groupId, i, "", iconId, 0, 0);
+                            http.manageIRButton(M1.mac, GlobalVariables.IR_SERVICE, type, action, groupId, i, "", iconId, 0, 0);
                         }
                         Intent i = new Intent("serverReplied");
                         sendBroadcast(i);

@@ -32,13 +32,11 @@ import java.io.File;
 public class R2_EditItem extends Activity {
     public static final int SELECT_ICON_CODE = 75;
     ImageButton ir_icon;
-    Activity act = this;
     String filePath = "http://rgbetanco.com/jiEE/icons/btn_power_pressed.png";
     Button save;
     EditText txt;
     String devid;
     String token;
-    GlobalVariables gb = new GlobalVariables();
     HTTPHelper http;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +52,7 @@ public class R2_EditItem extends Activity {
         ir_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(act, IconPicker.class);
+                Intent intent = new Intent(R2_EditItem.this, IconPicker.class);
                 startActivityForResult(intent, SELECT_ICON_CODE);
             }
         });
@@ -66,7 +64,7 @@ public class R2_EditItem extends Activity {
             @Override
             public void onClick(View v) {
                 String title = txt.getText().toString();
-                MySQLHelper sql = new MySQLHelper(act);
+                MySQLHelper sql = HTTPHelper.getDB(R2_EditItem.this);
                 if(!title.isEmpty()) {
                     Cursor c = sql.getToken();
                     if(c.getCount()>0){
@@ -91,7 +89,7 @@ public class R2_EditItem extends Activity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            http.manageIRGroup(token, devid, gb.IR_SERVICE, type, action, 0, groupName, nIconId, res, groupId);
+                            http.manageIRGroup(devid, GlobalVariables.IR_SERVICE, type, action, 0, groupName, nIconId, res, groupId);
                             Intent i = new Intent("serverReplied");
                             sendBroadcast(i);
                         }
@@ -99,9 +97,8 @@ public class R2_EditItem extends Activity {
 
                     finish();
                 } else {
-                    Toast.makeText(act, "Field must not be blank", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(R2_EditItem.this, "Field must not be blank", Toast.LENGTH_SHORT).show();
                 }
-                sql.close();
             }
         });
     }
@@ -113,9 +110,9 @@ public class R2_EditItem extends Activity {
             case SELECT_ICON_CODE:
                 try {
                     filePath = urlReturnedIntent.getStringExtra("url");
-                    Picasso.with(act).load(filePath).into(ir_icon);
+                    Picasso.with(R2_EditItem.this).load(filePath).into(ir_icon);
                 } catch(Exception e){
-                    Picasso.with(act).load(filePath).into(ir_icon);
+                    Picasso.with(R2_EditItem.this).load(filePath).into(ir_icon);
                 }
         }
     }

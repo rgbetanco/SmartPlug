@@ -35,7 +35,7 @@ public class HelpView extends Activity {
         setContentView(R.layout.activity_help_view);
 
         httpHelper = new HTTPHelper(this);
-        mySQLHelper = new MySQLHelper(this);
+        mySQLHelper = HTTPHelper.getDB(this);
 
         //Get the data to be swiped through
         pageData=getResources().getStringArray(R.array.backgrounds);

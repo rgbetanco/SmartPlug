@@ -94,7 +94,7 @@ public class NewDeviceList extends AppCompatActivity {
         con = new UDPCommunication();
         http = new Http();
         httpHelper = new HTTPHelper(this);
-        mySQLHelper = new MySQLHelper(this);
+        mySQLHelper = HTTPHelper.getDB(this);
         networkUtil = new NetworkUtil();
         crashTimer = new CrashCountDown(this);
 

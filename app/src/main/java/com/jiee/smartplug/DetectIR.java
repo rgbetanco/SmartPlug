@@ -14,13 +14,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jiee.smartplug.services.UDPListenerService;
+import com.jiee.smartplug.utils.HTTPHelper;
 import com.jiee.smartplug.utils.MySQLHelper;
 import com.jiee.smartplug.utils.UDPCommunication;
 
 public class DetectIR extends Activity {
 
     boolean keeprunning;
-    MySQLHelper sql = new MySQLHelper(this);
     Context context = this;
     BroadcastReceiver brec;
 
@@ -33,6 +33,7 @@ public class DetectIR extends Activity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 int name = intent.getIntExtra("filename", 0);
+                MySQLHelper sql = HTTPHelper.getDB(context);
                 //sql.insertIRCodes(name, M1.mac);
                 //sql.close();
                 //Intent i = new Intent(context, IREditMode.class);

@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import com.jiee.smartplug.R;
 import com.jiee.smartplug.R2_EditItem;
+import com.jiee.smartplug.utils.HTTPHelper;
 import com.jiee.smartplug.utils.MySQLHelper;
 import com.squareup.picasso.Picasso;
 
@@ -74,7 +75,7 @@ public class ListIconsAdapter extends BaseAdapter {
     }
 
     private void populateIcons(){
-        sql = new MySQLHelper(a);
+        sql = HTTPHelper.getDB(a);
         Cursor c = sql.getIcons();
         if(c.getCount() > 0) {
             c.moveToFirst();
@@ -84,6 +85,5 @@ public class ListIconsAdapter extends BaseAdapter {
             }
         }
         c.close();
-        sql.close();
     }
 }

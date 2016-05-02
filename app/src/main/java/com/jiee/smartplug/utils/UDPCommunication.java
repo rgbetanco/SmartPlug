@@ -57,7 +57,6 @@ public class UDPCommunication {
     int irCode = 0;
     int sendFlag = 0;
     HTTPHelper http;
-    GlobalVariables gb = new GlobalVariables();
 
     public UDPCommunication(){
 
@@ -434,13 +433,13 @@ public class UDPCommunication {
         timers[i++] = (byte) ((time >> 8) & 0xff);
         timers[i++] = (byte) (time & 0xff);
 
-        sql = new MySQLHelper(a);
+        sql = HTTPHelper.getDB(a);
         Cursor c = sql.getAlarmData(id);
         if(c.getCount() > 0) {
             c.moveToFirst();
             for (int j = 0; j < c.getCount(); j++) {
                 int serviceId = c.getInt(2);
-                if(serviceId == gb.ALARM_RELAY_SERVICE || serviceId == gb.ALARM_NIGHLED_SERVICE) {
+                if(serviceId == GlobalVariables.ALARM_RELAY_SERVICE || serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
 
                     timers[i++] = (byte) ((serviceId >> 24) & 0xff);
                     timers[i++] = (byte) ((serviceId >> 16) & 0xff);
@@ -494,13 +493,13 @@ public class UDPCommunication {
             timers[i++] = (byte) ((time >> 16) & 0xff);
             timers[i++] = (byte) ((time >> 24) & 0xff);
 
-            sql = new MySQLHelper(a);
+            sql = HTTPHelper.getDB(a);
             Cursor c = sql.getAlarmData(id);
             if(c.getCount() > 0) {
                 c.moveToFirst();
                 for (int j = 0; j < c.getCount(); j++) {
                     int serviceId = c.getInt(2);
-                    if(serviceId == gb.ALARM_RELAY_SERVICE || serviceId == gb.ALARM_NIGHLED_SERVICE) {
+                    if(serviceId == GlobalVariables.ALARM_RELAY_SERVICE || serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
 
                         timers[i++] = (byte) ((serviceId >> 24) & 0xff);
                         timers[i++] = (byte) ((serviceId >> 16) & 0xff);
@@ -681,14 +680,14 @@ public class UDPCommunication {
             timer[i] = hMsg[i];
         }
         String ip = M1.ip;
-        sql = new MySQLHelper(a);
+        sql = HTTPHelper.getDB(a);
         Cursor c = sql.getAlarmData(id);
         if(c.getCount() > 0) {
             c.moveToFirst();
             for (int j = 0; j < c.getCount(); j++) {
                 int serviceId = c.getInt(2);
                 System.out.println("SERVICE ID: "+serviceId);
-                if(serviceId == gb.ALARM_RELAY_SERVICE || serviceId == gb.ALARM_NIGHLED_SERVICE) {
+                if(serviceId == GlobalVariables.ALARM_RELAY_SERVICE || serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
                     if (protocol == 0) {
                         timer[17] = (byte) (serviceId & 0xff);
                         timer[16] = (byte) ((serviceId >> 8) & 0xff);

@@ -26,10 +26,8 @@ public class S2_Schedule extends Activity {
 
     ListView list;
     ListTimersAdapter adapter;
-    Activity activity = this;
     String device_id;
     int service_id;
-    GlobalVariables gb = new GlobalVariables();
     BroadcastReceiver listchange;
     BroadcastReceiver timers_sent_successfully;
     BroadcastReceiver gcm_notification;
@@ -37,11 +35,14 @@ public class S2_Schedule extends Activity {
     ImageButton btn_menu_new;
     Button btn_update;
     boolean udpconnection = false;
-    HTTPHelper http = new HTTPHelper(activity);
+    HTTPHelper http;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        http = new HTTPHelper(this);
+
         setContentView(R.layout.activity_s2__schedule);
 
         btn_menu_new = (ImageButton)findViewById(R.id.btn_ic_new);
@@ -49,7 +50,7 @@ public class S2_Schedule extends Activity {
         Intent i = getIntent();
 
         device_id = i.getStringExtra("device_id");
-        service_id = i.getIntExtra("service_id", gb.ALARM_RELAY_SERVICE);
+        service_id = i.getIntExtra("service_id", GlobalVariables.ALARM_RELAY_SERVICE);
 
         btn_update = (Button)findViewById(R.id.btn_update_alarms);
         btn_update.setVisibility(View.GONE);
@@ -65,7 +66,7 @@ public class S2_Schedule extends Activity {
         });
 
         list = (ListView)findViewById(R.id.list_schedule);
-        adapter = new ListTimersAdapter(activity, device_id, service_id);
+        adapter = new ListTimersAdapter(this, device_id, service_id);
         list.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 

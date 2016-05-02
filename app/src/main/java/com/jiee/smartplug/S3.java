@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.jiee.smartplug.objects.Alarm;
 import com.jiee.smartplug.utils.GlobalVariables;
+import com.jiee.smartplug.utils.HTTPHelper;
 import com.jiee.smartplug.utils.Miscellaneous;
 import com.jiee.smartplug.utils.MySQLHelper;
 import com.jiee.smartplug.utils.UDPCommunication;
@@ -56,13 +57,9 @@ public class S3 extends AppCompatActivity {
     static final int TIME_DIALOG_ID_INIT = 999;
     static final int TIME_DIALOG_ID_END = 998;
 
-    GlobalVariables gb = new GlobalVariables();
-
     ImageView img_action;
     TextView txt_action;
     ImageView img_action_service;
-
-    Context context = this;
 
     MySQLHelper sql;
 
@@ -82,13 +79,14 @@ public class S3 extends AppCompatActivity {
         setContentView(R.layout.activity_s3);
 
         udp = new UDPCommunication();
+        sql = HTTPHelper.getDB(this);
 
         img_action = (ImageView) findViewById(R.id.img_action);
         txt_action = (TextView) findViewById(R.id.txt_action);
         img_action_service = (ImageView) findViewById(R.id.img_action_service);
 
         Intent i = getIntent();
-        service_id = i.getIntExtra("service_id", gb.ALARM_RELAY_SERVICE);
+        service_id = i.getIntExtra("service_id", GlobalVariables.ALARM_RELAY_SERVICE);
         device_id = i.getStringExtra("device_id");
         alarm_id = i.getIntExtra("alarm_id", -1);
         txt_action.setText(M1.givenName);
@@ -108,11 +106,11 @@ public class S3 extends AppCompatActivity {
             }
         };
 
-        if(service_id == gb.ALARM_RELAY_SERVICE){
+        if(service_id == GlobalVariables.ALARM_RELAY_SERVICE){
             img_action_service.setImageResource(R.drawable.svc_0_big);
         }
 
-        if(service_id == gb.ALARM_NIGHLED_SERVICE){
+        if(service_id == GlobalVariables.ALARM_NIGHLED_SERVICE){
             img_action_service.setImageResource(R.drawable.svc_1_big);
         }
 
@@ -163,7 +161,6 @@ public class S3 extends AppCompatActivity {
         sunday = (Button) findViewById(R.id.btn_sunday);
 
         if(alarm_id >= 0){
-            sql = new MySQLHelper(this);
             Cursor s = sql.getAlarmData(alarm_id);
             s.moveToFirst();
             init_hour = s.getInt(4);
@@ -280,7 +277,7 @@ public class S3 extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        sql = new MySQLHelper(context);
+                        sql = HTTPHelper.getDB(S3.this);
                         if(alarm_id >= 0) {
                             System.out.println("dOW:"+dow+"Init Hour: "+init_hour+" Init Minute: "+init_minute+" End Hour: "+end_hour+" End Minute: "+end_minute+" MAC:"+M1.mac);
                             sql.updateAlarm(a);
@@ -322,7 +319,7 @@ public class S3 extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        sql = new MySQLHelper(this);
+        sql = HTTPHelper.getDB(this);
         if(resultCode == 3){
             int localStatus = data.getIntExtra("status", -1);
             String groupName = data.getStringExtra("group");
