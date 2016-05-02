@@ -239,9 +239,17 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
                                 snooze = 0;
                             }
                         }
+                        if(service_id == gb.ALARM_IR_SERVICE){
+                            if(minutes > 0) {
+                                sql.updateDeviceSnooze(device_id, gb.ALARM_IR_SERVICE, snooze);
+                                snooze += minutes;
+                            } else {
+                                sql.updateDeviceSnooze(device_id, gb.ALARM_IR_SERVICE, 0);
+                                snooze = 0;
+                            }
+                        }
                         Intent j = new Intent("status_changed_update_ui");
                         activity.sendBroadcast(j);
-                     //   Toast.makeText(activity, activity.getApplicationContext().getString(R.string.timer)+" "+getContext().getString(R.string.snooze)+" "+snooze+" "+getContext().getString(R.string.minutes), Toast.LENGTH_SHORT).show();
                         deviceStatusChangedFlag = false;
                     }
 

@@ -93,9 +93,9 @@ public class M2A_Item_Settings extends Activity {
         txt_jsname = (EditText) findViewById(R.id.txt_jsname);
         txt_wifi = (TextView) findViewById(R.id.txt_wifi);
         txt_mac = (TextView) findViewById(R.id.txt_mac);
-        cbx_power = (CheckBox) findViewById(R.id.cbx_power);
-        cbx_co = (CheckBox) findViewById(R.id.cbx_co);
-        cbx_timer = (CheckBox) findViewById(R.id.cbx_timer);
+     //   cbx_power = (CheckBox) findViewById(R.id.cbx_power);
+     //   cbx_co = (CheckBox) findViewById(R.id.cbx_co);
+     //   cbx_timer = (CheckBox) findViewById(R.id.cbx_timer);
         txt_remove = (TextView) findViewById(R.id.txt_remove);
         save = (Button) findViewById(R.id.btn_settings);
         txt_program = (TextView) findViewById(R.id.txt_program);
@@ -107,9 +107,9 @@ public class M2A_Item_Settings extends Activity {
         l2 = (LinearLayout) findViewById(R.id.layout_idsensor);
         l3 = (LinearLayout) findViewById(R.id.layout_hardware);
         l4 = (LinearLayout) findViewById(R.id.layout_firmware);
-        l5 = (LinearLayout) findViewById(R.id.layout_notify_power);
-        l6 = (LinearLayout) findViewById(R.id.layout_notify_co);
-        l7 = (LinearLayout) findViewById(R.id.layout_notify_timer);
+     //   l5 = (LinearLayout) findViewById(R.id.layout_notify_power);
+     //   l6 = (LinearLayout) findViewById(R.id.layout_notify_co);
+     //   l7 = (LinearLayout) findViewById(R.id.layout_notify_timer);
         System.out.println("MAC:" + M1.mac);
         Cursor c = sql.getPlugDataByID(M1.mac);
         if (c.getCount() > 0) {

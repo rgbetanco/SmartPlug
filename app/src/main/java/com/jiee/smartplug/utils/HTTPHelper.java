@@ -624,6 +624,8 @@ public class HTTPHelper {
                             a.setService_id(gb.ALARM_RELAY_SERVICE);
                         } else if(serviceId == gb.ALARM_NIGHLED_SERVICE){
                             a.setService_id(gb.ALARM_NIGHLED_SERVICE);
+                        } else if(serviceId == gb.ALARM_IR_SERVICE){
+                            a.setService_id(gb.ALARM_IR_SERVICE);
                         }
 
                         System.out.println("SERVICE FROM SERVER: "+a.getService_id());

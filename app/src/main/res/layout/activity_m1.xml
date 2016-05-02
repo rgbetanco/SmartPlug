@@ -154,6 +154,7 @@
                         android:layout_height="wrap_content"
                         android:src="@drawable/btn_timer_off"
                         android:id="@+id/btn_ir_alarm"
+                        android:background="@null"
                         android:layout_marginLeft="60dp"
                         android:layout_marginTop="5dp"
                         />
