@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Smart Plug</string>
+    <string name="str_create_account"><u>建立账号</u></string>
+    <string name="str_forgot_password"><u>忘记密码吗?</u></string>
+    <string name="title_activity_reset_password">重设密码</string>
+    <string name="submit">提交</string>
+    <string name="login">登入</string>
+    <string name="reset">重设密码</string>
+    <string name="title_activity_create_account">建立账号</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">取消</string>
+    <string name="deviceList">装置列表</string>
+    <string name="startSmartConfig">初始化装置</string>
+    <string name="account_sent">请检查您的邮箱连结!此账号如于7日内没激活,账号自动无效!您现在可以开始使用此账号了!</string>
+    <string name="create_account_dialog_text">以建立账号</string>
+    <string name="reset_password_dialog_text">密码重制已寄出</string>
+    <string name="reset_password">密码重设已寄至您的邮箱!</string>
+    <string name="add_device">开始前请确认您已做好WiFi连结,并请按下下方的按钮!</string>
+    <string name="id_username">账号名称</string>
+    <string name="id_password">密码</string>
+    <string name="btn_login">登入</string>
+    <string name="lnk_createAccount">建立账号</string>
+    <string name="lnk_forgetPassword">忘记密码</string>
+    <string name="title_passwordResetSent">密码重设已寄出</string>
+    <string name="msg_passwordResetBtn">密码重设已寄至您的邮箱,并请按照邮箱内容做进一步指示.</string>
+    <string name="title_resetPassword">重设密码</string>
+    <string name="title_initializeDevices">装置初始化</string>
+    <string name="msg_enterSSID_password.">请输入您现在的SSID与密码!</string>
+    <string name="msg_pleaseWait.">请稍后!</string>
+    <string name="msg_enterNewUserName">请输入新账号</string>
+    <string name="btn_submit">提出</string>
+    <string name="title_accountCreated">账号已建立</string>
+    <string name="msg_accountCreatedBtn">请检查您的邮箱连结!此账号如于7日内没激活,账号自动无效!您现在可以开始使用此账号了!</string>
+    <string name="id_createAccount">建立账号</string>
+    <string name="msg_enterEmail">输入您的电子邮件</string>
+    <string name="id_email">电子邮件</string>
+    <string name="msg_enterNewPassword">输入新密码</string>
+    <string name="msg_confirmPassword">确认密码</string>
+    <string name="btn_main">主页</string>
+    <string name="title_addDevice">新装置</string>
+    <string name="msg_toStartBtn">请扫描包装上QR码,或手动链接手机WIFI至SSID清单</string>
+    <string name="btn_initializeDevices">装置初始化</string>
+    <string name="title_unableToUseSelectedNetwork">无法使用已选择的网络</string>
+    <string name="msg_selectedNetworkBtn">您选择的网络无法链接至IOT服务器,请确认您的设定,并再试一次!</string>
+    <string name="btn_addDevice">加增装置</string>
+    <string name="btn_addingDevice">加入装置中</string>
+    <string name="title_wifi">WIFI</string>
+    <string name="id_chooseNetwork">选择网络…</string>
+    <string name="id_other">其他...</string>
+    <string name="title_deviceAdded">装置已加入</string>
+    <string name="btn_done">完成!</string>
+    <string name="title_deskLamp">桌灯</string>
+    <string name="btn_nightLight">小夜灯</string>
+    <string name="btn_coNormal">一氧化碳</string>
+    <string name="btn_outlet">插座</string>
+    <string name="btn_ir">红外线</string>
+    <string name="title_bedroom">卧室</string>
+    <string name="title_logout">注销</string>
+    <string name="msg_logoutBtn">您确认要注销?您将需要再次登入装置</string>
+    <string name="btn_no">否</string>
+    <string name="btn_yes">是</string>
+    <string name="title_settings">设定</string>
+    <string name="id_changePassword">更改密码</string>
+    <string name="id_logout">注销</string>
+    <string name="btn_setting">设定</string>
+    <string name="title_changePassword">更改密码</string>
+    <string name="msg_enterOldPassword">请输入旧密码</string>
+    <string name="title_removeAction">移除动作</string>
+    <string name="msg_removeActionBtn">您确认要移除已设定的时程?</string>
+    <string name="title_scheduling">排定中</string>
+    <string name="id_deskLamp">桌灯</string>
+    <string name="btn_cancel">取消</string>
+    <string name="btn_save">储存</string>
+    <string name="title_scheduleAction">时程排定</string>
+    <string name="msg_daysofWeek">一周天数</string>
+    <string name="msg_timeEachDay">每日时间</string>
+    <string name="msg_action">动作</string>
+    <string name="btn_select">选择</string>
+    <string name="id_sevice">装置</string>
+    <string name="id_jsPlug">智能插座</string>
+    <string name="id_icon">图示</string>
+    <string name="id_name">名称</string>
+    <string name="id_wifi">WIFI</string>
+    <string name="id_macID">Mac ID</string>
+    <string name="msg_deskLampBtn">欲配置装置,请加入装置网络链接处!</string>
+    <string name="lnk_removeAndReset"><u>移除与重设装置</u></string>
+    <string name="title_removeAndReset">移除与重设装置</string>
+    <string name="msg_removeAndResetBtn">您确认要重设装置并从您的装置移除?</string>
+    <string name="id_irTransmitter">红外线接收器</string>
+    <string name="id_program">安排</string>
+    <string name="id_cosensor">一氧化碳感测</string>
+    <string name="id_hardware">硬件</string>
+    <string name="id_version">版本</string>
+    <string name="id_firmware">韧体</string>
+    <string name="btn_deskLamp">桌灯</string>
+    <string name="btn_wifi">WIFI</string>
+    <string name="id_mode">状态</string>
+    <string name="id_ipAddress">IP 地址</string>
+    <string name="id_subnetMask">子网掩码</string>
+    <string name="id_gateway">网络闸口</string>
+    <string name="lnk_renewLease">换新 Lease</string>
+    <string name="btn_remove">移除</string>
+    <string name="title_other">其他</string>
+    <string name="id_security">保护</string>
+    <string name="id_none">无</string>
+    <string name="btn_join">加入</string>
+    <string name="title_irControl">红外线控制</string>
+    <string name="btn_tvOn_off">电视 开/关</string>
+    <string name="btn_acOn_off">冷气 开/关</string>
+    <string name="btn_acFullPwr">冷气 强风</string>
+    <string name="title_title">主题</string>
+    <string name="title_editCommand">编辑指令</string>
+    <string name="btn_chooseBrand">选择品牌与模型</string>
+    <string name="btn_detectBrand">侦测品牌与模型</string>
+    <string name="btn_recordCustom">录制指令</string>
+    <string name="msg_delectIr">请对应遥控器至智能插座,并按指示的按钮<br>
+    1.按电源按钮</br>
+2.按音量按纽
+3.装置已认出 as: Hitachi 冷气机</string>
+    <string name="btn_addNow">现在加入</string>
+    <string name="title_customCommand">客制指示</string>
+    <string name="id_recordIrCommand">红外线指令录制</string>
+    <string name="msg_recordIr">请对应遥控器至智能插座,并按录制
+
+1.按钮已录制.</string>
+    <string name="btn_recordAgain">重新录制</string>
+    <string name="btn_testCommand">测试指令</string>
+    <string name="msg_co_warning">一氧化碳警告</string>
+    <string name="msg_ha_warning">过电警告</string>
+    <string name="add_timer">加入定时?</string>
+    <string name="no_timer_set">无定时设入</string>
+    <string name="title_add_new">加入</string>
+    <string name="ir_recorded">(已录制)</string>
+    <string name="title_device">装置</string>
+    <string name="notify_on_power_outage">停电通知</string>
+    <string name="notify_on_co_warning">一氧化碳通知</string>
+    <string name="notify_on_timer_activated">计时激活通知</string>
+    <string name="gcm_send_message">GCM 寄出讯息</string>
+    <string name="token_error_message">权限错误讯息</string>
+    <string name="connect_to_wifi"><u>连结至WiFi</u></string>
+    <!--<string name="gcm_defaultSenderId">725253730549</string>-->
+    <string name="create_account_error">新账号建立错误</string>
+    <string name="password_compare_error">密码不同</string>
+    <string name="no_udp_Connection">无UDP连结</string>
+    <string name="new_device_found">找到新装置</string>
+    <string name="USB_not_plugged_in">USB无插入</string>
+    <string name="delay_5_minutes">延时5分钟已送出</string>
+    <string name="delay_10_minutes">延时10分钟已送出</string>
+    <string name="delay_60_minutes">延时1小时已送出</string>
+    <string name="delay_30_minutes">延时30分钟已送出</string>
+    <string name="please_wait">请您稍后，我们正处理中，感谢!</string>
+    <string name="btn_ota"><u>韧体更新</u></string>
+    <string name="ip_not_found">装置无链接上，请重整APP内部网络装置。</string>
+    <string name="please_wait_done">装载中…请稍后</string>
+    <string name="update_alarms_on_server">更新闹钟装置</string>
+    <string name="alarms_sent_success">成功送出闹钟</string>
+    <string name="add_new_timer">增加新定时器</string>
+    <string name="show_modify_timer">显示/更改定时</string>
+    <string name="Snooze_5_Minutes">延时5分钟</string>
+    <string name="Snooze_10_Minutes">延时10分钟</string>
+    <string name="Snooze_30_Minutes">延时30分钟</string>
+    <string name="Snooze_1_Hour">延时1小时</string>
+
+    <string name="instructions">Please Swipe</string>
+    <string-array name="backgrounds">
+        <item>快速入门指南</item>
+        <item>登入</item>
+        <item>增加新装置</item>
+        <item>打开您的智能插座</item>
+        <item>初始化装置</item>
+        <item>增加新装置</item>
+        <item>准备开始啰!</item>
+    </string-array>
+
+    <string name="sunday">日</string>
+    <string name="monday">一</string>
+    <string name="tuesday">二</string>
+    <string name="wednesday">三</string>
+    <string name="thursday">四</string>
+    <string name="friday">五</string>
+    <string name="saturday">六</string>
+
+    <string name="help1">不论您在何处，都可藉由此APP操控您的智能型插座喔! </string>
+    <string name="help2">创建一个账户或登录您已有的账户</string>
+    <string name="help3">如果增加装置屏幕无显示，请按（+）符号，即可看到增加装置屏幕</string>
+    <string name="help4"> 插上你的智能型插座 ，并等待绿色指示灯开启 </string>
+    <string name="help5">按“初始化装置”按钮，并为您的WiFi路由器输入SSID和密码</string>
+    <string name="help6">您JSPlug现在应该在列表中。只需点击它，装置将添加到您的账户</string>
+    <string name="help7"></string>
+
+    <string name="cancelir">停止扫描</string>
+    <string name="ir_timeout">红外线扫瞄已过时</string>
+    <string name="processing_ir_command">红外线指令进行中</string>
+    <string name="processing_command">指令进行中</string>
+
+    <string name="password_reseted">密码已修改成功</string>
+    <string name="delay_plus_five">已多延迟5分钟</string>
+    <string name="delay_plus_ten">已多延迟10分钟</string>
+    <string name="delay_plus_thirty">已多延迟30分钟</string>
+    <string name="delay_plus_sixty">已多延迟1小时</string>
+    <string name="delay_cancel">取消延迟</string>
+    <string name="msg_snooze_cancel">已取消延迟</string>
+
+    <string name="timer_set">已定时</string>
+
+    <string name="connection_error">无法连到装置，请查网络设定</string>
+
+    <string name="timer_set_snoozing">延时定时</string>
+    <string name="minutes">分</string>
+    <string name="timer">定时</string>
+    <string name="snooze">已延时</string>
+    <string name="error_adding_new_device">增加装置失败，请稍候再试</string>
+    <string name="error_adding_device">增加装置失败，请确认装置没跟其他账号配对</string>
+    <string name="general_error">发生错误，请稍候再试</string>
+    <string name="error_logout">警告: 注销服务器失败</string>
+    <string name="password_badchar_error"><![CDATA[密码不能有 # or &]]></string>
+    <string name="password_length_error">密码至少要六个字以上</string>
+    <string name="warning">注意</string>
+    <string name="warning_logout_baduser">已被注销，因为您的账号或密码已经无效了</string>
+    <string name="warning_logout_changepwd">已被注销，因为您更改您的密码了</string>
+
+</resources>
