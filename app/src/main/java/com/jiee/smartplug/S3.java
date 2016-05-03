@@ -310,10 +310,10 @@ public class S3 extends AppCompatActivity {
                     public void run() {
                         sql = HTTPHelper.getDB(S3.this);
                         if(alarm_id >= 0) {
-                            System.out.println("updating - dOW:"+dow+"Init Hour: "+init_hour+" Init Minute: "+init_minute+" End Hour: "+end_hour+" End Minute: "+end_minute+" MAC:"+M1.mac);
+    //                        System.out.println("updating - dOW:"+dow+"Init Hour: "+init_hour+" Init Minute: "+init_minute+" End Hour: "+end_hour+" End Minute: "+end_minute+" MAC:"+M1.mac);
                             sql.updateAlarm(a);
                         } else {
-                            System.out.println("inserting - dOW:"+dow+"Init Hour: "+init_hour+" Init Minute: "+init_minute+" End Hour: "+end_hour+" End Minute: "+end_minute+" MAC:"+M1.mac);
+    //                        System.out.println("inserting - dOW:"+dow+"Init Hour: "+init_hour+" Init Minute: "+init_minute+" End Hour: "+end_hour+" End Minute: "+end_minute+" MAC:"+M1.mac);
                             sql.insertAlarm(a);
                         }
                         Intent i = new Intent("device_not_reached");
@@ -338,7 +338,6 @@ public class S3 extends AppCompatActivity {
                             i.putExtra("error","");
                             deviceStatusChangedFlag = false;
                         }
-
                         sendBroadcast(i);
                     }
                 }).start();
