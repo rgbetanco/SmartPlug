@@ -32,32 +32,16 @@ public class S0 extends AppCompatActivity {
         this.getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        ImageView img_view1 = (ImageView)findViewById(R.id.img_view1);
-        img_view1.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                startActivity(new Intent(S0.this, S1.class));
-            }
-        });
+    }
 
-        TextView txt_changePassword = (TextView)findViewById(R.id.txt_changePassword);
-        txt_changePassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(S0.this, S1.class));
-            }
-        });
+    public void onBtnChangePassword(View view) {
+        startActivity(new Intent(S0.this, S1.class));
+    }
 
-        TextView txt_view1 = (TextView)findViewById(R.id.id_logout);
-        txt_view1.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                final YesNoDialog cd = new YesNoDialog(S0.this, 1);   // 1 = logout
-                cd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                cd.show();
-            }
-        });
-
+    public void onBtnLogout(View view) {
+        final YesNoDialog cd = new YesNoDialog(S0.this, 1);   // 1 = logout
+        cd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        cd.show();
     }
 
     /**

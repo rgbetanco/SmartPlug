@@ -30,29 +30,37 @@
 
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
             android:layout_marginRight="16dp"
             android:layout_marginLeft="16dp"
-            android:paddingLeft="10dp"
+            android:paddingLeft="10sp"
             android:textSize="15sp"
             android:inputType="textPersonName"
             android:hint="@string/id_username"
             android:background="@drawable/edit_text_design"
-            android:id="@+id/txt_username" />
+            android:id="@+id/txt_username"
+            android:singleLine="true"
+            android:paddingTop="8sp"
+            android:paddingRight="8sp"
+            android:paddingBottom="8sp" />
 
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:layout_marginRight="16dp"
             android:layout_marginLeft="16dp"
-            android:paddingLeft="10dp"
+            android:paddingLeft="10sp"
             android:textSize="15sp"
             android:inputType="textPassword"
             android:hint="@string/id_password"
             android:background="@drawable/edit_text_design"
-            android:id="@+id/txt_password" />
+            android:id="@+id/txt_password"
+            android:singleLine="true"
+            android:paddingTop="8sp"
+            android:paddingRight="8sp"
+            android:paddingBottom="8sp" />
 
         <Button
             android:layout_marginTop="50dp"
@@ -75,7 +83,8 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="@string/str_create_account"
             android:id="@+id/txt_create_account"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:padding="4sp" />
 
         <TextView
             android:layout_marginTop="10dp"
@@ -84,7 +93,8 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="@string/str_forgot_password"
             android:id="@+id/txt_forgot_password"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:padding="4sp" />
     </LinearLayout>
 
     <ProgressBar

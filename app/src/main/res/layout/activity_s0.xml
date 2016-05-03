@@ -10,7 +10,7 @@
     android:background="@color/gray"
     tools:context="com.jiee.smartplug.S0">
 
-    <include layout="@layout/toolbar" />
+    <include layout="@layout/toolbar_s0" />
 
     <LinearLayout
         android:id="@+id/linearLayout_s0"
