@@ -214,7 +214,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
 
                 if(!deviceStatusChangedFlag){
                     Intent i = new Intent("device_not_reached");
-                    if(!udp.delayTimer(snooze, 0, getOwnerActivity(), service_id, 0)){
+                    if(!udp.delayTimer(snooze, 0, getContext(), service_id, 0)){
                         i.putExtra("error", "yes");
                         getContext().sendBroadcast(i);
                     } else {
