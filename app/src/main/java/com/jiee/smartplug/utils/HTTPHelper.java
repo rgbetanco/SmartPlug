@@ -444,6 +444,7 @@ public class HTTPHelper {
                         String hall_sensor = optString(Jobject, "hallsensor");
                         String snooze = optString(Jobject, "snooze");
                         String ledsnooze = optString(Jobject, "nightlightsnooze");
+                        String irsnooze = optString(Jobject, "irsnooze");
                         System.out.println("RELAY=" + relay + " NIGHTLIGHT=" + nightlight + " CO SENSOR=" + co_sensor + " HALL SENSOR="+hall_sensor+" ID="+id+" SNOOZE="+snooze+" LED SNOOZE="+ledsnooze);
                         if(relay != null && !relay.isEmpty()) {
                             sql.updatePlugRelayService(Integer.parseInt(relay), idLocal);
@@ -474,6 +475,11 @@ public class HTTPHelper {
                             sql.updateDeviceSnooze(idLocal, GlobalVariables.ALARM_NIGHLED_SERVICE, Integer.parseInt(ledsnooze));
                         } else {
                             sql.updateDeviceSnooze(idLocal, GlobalVariables.ALARM_NIGHLED_SERVICE, 0);
+                        }
+                        if(irsnooze != null && !irsnooze.isEmpty()) {
+                            sql.updateDeviceSnooze(idLocal, GlobalVariables.ALARM_IR_SERVICE, Integer.parseInt(irsnooze));
+                        } else {
+                            sql.updateDeviceSnooze(idLocal, GlobalVariables.ALARM_IR_SERVICE, 0);
                         }
 
                     }

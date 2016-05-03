@@ -49,9 +49,11 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
     HTTPHelper http;
     int snooze = 0;
     boolean deviceStatusChangedFlag = false;
+    Activity act;
 
     public M1SnoozeDialog(Activity a, String device_id, int snooze, int service_id){
         super(a);
+        this.act = a;
         http = new HTTPHelper(a);
         sql = HTTPHelper.getDB(a);
         this.device_id = device_id;
@@ -214,7 +216,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
 
                 if(!deviceStatusChangedFlag){
                     Intent i = new Intent("device_not_reached");
-                    if(!udp.delayTimer(snooze, 0, getOwnerActivity(), service_id, 0)){
+                    if(!udp.delayTimer(snooze, 0, act, service_id, 0)){
                         i.putExtra("error", "yes");
                         getContext().sendBroadcast(i);
                     } else {

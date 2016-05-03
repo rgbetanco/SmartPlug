@@ -267,7 +267,6 @@ public class S3 extends AppCompatActivity {
         });
 
         if(alarm_id != -1){
-            System.out.println("init_ir_code: "+init_ir_code);
             String init_name = "";
             Cursor r = sql.getIRCodeById(init_ir_code);
             if(r.getCount()>0){

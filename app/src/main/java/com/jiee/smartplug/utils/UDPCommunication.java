@@ -438,7 +438,7 @@ public class UDPCommunication {
             c.moveToFirst();
             for (int j = 0; j < c.getCount(); j++) {
                 int serviceId = c.getInt(2);
-                if(serviceId == GlobalVariables.ALARM_RELAY_SERVICE || serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
+                if(serviceId == GlobalVariables.ALARM_RELAY_SERVICE || serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE || serviceId == GlobalVariables.ALARM_IR_SERVICE) {
 
                     timers[i++] = (byte) ((serviceId >> 24) & 0xff);
                     timers[i++] = (byte) ((serviceId >> 16) & 0xff);
@@ -498,7 +498,7 @@ public class UDPCommunication {
                 c.moveToFirst();
                 for (int j = 0; j < c.getCount(); j++) {
                     int serviceId = c.getInt(2);
-                    if(serviceId == GlobalVariables.ALARM_RELAY_SERVICE || serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
+                    if(serviceId == GlobalVariables.ALARM_RELAY_SERVICE || serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE || serviceId == GlobalVariables.ALARM_IR_SERVICE) {
 
                         timers[i++] = (byte) ((serviceId >> 24) & 0xff);
                         timers[i++] = (byte) ((serviceId >> 16) & 0xff);
