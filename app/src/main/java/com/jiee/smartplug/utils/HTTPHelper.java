@@ -233,6 +233,10 @@ public class HTTPHelper {
                     js.setRelay(optInt(childJSONObject, "hallsensor"));
 
                     js.setModel(optString(childJSONObject, "model"));
+                    String sBuildNumber = optString(childJSONObject, "buildnumber");
+                    if(sBuildNumber != null && !sBuildNumber.isEmpty()) {
+                        js.setBuildno(Integer.parseInt(sBuildNumber));
+                    }
                     String protocol = optString(childJSONObject, "protocol");
                     if(protocol != null && !protocol.isEmpty()){
                         js.setProt_ver(Integer.parseInt(protocol));
@@ -452,6 +456,27 @@ public class HTTPHelper {
                         String snooze = optString(Jobject, "snooze");
                         String ledsnooze = optString(Jobject, "nightlightsnooze");
                         String irsnooze = optString(Jobject, "irsnooze");
+
+                        String model = optString(Jobject, "model");
+                        String sbuilnumber = optString(Jobject, "buildnumber");
+                        int builnumber = 0;
+                        if(sbuilnumber != null && !sbuilnumber.isEmpty()){
+                            builnumber = Integer.parseInt(sbuilnumber);
+                        }
+                        String sprotocol = optString(Jobject, "protocol");
+                        int protocol = 0;
+                        if(sprotocol != null && !sprotocol.isEmpty()){
+                            protocol = Integer.parseInt(sprotocol);
+                        }
+                        String hardware_version = optString(Jobject, "hardware");
+                        String firmware_version = optString(Jobject, "firmware");
+                        String sfirmwaredate = optString(Jobject, "firmwaredate");
+                        int firmwaredate = 0;
+                        if(sfirmwaredate != null && !sfirmwaredate.isEmpty()){
+                            firmwaredate = Integer.parseInt(sfirmwaredate);
+                        }
+
+
                         System.out.println("RELAY=" + relay + " NIGHTLIGHT=" + nightlight + " CO SENSOR=" + co_sensor + " HALL SENSOR="+hall_sensor+" ID="+id+" SNOOZE="+snooze+" LED SNOOZE="+ledsnooze+ " IR SNOOZE="+irsnooze);
                         if(relay != null && !relay.isEmpty()) {
                             sql.updatePlugRelayService(Integer.parseInt(relay), idLocal);
@@ -488,6 +513,8 @@ public class HTTPHelper {
                         } else {
                             sql.updateDeviceSnooze(idLocal, GlobalVariables.ALARM_IR_SERVICE, 0);
                         }
+
+                        sql.updateDeviceVersions(idLocal, model, builnumber, protocol, hardware_version, firmware_version, firmwaredate);
 
                     }
 

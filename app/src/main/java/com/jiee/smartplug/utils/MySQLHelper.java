@@ -512,6 +512,20 @@ public class MySQLHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    public boolean updateDeviceVersions(String idLocal, String model, int buildnumber, int protocol, String hardware_version, String firmware_version, int firmwaredate){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues args = new ContentValues();
+        args.put(COLUMN_MODEL, model);
+        args.put(COLUMN_BUILD_NO, buildnumber);
+        args.put(COLUMN_PROT_VER, protocol);
+        args.put(COLUMN_HW_VER, hardware_version);
+        args.put(COLUMN_FW_VER, firmware_version);
+        args.put(COLUMN_FW_DATE, firmwaredate);
+        String strFilter = COLUMN_SID + " = '" + idLocal + "'";
+        db.update(TABLE_SMARTPLUGS, args, strFilter, null);
+        return true;
+    }
+
     public boolean updatePlugServicesByID(JSmartPlug js){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues args = new ContentValues();

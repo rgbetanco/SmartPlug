@@ -65,6 +65,7 @@ public class Splashscreen extends Activity {
                         public void run() {
                             try {
                                 String tosend = "devlist?token="+token+"&hl="+ Locale.getDefault().getLanguage()+"&res=1";
+                                System.out.println(tosend);
                                 httpHelper.getDeviceList(tosend);
                                 Cursor c = mySQLHelper.getPlugData();
                                 if (c.getCount() > 0) {

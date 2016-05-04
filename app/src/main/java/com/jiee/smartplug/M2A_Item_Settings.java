@@ -11,6 +11,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.http.HttpResponseCache;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Layout;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jiee.smartplug.services.UDPListenerService;
 import com.jiee.smartplug.utils.HTTPHelper;
 import com.jiee.smartplug.utils.Miscellaneous;
 import com.jiee.smartplug.utils.MySQLHelper;
@@ -75,6 +77,8 @@ public class M2A_Item_Settings extends Activity {
 
     BroadcastReceiver ota_sent;
     BroadcastReceiver ota_finished;
+    BroadcastReceiver device_info;
+    UDPCommunication con;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +90,7 @@ public class M2A_Item_Settings extends Activity {
         sql = HTTPHelper.getDB(this);
         udp = new UDPCommunication();
         networkUtil = new NetworkUtil();
+        con = new UDPCommunication();
 
         overlay = (RelativeLayout)findViewById(R.id.overlay);
         int opacity = 200; // from 0 to 255
@@ -105,7 +110,57 @@ public class M2A_Item_Settings extends Activity {
         ota_finished = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                int count = 10;
+                while(count > 0){
+                    count--;
+                    SystemClock.sleep(1000);
+                }
+                short command = 0x0001;
+                con.queryDevices(M1.ip, command, M1.mac);
                 removeGrayOutView();
+            }
+        };
+
+        device_info = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                System.out.println("DEVICE INFO BROADCAST RECEIVED");
+
+                sql.updateDeviceVersions(M1.mac, UDPListenerService.js.getModel(), UDPListenerService.js.getBuildno(),
+                        UDPListenerService.js.getProt_ver(), UDPListenerService.js.getHw_ver(), UDPListenerService.js.getFw_ver(), UDPListenerService.js.getFw_date());
+
+                Cursor c = sql.getPlugDataByID(M1.mac);
+                if(c.getCount() > 0){
+                    c.moveToFirst();
+                    final String model = c.getString(5);
+                    final int buildnumber = c.getInt(6);
+                    final int protocol = c.getInt(7);
+                    final String hardware = c.getString(8);
+                    final String firmware = c.getString(9);
+                    final int firmwaredate = c.getInt(10);
+
+                    txt_hardware.setText(hardware);
+                    txt_firmware.setText(firmware);
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String param = "devset?token="+ Miscellaneous.getToken(M2A_Item_Settings.this)+"&hl="
+                                    + Locale.getDefault().getLanguage()+"&devid="
+                                    + M1.mac +"&model="+model+ "&buildnumber="+buildnumber+"&protocol="+protocol
+                                    + "&hardware="+hardware+"&firmware="+firmware
+                                    + "&firmwaredate="+firmwaredate+"&send=1";
+                            try {
+                                System.out.println(param);
+                                http.setDeviceSettings(param);
+                            } catch(Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                }
+                c.close();
             }
         };
 
@@ -121,7 +176,7 @@ public class M2A_Item_Settings extends Activity {
         save = (Button) findViewById(R.id.btn_settings);
         txt_program = (TextView) findViewById(R.id.txt_program);
         cbx_cosensor = (CheckBox) findViewById(R.id.cbx_cosensor);
-        txt_hardware = (TextView) findViewById(R.id.id_harware);
+        txt_hardware = (TextView) findViewById(R.id.id_hardware);
         txt_firmware = (TextView) findViewById(R.id.id_firmware);
         txt_ota = (TextView) findViewById(R.id.txt_ota);
         l1 = (LinearLayout) findViewById(R.id.layout_irtransmitter);
@@ -389,6 +444,15 @@ public class M2A_Item_Settings extends Activity {
         super.onResume();
         registerReceiver(ota_sent, new IntentFilter("ota_sent"));
         registerReceiver(ota_finished, new IntentFilter("ota_finished"));
+        registerReceiver(device_info, new IntentFilter("device_info"));
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                short command = 0x0001;
+                con.queryDevices(M1.ip, command, M1.mac);
+            }
+        }).start();
     }
 
     @Override
@@ -396,6 +460,7 @@ public class M2A_Item_Settings extends Activity {
         super.onPause();
         unregisterReceiver(ota_sent);
         unregisterReceiver(ota_finished);
+        unregisterReceiver(device_info);
     }
 
     public void grayOutView(){

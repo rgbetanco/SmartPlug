@@ -86,7 +86,7 @@ public class UDPListenerService extends Service {
                 }
 
                 if(UDPCommunication.command == 0x003){
-                    System.out.println("I got a broadcast yeah.....");
+                    System.out.println("I got a broadcast .....");
                 }
 
                 if(UDPCommunication.command == 0x000B){

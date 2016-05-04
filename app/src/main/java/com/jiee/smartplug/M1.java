@@ -515,7 +515,7 @@ public class M1 extends AppCompatActivity {
 
         getDataFromServer();
 
-        startRepeatingTask();
+     //   startRepeatingTask();
 
         removeGrayOutView();
 

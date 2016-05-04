@@ -268,7 +268,7 @@ public class ListDevices extends Activity {
             public void onReceive(Context context, Intent intent) {
                 System.out.println("DEVICE STATUS CHANGED UI");
                 deviceStatusChangedFlag = true;
-    //            startRepeatingTask();
+
                 if(l!=null) {
                     l.setDeviceStatusChangedFlag(true);
                     l.getData();
@@ -300,6 +300,36 @@ public class ListDevices extends Activity {
                         mySQLHelper.updatePlugServicesByIP(jsTemp);
                     }
                 }
+
+                MySQLHelper sql = new MySQLHelper(ListDevices.this);
+
+                Cursor c = sql.getPlugDataByID(M1.mac);
+                if(c.getCount() > 0){
+                    c.moveToFirst();
+                    final String model = c.getString(5);
+                    final int buildnumber = c.getInt(6);
+                    final int protocol = c.getInt(7);
+                    final String hardware = c.getString(8);
+                    final String firmware = c.getString(9);
+                    final int firmwaredate = c.getInt(10);
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String param = "devset?token="+ Miscellaneous.getToken(ListDevices.this)+"&hl="
+                                    + Locale.getDefault().getLanguage()+"&devid="
+                                    + M1.mac +"&model="+model+ "&buildnumber="+buildnumber+"&protocol="+protocol
+                                    + "&hardware="+hardware+"&firmware="+firmware
+                                    + "&firmwaredate="+firmwaredate+"&send=1";
+                            try {
+                                httpHelper.setDeviceSettings(param);
+                            } catch(Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                }
+
             l.getData();
             }
 
