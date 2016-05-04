@@ -232,10 +232,17 @@ public class HTTPHelper {
                     js.setRelay(optInt(childJSONObject, "cosensor"));
                     js.setRelay(optInt(childJSONObject, "hallsensor"));
 
-                    //js.setRelay(Integer.parseInt((childJSONObject.getString("relay"))));
-                    //js.setNightlight(Integer.parseInt(childJSONObject.getString("nightlight")));
-                    //js.setCo_sensor(Integer.parseInt(childJSONObject.getString("cosensor")));
-                    //js.setHall_sensor(Integer.parseInt(childJSONObject.getString("hallsensor")));
+                    js.setModel(optString(childJSONObject, "model"));
+                    String protocol = optString(childJSONObject, "protocol");
+                    if(protocol != null && !protocol.isEmpty()){
+                        js.setProt_ver(Integer.parseInt(protocol));
+                    }
+                    js.setHw_ver(optString(childJSONObject, "hardware"));
+                    js.setFw_ver(optString(childJSONObject, "firmware"));
+                    String firmwaredate = optString(childJSONObject, "firmwaredate");
+                    if(firmwaredate != null && !firmwaredate.isEmpty()){
+                        js.setFw_date(Integer.parseInt(firmwaredate));
+                    }
 
                     if(js.getName()==null || js.getName().isEmpty()){
                         js.setName(js.getGivenName());
@@ -445,7 +452,7 @@ public class HTTPHelper {
                         String snooze = optString(Jobject, "snooze");
                         String ledsnooze = optString(Jobject, "nightlightsnooze");
                         String irsnooze = optString(Jobject, "irsnooze");
-                        System.out.println("RELAY=" + relay + " NIGHTLIGHT=" + nightlight + " CO SENSOR=" + co_sensor + " HALL SENSOR="+hall_sensor+" ID="+id+" SNOOZE="+snooze+" LED SNOOZE="+ledsnooze);
+                        System.out.println("RELAY=" + relay + " NIGHTLIGHT=" + nightlight + " CO SENSOR=" + co_sensor + " HALL SENSOR="+hall_sensor+" ID="+id+" SNOOZE="+snooze+" LED SNOOZE="+ledsnooze+ " IR SNOOZE="+irsnooze);
                         if(relay != null && !relay.isEmpty()) {
                             sql.updatePlugRelayService(Integer.parseInt(relay), idLocal);
                         } else {

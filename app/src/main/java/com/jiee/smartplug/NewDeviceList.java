@@ -251,7 +251,11 @@ public class NewDeviceList extends AppCompatActivity {
                                     mySQLHelper.insertPlug(plugs.get(i), 1);
 
                                     System.out.println("Right! - Plug id: " + plugs.get(i).getId() + ", Plug Ip: " + plugs.get(i).getIp());
-                                    String param = "actdev?token="+misc.getToken(NewDeviceList.this)+"&hl="+Locale.getDefault().getLanguage()+"&devid="+plugs.get(i).getId()+"&title="+plugs.get(i).getName()+"&model="+plugs.get(i).getModel()+"&send=0";
+                                    String param = "actdev?token="+misc.getToken(NewDeviceList.this)+"&hl="+Locale.getDefault().getLanguage()
+                                            + "&devid="+plugs.get(i).getId()+"&title="+plugs.get(i).getName()+"&model="+plugs.get(i).getModel()
+                                            + "&buildnumber="+plugs.get(i).getBuildno()+"&protocol="+plugs.get(i).getProt_ver()
+                                            + "&hardware="+plugs.get(i).getHw_ver()+"&firmware="+plugs.get(i).getFw_ver()
+                                            + "&firmwaredate="+plugs.get(i).getFw_date()+"&send=0";
                                     System.out.println(param);
                                     try {
                                         System.out.println("ACTIVATING DEVICE ON SERVER - ID:" + plugs.get(i).getId() + " IP:" + plugs.get(i).getIp() + " NAME:"+plugs.get(i).getName());

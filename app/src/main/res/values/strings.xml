@@ -228,5 +228,6 @@
     <string name="timer">Timer</string>
     <string name="snooze">Snoozed</string>
     <string name="minutes">Minutes</string>
+    <string name="ir_code">IR CODE</string>
 
 </resources>

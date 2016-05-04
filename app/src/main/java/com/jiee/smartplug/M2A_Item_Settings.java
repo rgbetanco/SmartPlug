@@ -1,7 +1,10 @@
 package com.jiee.smartplug;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -70,6 +73,9 @@ public class M2A_Item_Settings extends Activity {
     NetworkUtil networkUtil;
     RelativeLayout overlay;
 
+    BroadcastReceiver ota_sent;
+    BroadcastReceiver ota_finished;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,8 +93,21 @@ public class M2A_Item_Settings extends Activity {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         overlay.setLayoutParams(params);
         overlay.invalidate(); // update the view
-        overlay.setVisibility(View.INVISIBLE);
+        overlay.setVisibility(View.GONE);
 
+        ota_sent = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                grayOutView();
+            }
+        };
+
+        ota_finished = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                removeGrayOutView();
+            }
+        };
 
         toolbar_title = (Button) findViewById(R.id.toolbar_title);
         btn_icon = (ImageButton) findViewById(R.id.js_icon);
@@ -234,7 +253,13 @@ public class M2A_Item_Settings extends Activity {
                 public void onClick(View v) {
                     if(M1.ip != null && !M1.ip.isEmpty()){
                         if(networkUtil.getConnectionStatus(M2A_Item_Settings.this) == 1) {
-                            udp.sendOTACommand(M1.ip);
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    udp.sendOTACommand(M1.ip);
+                                }
+                            }).start();
+
                             Toast.makeText(M2A_Item_Settings.this, getApplicationContext().getString(R.string.please_wait), Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(M2A_Item_Settings.this, getApplicationContext().getString(R.string.no_udp_Connection), Toast.LENGTH_SHORT).show();
@@ -357,6 +382,20 @@ public class M2A_Item_Settings extends Activity {
         if (cache != null) {
             cache.flush();            //FORCE THE CACHE DATA TO BE SAVED ON DISK
         }
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        registerReceiver(ota_sent, new IntentFilter("ota_sent"));
+        registerReceiver(ota_finished, new IntentFilter("ota_finished"));
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        unregisterReceiver(ota_sent);
+        unregisterReceiver(ota_finished);
     }
 
     public void grayOutView(){

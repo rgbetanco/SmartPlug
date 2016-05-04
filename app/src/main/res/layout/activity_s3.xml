@@ -174,7 +174,7 @@
                 android:id="@+id/init_IR"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="IR Code"
+                android:text="@string/ir_code"
                 android:background="@drawable/btn_bkgnd"
                 />
             <Button
@@ -184,7 +184,7 @@
                 android:id="@+id/end_IR"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="IR Code"
+                android:text="@string/ir_code"
                 android:background="@drawable/btn_bkgnd"
                 />
         </LinearLayout>

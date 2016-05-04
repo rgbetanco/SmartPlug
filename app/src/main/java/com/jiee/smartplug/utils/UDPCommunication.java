@@ -368,7 +368,6 @@ public class UDPCommunication {
             DatagramPacket dp;
             dp = new DatagramPacket(hMsg, hMsg.length, serverAddr, UDP_SERVER_PORT);
             ds.send(dp);
-            System.out.println("OTA COMMAND SENT");
         } catch (Exception e){
             e.printStackTrace();
         }

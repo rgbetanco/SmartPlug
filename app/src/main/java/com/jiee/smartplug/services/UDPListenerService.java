@@ -123,11 +123,27 @@ public class UDPListenerService extends Service {
                     }
                 }
 
+                if(UDPCommunication.command == 0x000F){
+                    if(code == 0){
+                        System.out.println("OTA SENT SUCCESSFULLY");
+                        code = 1;
+                        Intent i = new Intent("ota_sent");
+                        sendBroadcast(i);
+                    }
+                }
+
                 if(code == 0x1000 && process_data == true){
                     code = 1;
                     System.out.println("I GOT A BROADCAST");
                     Intent ui = new Intent("m1updateui");
                     sendBroadcast(ui);
+                }
+
+                if(code == 0x001F && process_data == true){
+                    code = 1;
+                    System.out.println("OTA FINISHED");
+                    Intent i = new Intent("ota_finished");
+                    sendBroadcast(i);
                 }
 
             }
