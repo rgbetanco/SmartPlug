@@ -62,6 +62,7 @@ public class ListDevicesAdapter extends BaseAdapter {
     int serviceId;
     public static String selectedIP;
     public static String mac;
+    public static String param;
     Handler mHandler;
     int globlaPosition = 0;
     boolean deviceStatusChangedFlag = false;
@@ -151,27 +152,18 @@ public class ListDevicesAdapter extends BaseAdapter {
         deleteDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            final String mac = SmartPlugsList.get(position).getId();
-            final String param = "devdel?token=" + ListDevices.token + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + mac;
-                try {
-                    System.out.println(param);
-                    if(mySQLHelper.deletePlugData(mac)) {
-                        System.out.println("Data removed successfully " + mac);
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    http.removeDevice(param, mac);
-                                } catch (Exception e){
-                                    e.printStackTrace();
-                                }
-                            }
-                        }).start();
+                System.out.println("SENDING REFORMAT DEVICE COMMAND");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        udp.sendReformatCommand(SmartPlugsList.get(position).getIp());
                     }
-                    getData();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                }).start();
+
+                mac = SmartPlugsList.get(position).getId();
+                param = "devdel?token=" + ListDevices.token + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + mac;
+                selectedIP = SmartPlugsList.get(position).getIp();
+
             }
 
         });
@@ -372,6 +364,29 @@ public class ListDevicesAdapter extends BaseAdapter {
         }
 
         return convertView;
+    }
+
+    public void deleteDevice(){
+        try {
+            System.out.println(param);
+            if(mySQLHelper.deletePlugData(mac)) {
+                System.out.println("Data removed successfully " + mac);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            udp.sendResetCommand(selectedIP);
+                            http.removeDevice(param, mac);
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
+            getData();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void gotoM1(int position){

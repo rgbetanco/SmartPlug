@@ -375,6 +375,40 @@ public class UDPCommunication {
         return true;
     }
 
+    public boolean sendReformatCommand(String ip){
+        this.command = 0x010F;
+        generate_header();
+        DatagramSocket ds = null;
+        try {
+            ds = new DatagramSocket();
+            InetAddress serverAddr = InetAddress.getByName(ip);
+            DatagramPacket dp;
+            dp = new DatagramPacket(hMsg, hMsg.length, serverAddr, UDP_SERVER_PORT);
+            ds.send(dp);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        ds.close();
+        return true;
+    }
+
+    public boolean sendResetCommand(String ip){
+        this.command = 0x0FFF;
+        generate_header();
+        DatagramSocket ds = null;
+        try {
+            ds = new DatagramSocket();
+            InetAddress serverAddr = InetAddress.getByName(ip);
+            DatagramPacket dp;
+            dp = new DatagramPacket(hMsg, hMsg.length, serverAddr, UDP_SERVER_PORT);
+            ds.send(dp);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        ds.close();
+        return true;
+    }
+
     public boolean sendIRFileName(int filename){
         sendIRHeader(filename);
         return true;

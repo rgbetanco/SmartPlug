@@ -132,6 +132,15 @@ public class UDPListenerService extends Service {
                     }
                 }
 
+                if(UDPCommunication.command == 0x010F){
+                    if(code == 0){
+                        System.out.println("DELETE SEND SUCCESSFULLY");
+                        code = 1;
+                        Intent i = new Intent("delete_sent");
+                        sendBroadcast(i);
+                    }
+                }
+
                 if(code == 0x1000 && process_data == true){
                     code = 1;
                     System.out.println("I GOT A BROADCAST");

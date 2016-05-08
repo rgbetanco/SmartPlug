@@ -78,6 +78,7 @@ public class ListDevices extends Activity {
     BroadcastReceiver repeatingTaskDone;
     BroadcastReceiver UpdateAlarmServiceDone;
     BroadcastReceiver http_device_status;
+    BroadcastReceiver delete_sent;
     ListDevicesAdapter l;
     ListView list;
     NetworkUtil networkUtil;
@@ -351,6 +352,13 @@ public class ListDevices extends Activity {
             }
         };
 
+        delete_sent = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                l.deleteDevice();
+            }
+        };
+
         mRegistrationProgressBar = (ProgressBar) findViewById(R.id.DeviceListProgress);
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -515,6 +523,7 @@ public class ListDevices extends Activity {
             registerReceiver(repeatingTaskDone, new IntentFilter("repeatingTaskDone"));
             registerReceiver(UpdateAlarmServiceDone, new IntentFilter("UpdateAlarmServiceDone"));
             registerReceiver(http_device_status, new IntentFilter("http_device_status"));
+            registerReceiver(delete_sent, new IntentFilter("delete_sent"));
             LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                     new IntentFilter(GlobalVariables.REGISTRATION_COMPLETE));
     //    }
@@ -539,6 +548,7 @@ public class ListDevices extends Activity {
             unregisterReceiver(repeatingTaskDone);
             unregisterReceiver(UpdateAlarmServiceDone);
             unregisterReceiver(http_device_status);
+            unregisterReceiver(delete_sent);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
     //    }
     }
