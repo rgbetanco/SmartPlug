@@ -36,6 +36,7 @@ import com.jiee.smartplug.services.M1ServicesService;
 import com.jiee.smartplug.services.RegistrationIntentService;
 import com.jiee.smartplug.services.UDPListenerService;
 import com.jiee.smartplug.services.gcmNotificationService;
+import com.jiee.smartplug.services.mDNSTesting;
 import com.jiee.smartplug.utils.GlobalVariables;
 import com.jiee.smartplug.utils.HTTPHelper;
 import com.jiee.smartplug.utils.Miscellaneous;
@@ -64,6 +65,7 @@ public class M1 extends AppCompatActivity {
     BroadcastReceiver device_not_reached;
     BroadcastReceiver timers_sent_successfully;
     BroadcastReceiver device_status_set;
+    BroadcastReceiver new_device_receiver;
     ProgressBar progressBar;
 
     ImageButton plug_icon;
@@ -111,6 +113,7 @@ public class M1 extends AppCompatActivity {
     int irSnooze = 0;
     public static boolean deviceStatusChangedFlag = false;
     String token;
+    Intent mDNS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -511,6 +514,18 @@ public class M1 extends AppCompatActivity {
             }
         });
 
+        new_device_receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Cursor c = sql.getPlugDataByID(mac);
+                if(c.getCount() > 0){
+                    c.moveToFirst();
+                    ip = c.getString(3);
+                }
+                Log.i("BROADCAST", "NEW DEVICE FOUND");
+            }
+        };
+
         mHandler = new Handler();
 
         getDataFromServer();
@@ -518,6 +533,9 @@ public class M1 extends AppCompatActivity {
      //   startRepeatingTask();
 
         removeGrayOutView();
+
+        mDNS = new Intent(this, mDNSTesting.class);
+
 
     }
 
@@ -769,6 +787,7 @@ public class M1 extends AppCompatActivity {
         super.onResume();
         updateUI();
         startRepeatingTask();
+        startService(mDNS);
         registerReceiver(udp_update_ui, new IntentFilter("status_changed_update_ui"));
         registerReceiver(device_status_changed, new IntentFilter("device_status_changed"));
         registerReceiver(gcm_notification, new IntentFilter("gcm_notification"));
@@ -778,6 +797,8 @@ public class M1 extends AppCompatActivity {
         registerReceiver(device_not_reached, new IntentFilter("device_not_reached"));
         registerReceiver(timers_sent_successfully, new IntentFilter("timers_sent_successfully"));
         registerReceiver(device_status_set, new IntentFilter("device_status_set"));
+        registerReceiver(new_device_receiver, new IntentFilter("mDNS_New_Device_Found"));
+
         try {
             Intent intent = new Intent(this, UDPListenerService.class);
             bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
@@ -789,6 +810,7 @@ public class M1 extends AppCompatActivity {
     @Override
     protected void onPause(){
         super.onPause();
+        stopService(mDNS);
 
         unregisterReceiver(udp_update_ui);
         unregisterReceiver(device_status_changed);
@@ -799,6 +821,7 @@ public class M1 extends AppCompatActivity {
         unregisterReceiver(device_not_reached);
         unregisterReceiver(timers_sent_successfully);
         unregisterReceiver(device_status_set);
+        unregisterReceiver(new_device_receiver);
         udpconnection = true;
             try {
                 if (mServiceBound) {
