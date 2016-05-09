@@ -44,13 +44,9 @@ public class ListDevicesServicesService extends IntentService {
 
         if(udp.setDeviceStatus(ip, serviceId, action)){
             System.out.println("ACTION: "+action);
-            int counter = 2;
+            ListDevices.deviceStatusChangedFlag = false;
+            int counter = 20000;
             while (!ListDevices.deviceStatusChangedFlag && counter > 0) {
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
                 counter--;
                 //waiting time
             }
@@ -58,8 +54,8 @@ public class ListDevicesServicesService extends IntentService {
             System.out.println("Action not carried out !!!!!!!");
         }
 
-        if(!ListDevices.deviceStatusChangedFlag){
-
+        if(ListDevices.deviceStatusChangedFlag == false){
+            System.out.println("device status changed flag == false");
             new Thread(new Runnable() {
                 @Override
                 public void run() {

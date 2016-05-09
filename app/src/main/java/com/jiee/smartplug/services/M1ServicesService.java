@@ -44,14 +44,10 @@ public class M1ServicesService extends IntentService {
             httpHelper = new HTTPHelper(this);
 
         String url = "";
+        M1.deviceStatusChangedFlag = false;
         if(udp.setDeviceStatus(ip, serviceId, action)){
-            int counter = 2;
+            int counter = 20000;
             while (!M1.deviceStatusChangedFlag && counter > 0) {
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
                 counter--;
                 //waiting time
             }
