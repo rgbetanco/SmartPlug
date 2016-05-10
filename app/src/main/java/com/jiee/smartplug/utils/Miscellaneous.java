@@ -63,7 +63,7 @@ public class Miscellaneous {
 
         for( int dowCurr=0; dowCurr<7; dowCurr++ ) {
             if( (dowFlags & (1<<dowCurr)) != 0 ) {
-                dow += DOWs[dowCurr];
+                dow += " "+DOWs[dowCurr];
             }
         }
 

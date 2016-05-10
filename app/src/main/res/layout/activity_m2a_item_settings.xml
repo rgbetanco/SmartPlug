@@ -27,6 +27,7 @@
                 android:id="@+id/toolbar_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAllCaps="true"
                 android:text="@string/title_deskLamp"
                 android:clickable="false"
                 android:background="@drawable/round_corners_sub_toolbar_green"/>
@@ -95,6 +96,7 @@
                     android:id="@+id/txt_jsname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textAllCaps="true"
                     android:hint="@string/title_deskLamp"
                     android:background="@null"
                     />

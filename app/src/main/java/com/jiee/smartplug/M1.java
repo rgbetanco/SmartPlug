@@ -36,7 +36,6 @@ import com.jiee.smartplug.services.M1ServicesService;
 import com.jiee.smartplug.services.RegistrationIntentService;
 import com.jiee.smartplug.services.UDPListenerService;
 import com.jiee.smartplug.services.gcmNotificationService;
-import com.jiee.smartplug.services.mDNSTesting;
 import com.jiee.smartplug.utils.GlobalVariables;
 import com.jiee.smartplug.utils.HTTPHelper;
 import com.jiee.smartplug.utils.Miscellaneous;
@@ -65,7 +64,6 @@ public class M1 extends AppCompatActivity {
     BroadcastReceiver device_not_reached;
     BroadcastReceiver timers_sent_successfully;
     BroadcastReceiver device_status_set;
-    BroadcastReceiver new_device_receiver;
     ProgressBar progressBar;
 
     ImageButton plug_icon;
@@ -113,7 +111,6 @@ public class M1 extends AppCompatActivity {
     int irSnooze = 0;
     public static boolean deviceStatusChangedFlag = false;
     String token;
-    Intent mDNS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,25 +125,25 @@ public class M1 extends AppCompatActivity {
         httpHelper = new HTTPHelper(this);
         crashTimer = new CrashCountDown(this);
 
-        progressBar = (ProgressBar)findViewById(R.id.M1ProgressBar);
+        progressBar = (ProgressBar) findViewById(R.id.M1ProgressBar);
         progressBar.setVisibility(View.GONE);
 
-        jsplug_icon = (ImageView)findViewById(R.id.imageView);
+        jsplug_icon = (ImageView) findViewById(R.id.imageView);
 
-        btn_layout_outlet = (RelativeLayout)findViewById(R.id.btn_outlet);
-        btn_layout_nightled = (RelativeLayout)findViewById(R.id.btn_nightled);
-        btn_layout_ir = (RelativeLayout)findViewById(R.id.btn_ir);
-        btn_layout_co = (RelativeLayout)findViewById(R.id.btn_co);
+        btn_layout_outlet = (RelativeLayout) findViewById(R.id.btn_outlet);
+        btn_layout_nightled = (RelativeLayout) findViewById(R.id.btn_nightled);
+        btn_layout_ir = (RelativeLayout) findViewById(R.id.btn_ir);
+        btn_layout_co = (RelativeLayout) findViewById(R.id.btn_co);
 
-        btn_co = (ImageButton)findViewById(R.id.co_icon);
+        btn_co = (ImageButton) findViewById(R.id.co_icon);
 
-        img_warn2 = (ImageView)findViewById(R.id.img_warn2);
+        img_warn2 = (ImageView) findViewById(R.id.img_warn2);
         img_warn2.setVisibility(View.GONE);
 
         warning_text = (TextView) findViewById(R.id.msg_warning);
-        warning_layout = (RelativeLayout)findViewById(R.id.warning_layout);
+        warning_layout = (RelativeLayout) findViewById(R.id.warning_layout);
 
-        btn_warning = (ImageButton)findViewById(R.id.btn_warning);
+        btn_warning = (ImageButton) findViewById(R.id.btn_warning);
         btn_warning.setVisibility(View.GONE);
         btn_warning.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -162,13 +159,13 @@ public class M1 extends AppCompatActivity {
         this.getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        plug_name = (TextView)findViewById(R.id.plug_name);
+        plug_name = (TextView) findViewById(R.id.plug_name);
 
         //Animation
         animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blink);
 
         plug_icon = (ImageButton) findViewById(R.id.plug_icon);
-        btn_outlet = (RelativeLayout)findViewById(R.id.btn_outlet);
+        btn_outlet = (RelativeLayout) findViewById(R.id.btn_outlet);
         btn_settings = (ImageButton) findViewById(R.id.btn_settings);
         btn_plug_alarm = (ImageButton) findViewById(R.id.plug_alarm_icon);
         btn_nightled_alarm = (ImageButton) findViewById(R.id.nightled_alarm_icon);
@@ -179,7 +176,7 @@ public class M1 extends AppCompatActivity {
         warning_icon.setVisibility(View.GONE);
         warning_icon_co.setVisibility(View.GONE);
 
-        btn_ir_alarm = (ImageButton)findViewById(R.id.btn_ir_alarm);
+        btn_ir_alarm = (ImageButton) findViewById(R.id.btn_ir_alarm);
 
         Intent i = getIntent();
         mac = i.getStringExtra("mac");
@@ -188,13 +185,13 @@ public class M1 extends AppCompatActivity {
         name = i.getStringExtra("name");
         givenName = i.getStringExtra("givenName");
 
-        if(givenName != null && !givenName.isEmpty()){
+        if (givenName != null && !givenName.isEmpty()) {
             plug_name.setText(givenName);
         } else {
             plug_name.setText(name);
         }
 
-        btn_ir = (ImageButton)findViewById(R.id.ir_icon);
+        btn_ir = (ImageButton) findViewById(R.id.ir_icon);
         btn_ir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -246,7 +243,7 @@ public class M1 extends AppCompatActivity {
 
         sql = HTTPHelper.getDB(this);
 
-        overlay = (RelativeLayout)findViewById(R.id.overlay);
+        overlay = (RelativeLayout) findViewById(R.id.overlay);
         int opacity = 200; // from 0 to 255
         overlay.setBackgroundColor(opacity * 0x1000000); // black with a variable alpha
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -278,18 +275,18 @@ public class M1 extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 String error = "";
                 error = intent.getStringExtra("error");
-                if(error != null && !error.isEmpty()){
+                if (error != null && !error.isEmpty()) {
                     removeGrayOutView();
                     Toast.makeText(M1.this, getApplicationContext().getString(R.string.connection_error), Toast.LENGTH_LONG).show();
                 }
-              updateUI();
+                updateUI();
             }
         };
 
         device_status_set = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-        //        updateUI();
+                //        updateUI();
                 startRepeatingTask();
             }
         };
@@ -308,7 +305,7 @@ public class M1 extends AppCompatActivity {
                 intent1.putExtra("getAlarmFlag",getAlarmFlag);
                 startService(intent1);
                 */
-             //   Toast.makeText(M1.this, "I GOT THE PUSH NOTIFICATION", Toast.LENGTH_SHORT).show();
+                //   Toast.makeText(M1.this, "I GOT THE PUSH NOTIFICATION", Toast.LENGTH_SHORT).show();
                 /*
                 String getDataFlag = intent.getStringExtra("getDataFlag");
                 System.out.println(getDataFlag);
@@ -348,7 +345,7 @@ public class M1 extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 removeGrayOutView();
-             //   startRepeatingTask();
+                //   startRepeatingTask();
                 updateUI();
             }
         };
@@ -368,7 +365,7 @@ public class M1 extends AppCompatActivity {
                 System.out.println("BROADCAST DEVICE NOT REACHED");
                 String error = "";
                 error = intent.getStringExtra("error");
-                if(error != null && !error.isEmpty()){
+                if (error != null && !error.isEmpty()) {
                     Toast.makeText(M1.this, getApplicationContext().getString(R.string.connection_error), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(M1.this, getApplicationContext().getString(R.string.please_wait), Toast.LENGTH_LONG).show();
@@ -383,15 +380,10 @@ public class M1 extends AppCompatActivity {
             public void onClick(View v) {
                 //I need to check on the database if there are alarms already set to this device
                 Cursor c = sql.getAlarmData(mac, GlobalVariables.ALARM_RELAY_SERVICE);
-                if (c.getCount() > 0) {
-                    final M1SnoozeDialog m1d = new M1SnoozeDialog(M1.this, mac, relaySnooze, GlobalVariables.ALARM_RELAY_SERVICE);
-                    m1d.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    m1d.show();
-                } else {
-                    final YesNoDialog cd = new YesNoDialog(M1.this, 2, mac, GlobalVariables.ALARM_RELAY_SERVICE);   // 1 = logout, 2 = M1 : device_id : service_id
-                    cd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    cd.show();
-                }
+                int alarmCount = c.getCount();
+                final M1SnoozeDialog m1d = new M1SnoozeDialog(M1.this, mac, relaySnooze, GlobalVariables.ALARM_RELAY_SERVICE, alarmCount);
+                m1d.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                m1d.show();
                 c.close();
             }
         });
@@ -400,15 +392,10 @@ public class M1 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Cursor c = sql.getAlarmData(mac, GlobalVariables.ALARM_NIGHLED_SERVICE);
-                if (c.getCount() > 0) {
-                    final M1SnoozeDialog m1d = new M1SnoozeDialog(M1.this, mac, ledSnooze, GlobalVariables.ALARM_NIGHLED_SERVICE);
-                    m1d.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    m1d.show();
-                } else {
-                    final YesNoDialog cd = new YesNoDialog(M1.this, 2, mac, GlobalVariables.ALARM_NIGHLED_SERVICE);   // 1 = logout, 2 = M1 : device_id : service_id
-                    cd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    cd.show();
-                }
+                int alarmCount = c.getCount();
+                final M1SnoozeDialog m1d = new M1SnoozeDialog(M1.this, mac, ledSnooze, GlobalVariables.ALARM_NIGHLED_SERVICE, alarmCount);
+                m1d.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                m1d.show();
                 c.close();
             }
         });
@@ -417,15 +404,10 @@ public class M1 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Cursor c = sql.getAlarmData(mac, GlobalVariables.ALARM_IR_SERVICE);
-                if(c.getCount() > 0){
-                    final M1SnoozeDialog m1d = new M1SnoozeDialog(M1.this, mac, irSnooze, GlobalVariables.ALARM_IR_SERVICE);
-                    m1d.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    m1d.show();
-                } else {
-                    final YesNoDialog cd = new YesNoDialog(M1.this, 2, mac, GlobalVariables.ALARM_IR_SERVICE);   // 1 = logout, 2 = M1 : device_id : service_id
-                    cd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    cd.show();
-                }
+                int alarmCount = c.getCount();
+                final M1SnoozeDialog m1d = new M1SnoozeDialog(M1.this, mac, irSnooze, GlobalVariables.ALARM_IR_SERVICE, alarmCount);
+                m1d.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                m1d.show();
                 c.close();
             }
         });
@@ -514,28 +496,13 @@ public class M1 extends AppCompatActivity {
             }
         });
 
-        new_device_receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Cursor c = sql.getPlugDataByID(mac);
-                if(c.getCount() > 0){
-                    c.moveToFirst();
-                    ip = c.getString(3);
-                }
-                Log.i("BROADCAST", "NEW DEVICE FOUND");
-            }
-        };
-
         mHandler = new Handler();
 
         getDataFromServer();
 
-     //   startRepeatingTask();
+        startRepeatingTask();
 
         removeGrayOutView();
-
-        mDNS = new Intent(this, mDNSTesting.class);
-
 
     }
 
@@ -543,12 +510,12 @@ public class M1 extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                if(ip != null) {
+                if (ip != null) {
                     short command = 0x0007;
                     if (udp.queryDevices(ip, command, mac)) {
                         removeGrayOutView();
-                    //    crashTimer.setTimer(2);
-                    //    crashTimer.startTimer();
+                        //    crashTimer.setTimer(2);
+                        //    crashTimer.startTimer();
                     } else {
                         System.out.println("IP IS NULL");
                     }
@@ -558,12 +525,12 @@ public class M1 extends AppCompatActivity {
             } finally {
                 updateUI();
                 stopRepeatingTask();
-            //    mHandler.postDelayed(mStatusChecker, 7000);
+                //    mHandler.postDelayed(mStatusChecker, 7000);
             }
         }
     };
 
-    public void getDataFromServer(){
+    public void getDataFromServer() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -583,17 +550,17 @@ public class M1 extends AppCompatActivity {
         mHandler.removeCallbacks(mStatusChecker);
     }
 
-    public void updateUI(){
+    public void updateUI() {
         removeGrayOutView();
         Cursor u = sql.getPlugDataByID(mac);
-        if(u.getCount() > 0){
+        if (u.getCount() > 0) {
             u.moveToFirst();
-            if(u.getString(21) != null && !u.getString(21).isEmpty()) {
+            if (u.getString(21) != null && !u.getString(21).isEmpty()) {
                 plug_name.setText(u.getString(21));
             } else {
                 plug_name.setText(u.getString(1));
             }
-            switch (u.getInt(12)){                                                                  //RELAY
+            switch (u.getInt(12)) {                                                                  //RELAY
                 case 0:
                     relay = 0;
                     plug_icon.setImageResource(R.drawable.svc_0_big_off);
@@ -617,7 +584,7 @@ public class M1 extends AppCompatActivity {
                     warning_text.setVisibility(View.VISIBLE);
                     //warning_icon.setImageResource(R.drawable.marker_warn2);
                     //warning_icon.startAnimation(animation);
-                    ((AnimationDrawable)warning_icon.getDrawable()).start();
+                    ((AnimationDrawable) warning_icon.getDrawable()).start();
                     warning_layout.setVisibility(View.VISIBLE);
                     img_warn2.setVisibility(View.VISIBLE);
                     btn_warning.setVisibility(View.VISIBLE);
@@ -635,7 +602,7 @@ public class M1 extends AppCompatActivity {
                     warning_layout.setVisibility(View.VISIBLE);
                     btn_co.setImageResource(R.drawable.svc_3_big);
                     warning_icon_co.setVisibility(View.VISIBLE);
-                    ((AnimationDrawable)warning_icon_co.getDrawable()).start();
+                    ((AnimationDrawable) warning_icon_co.getDrawable()).start();
 
                     img_warn2.setVisibility(View.VISIBLE);
                     warning_text.setText(getApplicationContext().getString(R.string.msg_co_warning));
@@ -668,9 +635,9 @@ public class M1 extends AppCompatActivity {
             }
 
             relaySnooze = u.getInt(22);
-            if(relaySnooze == 0){
+            if (relaySnooze == 0) {
                 Cursor c = sql.getAlarmData(mac, GlobalVariables.ALARM_RELAY_SERVICE);
-                if(c.getCount()>0){
+                if (c.getCount() > 0) {
                     btn_plug_alarm.setImageResource(R.drawable.btn_timer_on);
                 } else {
                     btn_plug_alarm.setImageResource(R.drawable.btn_timer_off);
@@ -681,9 +648,9 @@ public class M1 extends AppCompatActivity {
             }
 
             ledSnooze = u.getInt(23);
-            if(ledSnooze == 0){
+            if (ledSnooze == 0) {
                 Cursor e = sql.getAlarmData(mac, GlobalVariables.ALARM_NIGHLED_SERVICE);
-                if(e.getCount()>0){
+                if (e.getCount() > 0) {
                     btn_nightled_alarm.setImageResource(R.drawable.btn_timer_on);
                 } else {
                     btn_nightled_alarm.setImageResource(R.drawable.btn_timer_off);
@@ -694,9 +661,9 @@ public class M1 extends AppCompatActivity {
             }
 
             irSnooze = u.getInt(24);
-            if(irSnooze == 0){
+            if (irSnooze == 0) {
                 Cursor f = sql.getAlarmData(mac, GlobalVariables.ALARM_IR_SERVICE);
-                if(f.getCount() > 0){
+                if (f.getCount() > 0) {
                     btn_ir_alarm.setImageResource(R.drawable.btn_timer_on);
                 } else {
                     btn_ir_alarm.setImageResource(R.drawable.btn_timer_off);
@@ -706,7 +673,7 @@ public class M1 extends AppCompatActivity {
                 btn_ir_alarm.setImageResource(R.drawable.btn_timer_delay);
             }
 
-            if(u.getString(17)!=null && !u.getString(17).isEmpty()){
+            if (u.getString(17) != null && !u.getString(17).isEmpty()) {
                 Picasso.with(this).load(u.getString(17).toString()).into(jsplug_icon);
             }
 
@@ -714,7 +681,7 @@ public class M1 extends AppCompatActivity {
             plug_icon.setEnabled(true);
 
         }
-        if(!u.isClosed()){
+        if (!u.isClosed()) {
             u.close();
         }
 /*
@@ -761,7 +728,7 @@ public class M1 extends AppCompatActivity {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    if(ip != null) {
+                    if (ip != null) {
                         short command = 0x0007;
                         if (udp.queryDevices(ip, command, mac)) {
                             crashTimer.setTimer(0);
@@ -777,7 +744,7 @@ public class M1 extends AppCompatActivity {
     };
 
 
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         finish();
         return true;
     }
@@ -787,7 +754,6 @@ public class M1 extends AppCompatActivity {
         super.onResume();
         updateUI();
         startRepeatingTask();
-        startService(mDNS);
         registerReceiver(udp_update_ui, new IntentFilter("status_changed_update_ui"));
         registerReceiver(device_status_changed, new IntentFilter("device_status_changed"));
         registerReceiver(gcm_notification, new IntentFilter("gcm_notification"));
@@ -797,20 +763,17 @@ public class M1 extends AppCompatActivity {
         registerReceiver(device_not_reached, new IntentFilter("device_not_reached"));
         registerReceiver(timers_sent_successfully, new IntentFilter("timers_sent_successfully"));
         registerReceiver(device_status_set, new IntentFilter("device_status_set"));
-        registerReceiver(new_device_receiver, new IntentFilter("mDNS_New_Device_Found"));
-
         try {
             Intent intent = new Intent(this, UDPListenerService.class);
             bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    protected void onPause(){
+    protected void onPause() {
         super.onPause();
-        stopService(mDNS);
 
         unregisterReceiver(udp_update_ui);
         unregisterReceiver(device_status_changed);
@@ -821,38 +784,37 @@ public class M1 extends AppCompatActivity {
         unregisterReceiver(device_not_reached);
         unregisterReceiver(timers_sent_successfully);
         unregisterReceiver(device_status_set);
-        unregisterReceiver(new_device_receiver);
         udpconnection = true;
-            try {
-                if (mServiceBound) {
-                    unbindService(mServiceConnection);
-                    mServiceBound = false;
-                }
-            } catch (Exception e){
-                e.printStackTrace();
+        try {
+            if (mServiceBound) {
+                unbindService(mServiceConnection);
+                mServiceBound = false;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         stopRepeatingTask();
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
     }
 
-    public void sendService(int sId){
+    public void sendService(int sId) {
         grayOutView();
         //plug_icon.setEnabled(false);
         //nightled_icon.setEnabled(false);
         //Toast.makeText(this, getApplicationContext().getString(R.string.processing_command), Toast.LENGTH_SHORT).show();
         serviceId = sId;
         progressBar.setVisibility(View.VISIBLE);
-        if(serviceId == GlobalVariables.ALARM_RELAY_SERVICE) {
+        if (serviceId == GlobalVariables.ALARM_RELAY_SERVICE) {
             if (relay == 0) {
                 action = 0x01;
             } else {
@@ -860,7 +822,7 @@ public class M1 extends AppCompatActivity {
             }
         }
 
-        if(serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
+        if (serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
             if (nightlight == 0) {
                 action = 0x01;
             } else {
@@ -909,13 +871,13 @@ public class M1 extends AppCompatActivity {
 
     }
 
-    public void grayOutView(){
-    //    overlay.invalidate(); // update the view
-    //    overlay.setVisibility(View.VISIBLE);
+    public void grayOutView() {
+        //    overlay.invalidate(); // update the view
+        //    overlay.setVisibility(View.VISIBLE);
     }
 
-    public void removeGrayOutView(){
-    //    overlay.invalidate(); // update the view
-    //    overlay.setVisibility(View.INVISIBLE);
+    public void removeGrayOutView() {
+        //    overlay.invalidate(); // update the view
+        //    overlay.setVisibility(View.INVISIBLE);
     }
 }

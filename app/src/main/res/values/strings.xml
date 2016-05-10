@@ -79,9 +79,9 @@
     <string name="id_sevice">Device</string>
     <string name="id_jsPlug">JS Plug</string>
     <string name="id_icon">Icon</string>
-    <string name="id_name">Name</string>
+    <string name="id_name">Device Name</string>
     <string name="id_wifi">WIFI</string>
-    <string name="id_macID">Mac ID</string>
+    <string name="id_macID">Mac Address</string>
     <string name="msg_deskLampBtn">To configure this device, please join the network the device is connected to.</string>
     <string name="lnk_removeAndReset"><u>Remove And Reset Device</u></string>
     <string name="title_removeAndReset">Remove And Reset Device</string>
@@ -131,7 +131,7 @@
     <string name="no_timer_set">No Timer Set</string>
     <string name="title_add_new">Add New</string>
     <string name="ir_recorded">(Recorded)</string>
-    <string name="title_device">Device</string>
+    <string name="title_device">Device Type</string>
     <string name="notify_on_power_outage">Notify on Power Outage</string>
     <string name="notify_on_co_warning">Notify on CO Warning</string>
     <string name="notify_on_timer_activated">Notify on Timer Activated</string>
@@ -175,13 +175,13 @@
         <item>Ready to Begin !</item>
     </string-array>
 
-    <string name="sunday">Su</string>
-    <string name="monday">Mo</string>
-    <string name="tuesday">Tu</string>
-    <string name="wednesday">We</string>
-    <string name="thursday">Th</string>
-    <string name="friday">Fr</string>
-    <string name="saturday">Sa</string>
+    <string name="sunday">Sun</string>
+    <string name="monday">Mon</string>
+    <string name="tuesday">Tue</string>
+    <string name="wednesday">Wed</string>
+    <string name="thursday">Thu</string>
+    <string name="friday">Fri</string>
+    <string name="saturday">Sat</string>
 
     <string-array name="dow">
         <item>@string/sunday</item>
