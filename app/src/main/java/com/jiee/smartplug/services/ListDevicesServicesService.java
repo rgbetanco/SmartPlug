@@ -54,63 +54,6 @@ public class ListDevicesServicesService extends IntentService {
             System.out.println("Action not carried out !!!!!!!");
         }
 
-        if(ListDevices.deviceStatusChangedFlag == false){
-            System.out.println("device status changed flag == false");
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    String url = "devctrl?token=" + Miscellaneous.getToken(getApplicationContext()) + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + mac + "&send=0&ignoretoken="+ RegistrationIntentService.regToken;
-                    try {
-                        if (httpHelper.setDeviceStatus(url, (byte) action, serviceId)) {
-                            if (serviceId == GlobalVariables.ALARM_RELAY_SERVICE) {
-                                sql.updatePlugRelayService(action, mac);
-                            }
-
-                            if (serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
-                                sql.updatePlugNightlightService(action, mac);
-                            }
-                            Intent i = new Intent("status_changed_update_ui");
-                            sendBroadcast(i);
-                        } else {
-                            Intent i = new Intent("http_device_status");
-                            i.putExtra("error", "yes");
-                            sendBroadcast(i);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-
-        } else {
-
-            if (serviceId == GlobalVariables.ALARM_RELAY_SERVICE) {
-                sql.updatePlugRelayService(action, mac);
-            }
-
-            if (serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
-                sql.updatePlugNightlightService(action, mac);
-            }
-            Intent i = new Intent("status_changed_update_ui");
-            sendBroadcast(i);
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                   String url = "devctrl?token=" + Miscellaneous.getToken(getApplicationContext()) + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + mac + "&send=1&ignoretoken="+ RegistrationIntentService.regToken;
-
-                    try {
-                        httpHelper.setDeviceStatus(url, (byte) action, serviceId);
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-
-
-        }
-
-        ListDevices.deviceStatusChangedFlag = false;
     }
 
 }

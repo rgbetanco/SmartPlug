@@ -136,7 +136,19 @@ public class mDNSTesting extends Service {
             @Override
             public void onServiceLost(NsdServiceInfo serviceInfo) {
                 // TODO Auto-generated method stub
-                System.out.println("JSPlug removed: " + serviceInfo);
+
+                String name = serviceInfo.getServiceName();
+
+                name.substring(0, 5);
+
+                if (name.substring(0, 5).equals("JSPlug")) {
+                    System.out.println("JSPlug removed: " + serviceInfo);
+                    Intent intent1 = new Intent("mDNS_Device_Removed");
+                    intent1.putExtra("name", name);
+                    sendBroadcast(intent1);
+
+                }
+
                 /*
                 if(plugs.size() > 1) {
                     for (int i = 0; i < plugs.size(); i++) {
@@ -236,7 +248,20 @@ public class mDNSTesting extends Service {
             @Override
             public void serviceRemoved(ServiceEvent event) {
                 // TODO Auto-generated method stub
-                System.out.println("JSPlug removed: " + event);
+
+                String name = event.getName();
+
+                name.substring(0, 5);
+
+                if (name.substring(0, 5).equals("JSPlug")) {
+
+                    System.out.println("JSPlug removed: " + event);
+                    Intent intent1 = new Intent("mDNS_Device_Removed");
+                    intent1.putExtra("name", name);
+                    sendBroadcast(intent1);
+
+                }
+
                 /*
                 if(plugs.size() > 1) {
                     for (int i = 0; i < plugs.size(); i++) {

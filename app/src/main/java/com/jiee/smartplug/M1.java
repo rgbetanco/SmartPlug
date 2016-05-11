@@ -64,6 +64,7 @@ public class M1 extends AppCompatActivity {
     BroadcastReceiver device_not_reached;
     BroadcastReceiver timers_sent_successfully;
     BroadcastReceiver device_status_set;
+    BroadcastReceiver mDNS_Device_Removed;
     ProgressBar progressBar;
 
     ImageButton plug_icon;
@@ -262,11 +263,67 @@ public class M1 extends AppCompatActivity {
         timer_crash_reached = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if(!M1.deviceStatusChangedFlag){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String url = "devctrl?token=" + Miscellaneous.getToken(getApplicationContext()) + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + mac + "&send=0&ignoretoken="+ RegistrationIntentService.regToken;
+                            try {
+                                if (httpHelper.setDeviceStatus(url, (byte) action, serviceId)) {
+                                    if (serviceId == GlobalVariables.ALARM_RELAY_SERVICE) {
+                                        sql.updatePlugRelayService(action, mac);
+                                    }
+
+                                    if (serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
+                                        sql.updatePlugNightlightService(action, mac);
+                                    }
+                                    Intent i = new Intent("status_changed_update_ui");
+                                    sendBroadcast(i);
+                                } else {
+                                    Intent i = new Intent("http_device_status");
+                                    i.putExtra("error", "yes");
+                                    sendBroadcast(i);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+
+                } else {
+
+                    if (serviceId == GlobalVariables.ALARM_RELAY_SERVICE) {
+                        sql.updatePlugRelayService(action, mac);
+                    }
+
+                    if (serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
+                        sql.updatePlugNightlightService(action, mac);
+                    }
+                    Intent i = new Intent("status_changed_update_ui");
+                    sendBroadcast(i);
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String url = "devctrl?token=" + Miscellaneous.getToken(getApplicationContext()) + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + mac + "&send=1&ignoretoken="+ RegistrationIntentService.regToken;
+
+                            try {
+                                httpHelper.setDeviceStatus(url, (byte) action, serviceId);
+                            } catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                }
+                M1.deviceStatusChangedFlag = false;
+
+                /*
                 img_warn2.setVisibility(View.VISIBLE);
                 warning_text.setText(getApplicationContext().getString(R.string.no_udp_Connection));
                 warning_text.setVisibility(View.VISIBLE);
                 btn_warning.setVisibility(View.VISIBLE);
                 udpconnection = false;
+                */
             }
         };
 
@@ -356,6 +413,15 @@ public class M1 extends AppCompatActivity {
                 deviceStatusChangedFlag = true;
                 startRepeatingTask();
                 removeGrayOutView();
+            }
+        };
+
+        mDNS_Device_Removed = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String serviceName = intent.getStringExtra("name");
+                sql.updatePlugIP(serviceName, "");
+                System.out.println(serviceName);
             }
         };
 
@@ -731,8 +797,8 @@ public class M1 extends AppCompatActivity {
                     if (ip != null) {
                         short command = 0x0007;
                         if (udp.queryDevices(ip, command, mac)) {
-                            crashTimer.setTimer(0);
-                            crashTimer.startTimer();
+                         //   crashTimer.setTimer(0);
+                         //   crashTimer.startTimer();
                         } else {
                             System.out.println("IP IS NULL");
                         }
@@ -763,6 +829,7 @@ public class M1 extends AppCompatActivity {
         registerReceiver(device_not_reached, new IntentFilter("device_not_reached"));
         registerReceiver(timers_sent_successfully, new IntentFilter("timers_sent_successfully"));
         registerReceiver(device_status_set, new IntentFilter("device_status_set"));
+        registerReceiver(mDNS_Device_Removed, new IntentFilter("mDNS_Device_Removed"));
         try {
             Intent intent = new Intent(this, UDPListenerService.class);
             bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
@@ -784,6 +851,7 @@ public class M1 extends AppCompatActivity {
         unregisterReceiver(device_not_reached);
         unregisterReceiver(timers_sent_successfully);
         unregisterReceiver(device_status_set);
+        unregisterReceiver(mDNS_Device_Removed);
         udpconnection = true;
         try {
             if (mServiceBound) {
@@ -841,6 +909,9 @@ public class M1 extends AppCompatActivity {
         M1ServicesService.action = action;
         M1ServicesService.mac = mac;
         startService(iService);
+
+        crashTimer.setTimer(2);
+        crashTimer.startTimer();
 
 /*
         udpconnection = false;
