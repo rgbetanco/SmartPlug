@@ -46,7 +46,7 @@ public class M1ServicesService extends IntentService {
         String url = "";
         M1.deviceStatusChangedFlag = false;
         if(udp.setDeviceStatus(ip, serviceId, action)){
-            int counter = 20000;
+            int counter = 40000;
             while (!M1.deviceStatusChangedFlag && counter > 0) {
                 counter--;
                 //waiting time

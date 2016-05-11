@@ -104,12 +104,12 @@
     <string name="id_security">Security</string>
     <string name="id_none">None</string>
     <string name="btn_join">Join</string>
-    <string name="title_irControl">IR Control</string>
+    <string name="title_irControl">IR Groups</string>
     <string name="btn_tvOn_off">TV on/off</string>
     <string name="btn_acOn_off">AC on/off</string>
     <string name="btn_acFullPwr">AC full pwr</string>
     <string name="title_title">Title</string>
-    <string name="title_editCommand">Edit Command</string>
+    <string name="title_editCommand">Add Group</string>
     <string name="btn_chooseBrand">Choose brand and model</string>
     <string name="btn_detectBrand">Detect brand and model</string>
     <string name="btn_recordCustom">Record custom command</string>

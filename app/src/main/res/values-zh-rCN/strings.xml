@@ -105,12 +105,12 @@
     <string name="id_security">保护</string>
     <string name="id_none">无</string>
     <string name="btn_join">加入</string>
-    <string name="title_irControl">红外线控制</string>
+    <string name="title_irControl">红外线控制群組</string>
     <string name="btn_tvOn_off">电视 开/关</string>
     <string name="btn_acOn_off">冷气 开/关</string>
     <string name="btn_acFullPwr">冷气 强风</string>
     <string name="title_title">主题</string>
-    <string name="title_editCommand">编辑指令</string>
+    <string name="title_editCommand">新增群组</string>
     <string name="btn_chooseBrand">选择品牌与模型</string>
     <string name="btn_detectBrand">侦测品牌与模型</string>
     <string name="btn_recordCustom">录制指令</string>

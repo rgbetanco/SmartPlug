@@ -46,10 +46,14 @@ public class IREditMode extends Activity {
     BroadcastReceiver serverReplied;
     BroadcastReceiver gcm_notification;
 
+    boolean mIsEditMode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_iredit_mode);
+
+        mIsEditMode = false;
 
         sql = HTTPHelper.getDB(this);
         btn_edit = (ImageButton)findViewById(R.id.btn_ic_new);
@@ -84,9 +88,12 @@ public class IREditMode extends Activity {
             @Override
             public void onClick(View v) {
                 btn_add_ir.setVisibility(View.VISIBLE);
-                for (int i = 0; i < btn_close.length; i++) {
-                    if (btn_close[i] != null) {
-                        btn_close[i].setVisibility(View.VISIBLE);
+
+                mIsEditMode = !mIsEditMode;
+
+                for( View btn : btn_close ) {
+                    if( btn!=null ) {
+                        btn.setVisibility( mIsEditMode?View.VISIBLE:View.GONE );
                     }
                 }
             }
@@ -112,7 +119,7 @@ public class IREditMode extends Activity {
         layout = (ViewGroup)findViewById(R.id.ir_edit_linearlayout);
 
         TextView toolbar_text = (TextView)findViewById(R.id.sub_toolbar);
-        toolbar_text.setText("IR Control");
+        toolbar_text.setText(R.string.title_irControl);
 
      //   getDataFromServer();
     }

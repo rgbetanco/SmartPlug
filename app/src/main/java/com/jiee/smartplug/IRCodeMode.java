@@ -48,10 +48,13 @@ public class IRCodeMode extends Activity {
     HTTPHelper http;
     ViewGroup layout;
     BroadcastReceiver serverReplied;
+    boolean  mIsEditMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mIsEditMode = false;
 
         http = new HTTPHelper(this);
         sql = HTTPHelper.getDB(this);
@@ -85,11 +88,15 @@ public class IRCodeMode extends Activity {
             @Override
             public void onClick(View v) {
                 btn_ir.setVisibility(View.VISIBLE);
-                for (int i = 0; i < btn_close.length; i++) {
-                    if (btn_close[i] != null) {
-                        btn_close[i].setVisibility(View.VISIBLE);
+
+                mIsEditMode = !mIsEditMode;
+
+                for( View btn : btn_close ) {
+                    if( btn!=null ) {
+                        btn.setVisibility( mIsEditMode?View.VISIBLE:View.GONE );
                     }
                 }
+
             }
         });
 
@@ -103,6 +110,8 @@ public class IRCodeMode extends Activity {
                     i.putExtra("gid", gid);
                     startActivity(i);
                     finish();
+                } else {
+                    Toast.makeText(IRCodeMode.this, R.string.msg_deskLampBtn, Toast.LENGTH_LONG).show();
                 }
             }
         });
