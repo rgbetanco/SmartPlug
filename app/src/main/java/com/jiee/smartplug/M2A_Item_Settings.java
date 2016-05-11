@@ -57,13 +57,13 @@ public class M2A_Item_Settings extends Activity {
     CheckBox cbx_co;
     CheckBox cbx_timer;
     TextView txt_remove;
-    TextView txt_program;
+    //TextView txt_program;
     CheckBox cbx_cosensor;
     TextView txt_hardware;
     TextView txt_firmware;
     TextView txt_ota;
     boolean inrange;
-    LinearLayout l1;
+    //LinearLayout l1;
     LinearLayout l2;
     LinearLayout l3;
     LinearLayout l4;
@@ -174,12 +174,12 @@ public class M2A_Item_Settings extends Activity {
      //   cbx_timer = (CheckBox) findViewById(R.id.cbx_timer);
         txt_remove = (TextView) findViewById(R.id.txt_remove);
         save = (Button) findViewById(R.id.btn_settings);
-        txt_program = (TextView) findViewById(R.id.txt_program);
+        //txt_program = (TextView) findViewById(R.id.txt_program);
         cbx_cosensor = (CheckBox) findViewById(R.id.cbx_cosensor);
         txt_hardware = (TextView) findViewById(R.id.id_hardware);
         txt_firmware = (TextView) findViewById(R.id.id_firmware);
         txt_ota = (TextView) findViewById(R.id.txt_ota);
-        l1 = (LinearLayout) findViewById(R.id.layout_irtransmitter);
+        //l1 = (LinearLayout) findViewById(R.id.layout_irtransmitter);
         l2 = (LinearLayout) findViewById(R.id.layout_idsensor);
         l3 = (LinearLayout) findViewById(R.id.layout_hardware);
         l4 = (LinearLayout) findViewById(R.id.layout_firmware);
@@ -230,7 +230,7 @@ public class M2A_Item_Settings extends Activity {
                 inrange = true;
                 txt_jsname.setEnabled(true);
                 btn_icon.setEnabled(true);
-                l1.setVisibility(View.VISIBLE);
+                //l1.setVisibility(View.VISIBLE);
                 l2.setVisibility(View.VISIBLE);
                 l3.setVisibility(View.VISIBLE);
                 l4.setVisibility(View.VISIBLE);
@@ -243,7 +243,7 @@ public class M2A_Item_Settings extends Activity {
                 txt_jsname.setEnabled(false);
                 btn_icon.setEnabled(false);
                 save.setVisibility(View.GONE);
-                l1.setVisibility(View.GONE);
+                //l1.setVisibility(View.GONE);
                 l2.setVisibility(View.GONE);
                 l3.setVisibility(View.GONE);
                 l4.setVisibility(View.GONE);
@@ -385,6 +385,7 @@ public class M2A_Item_Settings extends Activity {
                 }
             });
 
+            /*
             txt_program.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -392,6 +393,7 @@ public class M2A_Item_Settings extends Activity {
                     startActivity(i);
                 }
             });
+            */
         }
         txt_wifi.setOnClickListener(new View.OnClickListener() {
             @Override

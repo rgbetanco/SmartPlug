@@ -8,7 +8,7 @@
     <string name="login">登入</string>
     <string name="reset">重设密码</string>
     <string name="title_activity_create_account">建立账号</string>
-    <string name="ok">Ok</string>
+    <string name="ok">确定</string>
     <string name="cancel">取消</string>
     <string name="deviceList">装置列表</string>
     <string name="startSmartConfig">初始化装置</string>

@@ -99,6 +99,8 @@
                     android:textAllCaps="true"
                     android:hint="@string/title_deskLamp"
                     android:background="@null"
+                    android:layout_marginRight="10dp"
+                    android:textSize="14sp"
                     />
                 <ImageView
                     android:layout_marginTop="0dp"
@@ -129,6 +131,7 @@
                     />
             </LinearLayout>
             <!-- HIDE IT WHEN NO IP -->
+            <!--
             <LinearLayout
                 android:id="@+id/layout_irtransmitter"
                 android:layout_marginTop="16dp"
@@ -155,6 +158,7 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/list_caret"/>
             </LinearLayout>
+            -->
 
             <LinearLayout
                 android:id="@+id/layout_idsensor"
@@ -174,6 +178,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@null"
+                    android:enabled="false"
                     />
             </LinearLayout>
 
