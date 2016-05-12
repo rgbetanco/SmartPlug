@@ -45,11 +45,11 @@ public class ListDevicesServicesService extends IntentService {
         if(udp.setDeviceStatus(ip, serviceId, action)){
             System.out.println("ACTION: "+action);
             ListDevices.deviceStatusChangedFlag = false;
-            int counter = 20000;
-            while (!ListDevices.deviceStatusChangedFlag && counter > 0) {
-                counter--;
+         //   int counter = 20000;
+         //   while (!ListDevices.deviceStatusChangedFlag && counter > 0) {
+         //       counter--;
                 //waiting time
-            }
+         //   }
         } else {
             System.out.println("Action not carried out !!!!!!!");
         }

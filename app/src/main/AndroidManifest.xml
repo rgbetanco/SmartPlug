@@ -14,6 +14,10 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <permission android:name="com.jiee.smartplug.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.jiee.smartplug.permission.C2D_MESSAGE" />
+
     <!-- [END gcm_permission] -->
     <application
         android:allowBackup="true"

@@ -28,6 +28,7 @@ import com.jiee.smartplug.MainActivity;
 import com.jiee.smartplug.NewDeviceList;
 import com.jiee.smartplug.R;
 import com.jiee.smartplug.objects.JSmartPlug;
+import com.jiee.smartplug.services.CrashCountDown;
 import com.jiee.smartplug.services.ListDevicesServicesService;
 import com.jiee.smartplug.services.M1ServicesService;
 import com.jiee.smartplug.services.RegistrationIntentService;
@@ -66,6 +67,7 @@ public class ListDevicesAdapter extends BaseAdapter {
     Handler mHandler;
     int globlaPosition = 0;
     boolean deviceStatusChangedFlag = false;
+    CrashCountDown crashTimer;
 
     final LayoutInflater inflater;
 
@@ -79,6 +81,7 @@ public class ListDevicesAdapter extends BaseAdapter {
         this.UDPBinding = UDPBinding;
         SmartPlugsList = getSmartPlugsList();
         http = new HTTPHelper(a);
+        crashTimer = new CrashCountDown(this.act);
 
         pb = (ProgressBar)a.findViewById(R.id.DeviceListProgress);
     }
@@ -291,6 +294,9 @@ public class ListDevicesAdapter extends BaseAdapter {
                     ListDevicesServicesService.action = action;
                     ListDevicesServicesService.mac = SmartPlugsList.get(position).getId();
                     act.startService(iService);
+
+                    crashTimer.setTimer(2);
+                    crashTimer.startTimer();
 
                     /*
 
