@@ -5,9 +5,32 @@
     android:orientation="vertical"
     android:background="#f4f4f4" >
 
-    <ExpandableListView
-        android:id="@+id/lvExp"
+    <include layout="@layout/toolbar" android:id="@+id/top_toolbar" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout_s2"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_width="match_parent"/>
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical"
+        android:background="@drawable/round_corners">
+
+        <Button
+            android:id="@+id/subtoolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title_scheduling"
+            android:clickable="false"
+            android:background="@drawable/round_corners_sub_toolbar_green"/>
+
+        <ExpandableListView
+            android:id="@+id/lvExp"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"/>
+
+    </LinearLayout>
 
 </LinearLayout>

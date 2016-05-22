@@ -6,8 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.net.http.HttpResponseCache;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -34,6 +39,9 @@ import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.Locale;
 
 public class M2A_Item_Settings extends Activity {
@@ -410,11 +418,29 @@ public class M2A_Item_Settings extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent urlReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, urlReturnedIntent);
+        Drawable iconLocal;
         switch(requestCode) {
             case R2_EditItem.SELECT_ICON_CODE:
                 try {
-                    icon = urlReturnedIntent.getStringExtra("url");
-                    Picasso.with(M2A_Item_Settings.this).load(icon).into(btn_icon);
+                    if (urlReturnedIntent.getIntExtra("custom", 0) == 1){
+                        InputStream is;
+                        try {
+                            is = this.getContentResolver().openInputStream(Uri.parse(urlReturnedIntent.getStringExtra("url")));
+                            BitmapFactory.Options options=new BitmapFactory.Options();
+                            options.inSampleSize = 10;
+                            Bitmap preview_bitmap= BitmapFactory.decodeStream(is, null, options);
+
+                            iconLocal = new BitmapDrawable(getResources(),preview_bitmap);
+
+                        } catch (FileNotFoundException e) {
+                            iconLocal = getResources().getDrawable(R.drawable.lamp);
+                        }
+                        btn_icon.setBackground(iconLocal);
+
+                    } else {
+                        icon = urlReturnedIntent.getStringExtra("url");
+                        Picasso.with(M2A_Item_Settings.this).load(icon).into(btn_icon);
+                    }
                 } catch(Exception e){
                     e.printStackTrace();
                 }

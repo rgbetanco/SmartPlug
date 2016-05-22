@@ -877,9 +877,9 @@ public class M1 extends AppCompatActivity {
 
     public void sendService(int sId) {
         grayOutView();
-        //plug_icon.setEnabled(false);
-        //nightled_icon.setEnabled(false);
-        //Toast.makeText(this, getApplicationContext().getString(R.string.processing_command), Toast.LENGTH_SHORT).show();
+        plug_icon.setEnabled(false);
+        nightled_icon.setEnabled(false);
+        Toast.makeText(this, getApplicationContext().getString(R.string.processing_command), Toast.LENGTH_SHORT).show();
         serviceId = sId;
         progressBar.setVisibility(View.VISIBLE);
         if (serviceId == GlobalVariables.ALARM_RELAY_SERVICE) {
@@ -910,8 +910,13 @@ public class M1 extends AppCompatActivity {
         M1ServicesService.mac = mac;
         startService(iService);
 
-        crashTimer.setTimer(2);
+        crashTimer.setMicroTimer();
         crashTimer.startTimer();
+
+        SystemClock.sleep(300);
+
+        plug_icon.setEnabled(true);
+        nightled_icon.setEnabled(true);
 
 /*
         udpconnection = false;

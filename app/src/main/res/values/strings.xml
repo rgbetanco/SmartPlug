@@ -229,5 +229,8 @@
     <string name="snooze">Snoozed</string>
     <string name="minutes">Minutes</string>
     <string name="ir_code">IR CODE</string>
+    <string name="select_start_command">Select Start Command</string>
+    <string name="select_end_command">Select End Command</string>
+    <string name="select_picture">Select Picture</string>
 
 </resources>

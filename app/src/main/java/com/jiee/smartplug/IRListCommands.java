@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
@@ -25,6 +26,7 @@ public class IRListCommands extends Activity {
     HashMap<String, List<String>> listDataChild;
     MySQLHelper sql;
     int status = -1;
+    Button btn_subtoolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,8 @@ public class IRListCommands extends Activity {
 
         // get the listview
         expListView = (ExpandableListView) findViewById(R.id.lvExp);
+
+        btn_subtoolbar = (Button) findViewById(R.id.subtoolbar);
 
         // preparing list data
         prepareListData();
@@ -61,6 +65,12 @@ public class IRListCommands extends Activity {
                 return false;
             }
         });
+
+        if (status == 0){
+            btn_subtoolbar.setText(R.string.select_start_command);
+        } else {
+            btn_subtoolbar.setText(R.string.select_end_command);
+        }
 
     }
 

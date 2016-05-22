@@ -41,6 +41,22 @@ public class CrashCountDown {
         });
     }
 
+    public void setMicroTimer(){
+
+        timing = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException e){
+                        e.printStackTrace();
+                    }
+                    Intent i = new Intent("timer_crash_reached");
+                    a.sendBroadcast(i);
+            }
+        });
+    }
+
     public void startTimer() {
 
         if (!timing.isAlive()){
