@@ -57,7 +57,7 @@ public class IconPicker extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, 501);
             }
         });
 
@@ -68,11 +68,12 @@ public class IconPicker extends Activity {
 
     }
 
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == 501 && resultCode == Activity.RESULT_OK) {
 
            Bitmap bp = (Bitmap) data.getExtras().get("data");
 
@@ -83,7 +84,7 @@ public class IconPicker extends Activity {
             File finalFile = new File(getRealPathFromURI(tempUri));
 
             Intent i = new Intent();
-            i.putExtra("url", tempUri);
+            i.putExtra("url", tempUri.toString());
             i.putExtra("custom", 1);
             this.setResult(R2_EditItem.SELECT_ICON_CODE, i);
             this.finish();

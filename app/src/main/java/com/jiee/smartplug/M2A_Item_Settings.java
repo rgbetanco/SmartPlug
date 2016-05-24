@@ -422,7 +422,7 @@ public class M2A_Item_Settings extends Activity {
         switch(requestCode) {
             case R2_EditItem.SELECT_ICON_CODE:
                 try {
-                    if (urlReturnedIntent.getIntExtra("custom", 0) == 1){
+                    if (urlReturnedIntent.getIntExtra("custom", 0) != 1){
                         InputStream is;
                         try {
                             is = this.getContentResolver().openInputStream(Uri.parse(urlReturnedIntent.getStringExtra("url")));
@@ -438,8 +438,10 @@ public class M2A_Item_Settings extends Activity {
                         btn_icon.setBackground(iconLocal);
 
                     } else {
+                        btn_icon.setBackground(null);
                         icon = urlReturnedIntent.getStringExtra("url");
-                        Picasso.with(M2A_Item_Settings.this).load(icon).into(btn_icon);
+                        Uri Uricon = Uri.parse(icon);
+                        Picasso.with(M2A_Item_Settings.this).load(Uricon).into(btn_icon);
                     }
                 } catch(Exception e){
                     e.printStackTrace();
