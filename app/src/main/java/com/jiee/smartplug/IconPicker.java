@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -22,15 +24,11 @@ import com.jiee.smartplug.adapters.ListIconsAdapter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 public class IconPicker extends Activity {
 
@@ -68,6 +66,22 @@ public class IconPicker extends Activity {
 
     }
 
+    public File savebitmap(Bitmap bmp) throws IOException {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 60, bytes);
+        File f = new File(Environment.getDataDirectory() + File.separator, "plugicon.jpg");
+        //    f.createNewFile();
+        String file = "plugicon.jpg";
+        try {
+            FileOutputStream fo = getApplicationContext().openFileOutput(file, getApplicationContext().MODE_PRIVATE);
+            fo.write(bytes.toByteArray());
+            fo.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return f;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
@@ -75,10 +89,21 @@ public class IconPicker extends Activity {
 
         if (requestCode == 501 && resultCode == Activity.RESULT_OK) {
 
-           Bitmap bp = (Bitmap) data.getExtras().get("data");
+            Bitmap bp = (Bitmap) data.getExtras().get("data");
+            try {
+                savebitmap(bp);
+            } catch (Exception ex){
+                ex.printStackTrace();
+            }
+
+//            File image = new File(Environment.getDataDirectory() + File.separator, "plugicon.jpg");
+//            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+//            Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(),bmOptions);
+//            bitmap = Bitmap.createScaledBitmap(bitmap, (int)(bitmap.getWidth()*0.5), (int)(bitmap.getHeight()*0.5), true);
 
             // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
             Uri tempUri = getImageUri(getApplicationContext(), bp);
+        //    Uri tempUri = getImageUri(getApplicationContext(), bitmap);
 
             // CALL THIS METHOD TO GET THE ACTUAL PATH
             File finalFile = new File(getRealPathFromURI(tempUri));

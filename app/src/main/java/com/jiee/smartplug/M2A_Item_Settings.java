@@ -88,6 +88,8 @@ public class M2A_Item_Settings extends Activity {
     BroadcastReceiver device_info;
     UDPCommunication con;
 
+    boolean customeIcon = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -371,13 +373,18 @@ public class M2A_Item_Settings extends Activity {
                                         iconId = cursor.getString(1);
                                     }
                                     String param = "devset?token="+ Miscellaneous.getToken(M2A_Item_Settings.this)+"&hl="+ Locale.getDefault().getLanguage()+"&devid="+M1.mac+"&icon="+iconId+"&title="+name+"&notify_power="+notify_on_power_outage+"&notify_timer="+notify_on_timer_activated+"&notify_danger="+notify_on_co_warning+"&send=1";
-                                    System.out.println("DEBUGING: "+param);
                                     try {
-                                        http.setDeviceSettings(param);
+                                        if(!customeIcon) {
+                                            http.setDeviceSettings(param);
+                                        } else {
+                                            param = "devset?token="+ Miscellaneous.getToken(M2A_Item_Settings.this)+"&hl="+ Locale.getDefault().getLanguage()+"&devid="+M1.mac+"&icon=upload&title="+name+"&notify_power="+notify_on_power_outage+"&notify_timer="+notify_on_timer_activated+"&notify_danger="+notify_on_co_warning+"&send=1";
+                                            http.setDeviceSettings(param, icon);
+                                        }
                                     } catch(Exception e){
                                         e.printStackTrace();
                                     }
                                     System.out.println("DB UPDATED SUCCESSFULLY");
+                                    cursor.close();
                                 } else {
                                     System.out.println("CHECK IF MAC ADDRESS IS NULL");
                                 }
@@ -423,6 +430,7 @@ public class M2A_Item_Settings extends Activity {
             case R2_EditItem.SELECT_ICON_CODE:
                 try {
                     if (urlReturnedIntent.getIntExtra("custom", 0) != 1){
+                        customeIcon = false;
                         InputStream is;
                         try {
                             is = this.getContentResolver().openInputStream(Uri.parse(urlReturnedIntent.getStringExtra("url")));
@@ -438,6 +446,7 @@ public class M2A_Item_Settings extends Activity {
                         btn_icon.setBackground(iconLocal);
 
                     } else {
+                        customeIcon = true;
                         btn_icon.setBackground(null);
                         icon = urlReturnedIntent.getStringExtra("url");
                         Uri Uricon = Uri.parse(icon);

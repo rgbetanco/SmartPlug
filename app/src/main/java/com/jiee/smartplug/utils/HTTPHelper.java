@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.Environment;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import com.jiee.smartplug.ListDevices;
@@ -19,6 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Inet4Address;
@@ -30,6 +34,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -151,6 +156,54 @@ public class HTTPHelper {
         }
 
         return true;
+    }
+
+    public boolean setDeviceSettings(String param, String file) throws Exception {
+        Uri Uricon = Uri.parse(file);
+
+        File finalFile = new File(a.getFilesDir() + File.separator + "plugicon.jpg");
+
+        if(finalFile.exists()){
+            System.out.println("FILE EXIST AT "+finalFile.getPath()+" - SIZE: "+finalFile.length());
+        } else {
+            System.out.println("FILE DOES NOT EXIST");
+        }
+
+    //    File finalFile = new File(getRealPathFromURI(Uricon));
+        try {
+
+            OkHttpClient c = new OkHttpClient();
+            c.newBuilder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS);
+            String url = GlobalVariables.DOMAIN+param;
+
+            RequestBody formBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("file", finalFile.getName(),
+                            RequestBody.create(MediaType.parse("image/jpeg"), finalFile))
+                    .addFormDataPart("other_field", "other_field_value")
+                    .build();
+            Request request = new Request.Builder().url(url).post(formBody).build();
+            Response response = this.client.newCall(request).execute();
+
+
+        //    RequestBody body = RequestBody.create(TEXT, GlobalVariables.DOMAIN+param);
+        //    Request request = new Request.Builder().url(url).post(body).build();
+        //    Response response = c.newCall(request).execute();
+            String jsonData = response.body().string().toString();
+            System.out.println(jsonData);
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    public String getRealPathFromURI(Uri uri) {
+        Cursor cursor = a.getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+        return cursor.getString(idx);
     }
 
     public boolean saveGallery(String param) throws Exception {
