@@ -13,4 +13,7 @@ public class GlobalVariables {
     public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
     public static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    public static final String plugfile = "plugicon.jpg";
+    public static final String irgroupfile = "irgroup.jpg";
+    public static final String irfile = "ir.jpg";
 }

@@ -21,6 +21,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.jiee.smartplug.adapters.ListIconsAdapter;
+import com.jiee.smartplug.utils.GlobalVariables;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,17 +37,23 @@ public class IconPicker extends Activity {
     ImageButton btn_gallery;
     ImageButton btn_camera;
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    String callerActivity = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_icon_picker);
 
+        callerActivity = getIntent().getStringExtra("activity");
+
         btn_gallery = (ImageButton)findViewById(R.id.btn_gallery);
         btn_gallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select File"), 502);
             }
         });
 
@@ -66,20 +73,28 @@ public class IconPicker extends Activity {
 
     }
 
-    public File savebitmap(Bitmap bmp) throws IOException {
+    public Boolean savebitmap(Bitmap bmp) throws IOException {
+        boolean toReturn = false;
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.JPEG, 60, bytes);
-        File f = new File(Environment.getDataDirectory() + File.separator, "plugicon.jpg");
-        //    f.createNewFile();
-        String file = "plugicon.jpg";
+
+        String file = null;
+        if(callerActivity.equals("M2A")) {
+            file = GlobalVariables.plugfile;
+        } else if(callerActivity.equals("IR_Group")){
+            file = GlobalVariables.irgroupfile;
+        } else if(callerActivity.equals("IR_Command")){
+            file = GlobalVariables.irfile;
+        }
         try {
             FileOutputStream fo = getApplicationContext().openFileOutput(file, getApplicationContext().MODE_PRIVATE);
             fo.write(bytes.toByteArray());
             fo.close();
+            toReturn = true;
         } catch (Exception e){
             e.printStackTrace();
         }
-        return f;
+        return toReturn;
     }
 
     @Override
@@ -90,73 +105,44 @@ public class IconPicker extends Activity {
         if (requestCode == 501 && resultCode == Activity.RESULT_OK) {
 
             Bitmap bp = (Bitmap) data.getExtras().get("data");
-            try {
-                savebitmap(bp);
-            } catch (Exception ex){
-                ex.printStackTrace();
-            }
+            setIcon(bp);
 
-//            File image = new File(Environment.getDataDirectory() + File.separator, "plugicon.jpg");
-//            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-//            Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(),bmOptions);
-//            bitmap = Bitmap.createScaledBitmap(bitmap, (int)(bitmap.getWidth()*0.5), (int)(bitmap.getHeight()*0.5), true);
-
-            // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
-            Uri tempUri = getImageUri(getApplicationContext(), bp);
-        //    Uri tempUri = getImageUri(getApplicationContext(), bitmap);
-
-            // CALL THIS METHOD TO GET THE ACTUAL PATH
-            File finalFile = new File(getRealPathFromURI(tempUri));
-
-            Intent i = new Intent();
-            i.putExtra("url", tempUri.toString());
-            i.putExtra("custom", 1);
-            this.setResult(R2_EditItem.SELECT_ICON_CODE, i);
-            this.finish();
-
-        /*
-        new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object[] params) {
-                OkHttpClient client = new OkHttpClient();
-
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            //    bitmaps[0].compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                byte[] byteArray = stream.toByteArray();
-
-                //there are some my custom fields form
-                RequestBody requestBody = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("submit", "")
-                        .addFormDataPart("name", "icon")
-                        .addFormDataPart("photo", "tmp_photo_" + System.currentTimeMillis(), RequestBody.create(MediaType.parse("image/jpeg"), byteArray))
-                        .build();
-
-                Request request = new Request.Builder()
-                        .url("www.example.com/upload_image.php")
-                        .post(requestBody)
-                        .build();
-
-                Response response = null;
+        } else if(requestCode == 502 && resultCode == Activity.RESULT_OK) {
+            Bitmap bm = null;
+            if (data != null) {
                 try {
-                    response = client.newCall(request).execute();
-                    if (response.isSuccessful()) {
-                        Log.d("BACKGROUND", "doInBackground: upload success");
-                    } else {
-                        Log.d("BACKGROUND", "doInBackground: upload failed");
-                    }
+                    bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
+                    setIcon(bm);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                return null;
             }
-        }.execute(bp);
-        */
-    } else {
-        //another results
-        super.onActivityResult(requestCode, resultCode, data);
+
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+
     }
 
+    public void setIcon(Bitmap bitmap){
+        try {
+            savebitmap(bitmap);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
+        Uri tempUri = getImageUri(getApplicationContext(), bitmap);
+        //    Uri tempUri = getImageUri(getApplicationContext(), bitmap);
+
+        // CALL THIS METHOD TO GET THE ACTUAL PATH
+        File finalFile = new File(getRealPathFromURI(tempUri));
+
+        Intent i = new Intent();
+        i.putExtra("url", tempUri.toString());
+        i.putExtra("custom", 1);
+        this.setResult(R2_EditItem.SELECT_ICON_CODE, i);
+        this.finish();
     }
 
     public Uri getImageUri(Context inContext, Bitmap inImage) {

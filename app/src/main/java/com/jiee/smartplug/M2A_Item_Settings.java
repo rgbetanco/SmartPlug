@@ -300,6 +300,7 @@ public class M2A_Item_Settings extends Activity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(M2A_Item_Settings.this, IconPicker.class);
+                    intent.putExtra("activity", "M2A");
                     startActivityForResult(intent, R2_EditItem.SELECT_ICON_CODE);
                 }
             });
@@ -378,7 +379,7 @@ public class M2A_Item_Settings extends Activity {
                                             http.setDeviceSettings(param);
                                         } else {
                                             param = "devset?token="+ Miscellaneous.getToken(M2A_Item_Settings.this)+"&hl="+ Locale.getDefault().getLanguage()+"&devid="+M1.mac+"&icon=upload&title="+name+"&notify_power="+notify_on_power_outage+"&notify_timer="+notify_on_timer_activated+"&notify_danger="+notify_on_co_warning+"&send=1";
-                                            http.setDeviceSettings(param, icon);
+                                            http.setDeviceSettingsCustome(param);
                                         }
                                     } catch(Exception e){
                                         e.printStackTrace();

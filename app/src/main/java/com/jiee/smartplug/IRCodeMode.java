@@ -292,7 +292,7 @@ public class IRCodeMode extends Activity {
                         String action = "del";
                         String type = "button";
                         if (token != null && !token.isEmpty()) {
-                            http.manageIRButton(M1.mac, GlobalVariables.IR_SERVICE, type, action, groupId, i, "", iconId, 0, 0);
+                            http.manageIRButton(M1.mac, GlobalVariables.IR_SERVICE, type, action, groupId, i, "", iconId, 0, 0, false);
                         }
                         Intent i = new Intent("serverReplied");
                         sendBroadcast(i);

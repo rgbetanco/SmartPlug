@@ -38,6 +38,7 @@ public class R2_EditItem extends Activity {
     String devid;
     String token;
     HTTPHelper http;
+    Boolean customeIcon = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +54,7 @@ public class R2_EditItem extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(R2_EditItem.this, IconPicker.class);
+                intent.putExtra("activity", "IR_Group");
                 startActivityForResult(intent, SELECT_ICON_CODE);
             }
         });
@@ -86,12 +88,14 @@ public class R2_EditItem extends Activity {
                     Miscellaneous mis = new Miscellaneous();
                     final int res = mis.getResolution(R2_EditItem.this);
                     final int nIconId = iconId;
+
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            http.manageIRGroup(devid, GlobalVariables.IR_SERVICE, type, action, 0, groupName, nIconId, res, groupId);
+                            http.manageIRGroup(devid, GlobalVariables.IR_SERVICE, type, action, 0, groupName, nIconId, res, groupId, customeIcon);
                             Intent i = new Intent("serverReplied");
                             sendBroadcast(i);
+
                         }
                     }).start();
 
@@ -106,6 +110,13 @@ public class R2_EditItem extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent urlReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, urlReturnedIntent);
+
+        if (urlReturnedIntent.getIntExtra("custom", 0) != 1){
+            customeIcon = false;
+        } else {
+            customeIcon = true;
+        }
+
         switch(requestCode) {
             case SELECT_ICON_CODE:
                 try {

@@ -158,10 +158,9 @@ public class HTTPHelper {
         return true;
     }
 
-    public boolean setDeviceSettings(String param, String file) throws Exception {
-        Uri Uricon = Uri.parse(file);
+    public boolean setDeviceSettingsCustome(String param) throws Exception {
 
-        File finalFile = new File(a.getFilesDir() + File.separator + "plugicon.jpg");
+        File finalFile = new File(a.getFilesDir() + File.separator + GlobalVariables.plugfile);
 
         if(finalFile.exists()){
             System.out.println("FILE EXIST AT "+finalFile.getPath()+" - SIZE: "+finalFile.length());
@@ -169,7 +168,6 @@ public class HTTPHelper {
             System.out.println("FILE DOES NOT EXIST");
         }
 
-    //    File finalFile = new File(getRealPathFromURI(Uricon));
         try {
 
             OkHttpClient c = new OkHttpClient();
@@ -185,10 +183,6 @@ public class HTTPHelper {
             Request request = new Request.Builder().url(url).post(formBody).build();
             Response response = this.client.newCall(request).execute();
 
-
-        //    RequestBody body = RequestBody.create(TEXT, GlobalVariables.DOMAIN+param);
-        //    Request request = new Request.Builder().url(url).post(body).build();
-        //    Response response = c.newCall(request).execute();
             String jsonData = response.body().string().toString();
             System.out.println(jsonData);
 
@@ -197,13 +191,6 @@ public class HTTPHelper {
         }
 
         return true;
-    }
-
-    public String getRealPathFromURI(Uri uri) {
-        Cursor cursor = a.getContentResolver().query(uri, null, null, null, null);
-        cursor.moveToFirst();
-        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-        return cursor.getString(idx);
     }
 
     public boolean saveGallery(String param) throws Exception {
@@ -820,23 +807,58 @@ public class HTTPHelper {
         return buffer.getShort(0);
     }
 
-    public void manageIRGroup( String devid, int serviceId, String type, String action, int groupId, String name, int icon, int res, int tempId){
+    public void manageIRGroup( String devid, int serviceId, String type, String action, int groupId, String name, int icon, int res, int tempId, boolean customeIcon){
         MySQLHelper sql = getDB();
-        String param = "devirset?token="+Miscellaneous.getToken(a)+"&hl="+Locale.getDefault().getLanguage()+"&devid="+devid+"&serviceid="+serviceId+"&type="+type+"&action="+action+"&groupid="+groupId+"&name="+name+"&icon="+icon+"&res="+res;
-        System.out.println(param);
-        String jsonData = "";
-        try {
-            jsonData = getJSONData(param);
-            JSONObject job = new JSONObject(jsonData);
-            boolean toReturn = checkReturn(job);
-            if(toReturn){
-                int id = job.getInt("id");
-                sql.updateIRGroupID(tempId, id);
+        String param = null;
+        if (!customeIcon) {
+            param = "devirset?token=" + Miscellaneous.getToken(a) + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + devid + "&serviceid=" + serviceId + "&type=" + type + "&action=" + action + "&groupid=" + groupId + "&name=" + name + "&icon=" + icon + "&res=" + res;
+            System.out.println(param);
+            String jsonData = "";
+            try {
+                jsonData = getJSONData(param);
+                JSONObject job = new JSONObject(jsonData);
+                boolean toReturn = checkReturn(job);
+                if(toReturn){
+                    int id = job.getInt("id");
+                    sql.updateIRGroupID(tempId, id);
+                }
+                System.out.println(jsonData);
+            } catch (Exception e){
+                e.printStackTrace();
             }
-            System.out.println(jsonData);
-        } catch (Exception e){
-            e.printStackTrace();
+        } else {
+            param = "devirset?token="+Miscellaneous.getToken(a)+"&hl="+Locale.getDefault().getLanguage()+"&devid="+devid+"&serviceid="+serviceId+"&type="+type+"&action="+action+"&groupid="+groupId+"&name="+name+"&icon=upload&res="+res;
+            File finalFile = new File(a.getFilesDir() + File.separator + GlobalVariables.irgroupfile);
+
+            if(finalFile.exists()){
+                System.out.println("FILE EXIST AT "+finalFile.getPath()+" - SIZE: "+finalFile.length());
+            } else {
+                System.out.println("FILE DOES NOT EXIST");
+            }
+
+            try {
+
+                OkHttpClient c = new OkHttpClient();
+                c.newBuilder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS);
+                String url = GlobalVariables.DOMAIN+param;
+
+                RequestBody formBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("file", finalFile.getName(),
+                                RequestBody.create(MediaType.parse("image/jpeg"), finalFile))
+                        .addFormDataPart("other_field", "other_field_value")
+                        .build();
+                Request request = new Request.Builder().url(url).post(formBody).build();
+                Response response = this.client.newCall(request).execute();
+
+                String jsonData = response.body().string().toString();
+                System.out.println(jsonData);
+
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         }
+
     }
 
     public void getServerIR( String devid, int serviceId, int res){
@@ -882,30 +904,65 @@ public class HTTPHelper {
         }
     }
 
-    public boolean manageIRButton(String devId, int serviceId, String type, String action, int groupId, int buttonId, String name, int icon, int code, int res){
+    public boolean manageIRButton(String devId, int serviceId, String type, String action, int groupId, int buttonId, String name, int icon, int code, int res, boolean customeIcon){
         MySQLHelper sql = getDB();
         boolean toReturn = false;
-        String param = "devirset?token="+Miscellaneous.getToken(a)+"&hl="+Locale.getDefault().getLanguage()+"&devid="+devId+"&serviceid="+serviceId+"&type="
-                +type+"&action="+action+"&groupid="+groupId+"&buttonid="+buttonId+"&name="+name+"&icon="+icon+"&code="+code+"&res="+res;
-        System.out.println(param);
-        if(devId == null || devId.isEmpty()){
-            devId = M1.mac;
-        }
-        String jsonData = "";
-        try {
-            if(devId != null && !devId.isEmpty()) {
-                jsonData = getJSONData(param);
-                JSONObject job = new JSONObject(jsonData);
-                toReturn = checkReturn(job);
-                if (toReturn) {
-                    int id = job.getInt("id");
-                    sql.updateIRCodeSID(code, id);
-                   // getServerIR(token, Locale.getDefault().getLanguage(), devId, serviceId, res);
-                }
-                System.out.println(jsonData);
+        if(!customeIcon) {
+            String param = "devirset?token=" + Miscellaneous.getToken(a) + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + devId + "&serviceid=" + serviceId + "&type="
+                    + type + "&action=" + action + "&groupid=" + groupId + "&buttonid=" + buttonId + "&name=" + name + "&icon=" + icon + "&code=" + code + "&res=" + res;
+            System.out.println(param);
+            if (devId == null || devId.isEmpty()) {
+                devId = M1.mac;
             }
-        } catch (Exception e){
-            e.printStackTrace();
+            String jsonData = "";
+            try {
+                if (devId != null && !devId.isEmpty()) {
+                    jsonData = getJSONData(param);
+                    JSONObject job = new JSONObject(jsonData);
+                    toReturn = checkReturn(job);
+                    if (toReturn) {
+                        int id = job.getInt("id");
+                        sql.updateIRCodeSID(code, id);
+                        // getServerIR(token, Locale.getDefault().getLanguage(), devId, serviceId, res);
+                    }
+                    System.out.println(jsonData);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            String param = "devirset?token=" + Miscellaneous.getToken(a) + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + devId + "&serviceid=" + serviceId + "&type="
+                    + type + "&action=" + action + "&groupid=" + groupId + "&buttonid=" + buttonId + "&name=" + name + "&icon=upload&code=" + code + "&res=" + res;
+            System.out.println(param);
+            File finalFile = new File(a.getFilesDir() + File.separator + GlobalVariables.irfile);
+
+            if(finalFile.exists()){
+                System.out.println("FILE EXIST AT "+finalFile.getPath()+" - SIZE: "+finalFile.length());
+            } else {
+                System.out.println("FILE DOES NOT EXIST");
+            }
+
+            try {
+
+                OkHttpClient c = new OkHttpClient();
+                c.newBuilder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS);
+                String url = GlobalVariables.DOMAIN+param;
+
+                RequestBody formBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("file", finalFile.getName(),
+                                RequestBody.create(MediaType.parse("image/jpeg"), finalFile))
+                        .addFormDataPart("other_field", "other_field_value")
+                        .build();
+                Request request = new Request.Builder().url(url).post(formBody).build();
+                Response response = this.client.newCall(request).execute();
+
+                String jsonData = response.body().string().toString();
+                System.out.println(jsonData);
+
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         }
         return toReturn;
     }

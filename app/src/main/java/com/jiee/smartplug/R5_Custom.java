@@ -28,6 +28,7 @@ public class R5_Custom extends Activity {
     int gid = 0;
     String ip;
     NetworkUtil util = new NetworkUtil();
+    Boolean customeIcon = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +44,7 @@ public class R5_Custom extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(act, IconPicker.class);
+                intent.putExtra("activity", "IR_Command");
                 startActivityForResult(intent, R2_EditItem.SELECT_ICON_CODE);
             }
         });
@@ -58,6 +60,7 @@ public class R5_Custom extends Activity {
                     i.putExtra("txt_name", txt.getText().toString());
                     i.putExtra("groupId", gid);
                     i.putExtra("icon", filePath);
+                    i.putExtra("customeIcon", customeIcon);
                     i.putExtra("ip", ip);
                     startActivity(i);
                     finish();
@@ -71,6 +74,13 @@ public class R5_Custom extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent urlReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, urlReturnedIntent);
+
+        if (urlReturnedIntent.getIntExtra("custom", 0) != 1){
+            customeIcon = false;
+        } else {
+            customeIcon = true;
+        }
+
         switch(requestCode) {
             case R2_EditItem.SELECT_ICON_CODE:
                 try {

@@ -207,7 +207,7 @@ public class IREditMode extends Activity {
                     public void run() {
                         HTTPHelper http = new HTTPHelper(IREditMode.this);
                         int res = new Miscellaneous().getResolution(IREditMode.this);
-                        http.manageIRGroup( devid, GlobalVariables.IR_SERVICE, type, action, nIndex, groupName, nIconId, res, -1);
+                        http.manageIRGroup( devid, GlobalVariables.IR_SERVICE, type, action, nIndex, groupName, nIconId, res, -1, false);
                         Intent i = new Intent("serverReplied");
                         sendBroadcast(i);
                     }
