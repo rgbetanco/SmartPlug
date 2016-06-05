@@ -56,7 +56,7 @@ public class UDPCommunication {
 
     Context mContext;
 
-    static int mLastMsgID =  0;//(new SecureRandom()).nextInt();
+    static int mLastMsgID = (new SecureRandom()).nextInt();
 
     public static class Command {
         public String macID;
