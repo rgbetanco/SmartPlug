@@ -316,8 +316,6 @@ public class UDPListenerService extends Service {
         /**********************************************/
         int header = process_long(lMsg[0],lMsg[1],lMsg[2],lMsg[3]);          //1397576276
 
-        System.out.println("HEADER: " + header);
-
         boolean isCommand;
 
         if (header == 0x534D5253) {
@@ -328,43 +326,43 @@ public class UDPListenerService extends Service {
             isCommand = true;
         } else {
             // failed
+            Log.v( "UDPListenerService", "ignoring header=" + header );
             return;
         }
 
-        /**********************************************/
+        // process header
         int msgid = process_long(lMsg[4],lMsg[5],lMsg[6],lMsg[7]);
-
-        System.out.println("MSGID: " + msgid);
-        /**********************************************/
         int seq = Math.abs(process_long(lMsg[8],lMsg[9],lMsg[10],lMsg[11]));
-        System.out.println("SEQ: " + seq);
-        /**********************************************/
         int size = process_long(lMsg[12], lMsg[13], lMsg[14], lMsg[15]);
-        System.out.println("SIZE: " + size);
-        /**********************************************/
         code = process_short(lMsg[16], lMsg[17]);
-        System.out.println("CODE: " + code);
 
         if( isCommand ) {
 
             if(code == 0x1000) {
                 code = 1;
-                System.out.println("I GOT A BROADCAST");
+                Log.v( "UDPListenerService", "command = BROADCAST" );
                 Intent ui = new Intent("m1updateui");
+                ui.putExtra("id", sql.getPlugMacFromIP( dp.getAddress() ) );
                 sendBroadcast(ui);
             }
-
-            if(code == 0x001F) {
+            else if(code == 0x001F) {
                 code = 1;
-                System.out.println("OTA FINISHED");
+                Log.v( "UDPListenerService", "command = OTA firmware OK" );
                 Intent i = new Intent("ota_finished");
+                i.putExtra("id", sql.getPlugMacFromIP( dp.getAddress() ) );
                 sendBroadcast(i);
+            }
+            else {
+                Log.v( "UDPListenerService", "unknown command " + code );
             }
 
         } else {
             if(msgid == previous_msgid){
+                Log.v( "UDPListenerService", "ignoring duplicate msg#" + msgid );
                 return; // ignore repeated command
             }
+
+            Log.v( "UDPListenerService", "Received header=" + header + " msg#" + msgid + " seq#" + seq + " size=" + size + " code=" + code );
 
             previous_msgid = msgid;
 
@@ -400,6 +398,7 @@ public class UDPListenerService extends Service {
                     if(code == 0){
                         code = 1;
                         Intent bi = new Intent("set_timer_delay");
+                        bi.putExtra("id", mCurrentCommand.macID);
                         sendBroadcast(bi);
 
                     }
@@ -410,6 +409,7 @@ public class UDPListenerService extends Service {
                         code = 1;
                         System.out.println("DEVICE STATUS CHANGED");
                         Intent i = new Intent("device_status_changed");
+                        i.putExtra("id", mCurrentCommand.macID);
                         sendBroadcast(i);
                     }
                     break;
@@ -418,6 +418,7 @@ public class UDPListenerService extends Service {
                         code = 1;
                         process_get_device_status();
                         Intent ui = new Intent("status_changed_update_ui");
+                        ui.putExtra("id", mCurrentCommand.macID);
                         sendBroadcast(ui);
                     }
                     break;
@@ -425,6 +426,7 @@ public class UDPListenerService extends Service {
                     if(code == 0){
                         code = 1;
                         Intent ui = new Intent("timers_sent_successfully");
+                        ui.putExtra("id", mCurrentCommand.macID);
                         sendBroadcast(ui);
                     }
                     break;
@@ -433,6 +435,7 @@ public class UDPListenerService extends Service {
                         System.out.println("OTA SENT SUCCESSFULLY");
                         code = 1;
                         Intent i = new Intent("ota_sent");
+                        i.putExtra("id", mCurrentCommand.macID);
                         sendBroadcast(i);
                     }
                     break;
@@ -442,6 +445,7 @@ public class UDPListenerService extends Service {
                         System.out.println("DELETE SEND SUCCESSFULLY");
                         code = 1;
                         Intent i = new Intent("delete_sent");
+                        i.putExtra("id", mCurrentCommand.macID);
                         sendBroadcast(i);
                     }
                     break;

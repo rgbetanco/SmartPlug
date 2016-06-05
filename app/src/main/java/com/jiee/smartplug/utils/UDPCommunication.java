@@ -73,7 +73,7 @@ public class UDPCommunication {
     static HashMap<String, Command> mQueuedCommands = new HashMap<String, Command>();
 
     public static void addCommand(Command command) {
-        Log.v( "UDPCommunication", "addCommand: msg#" + command.msgID + " for ID " + command.macID);
+        Log.v( "UDPCommunication", "addCommand: msg#" + command.msgID + " for ID " + command.macID + " code=" + command.command);
 
         mQueuedCommands.put( command.macID, command );
     }
@@ -442,23 +442,26 @@ public class UDPCommunication {
 
             InetAddress serverAddr = HTTPHelper.getDB(mContext).getPlugInetAddress(command.macID);
 
-            final DatagramPacket dp = new DatagramPacket(array, array.length, serverAddr, UDP_SERVER_PORT);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        ds.send(dp);
-                        addCommand(command);
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    } finally {
-                        if (ds != null) {
-                            ds.close();
+            if( serverAddr!=null ) {
+                addCommand(command);
+
+                final DatagramPacket dp = new DatagramPacket(array, array.length, serverAddr, UDP_SERVER_PORT);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ds.send(dp);
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        } finally {
+                            if (ds != null) {
+                                ds.close();
+                            }
                         }
                     }
-                }
-            }).start();
+                }).start();
 
+            }
         } catch (Exception e){
             e.printStackTrace();
         }

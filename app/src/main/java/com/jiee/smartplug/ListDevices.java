@@ -215,10 +215,10 @@ public class ListDevices extends Activity {
         m1updateui = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                startRepeatingTask();
-                Log.i("BROADCAST", "BROADCAST RECEIVED FROM DEVICE");
-                //l.getData();
-                //UDP BROADCAST RECEIVED
+                final String devid = intent.getStringExtra("id");
+                Log.i("BROADCAST", "BROADCAST RECEIVED FROM DEVICE + " + devid );
+
+                startRepeatingTask(devid);
             }
         };
 
@@ -287,7 +287,10 @@ public class ListDevices extends Activity {
             public void onReceive(Context context, Intent intent) {
                 deviceStatusChangedFlag = true;
        //         l.setDeviceStatusChangedFlag(true);
-                startRepeatingTask();
+                Log.i("BROADCAST", "DeviceStatusChanged");
+
+                final String devid = intent.getStringExtra("id");
+                startRepeatingTask(devid);
        //         l.getData();
             }
         };
@@ -344,8 +347,8 @@ public class ListDevices extends Activity {
         new_device_receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                startRepeatingTask();
                 Log.i("BROADCAST", "NEW DEVICE FOUND");
+                startRepeatingTask();
             }
         };
 
@@ -563,6 +566,16 @@ public class ListDevices extends Activity {
         mStatusChecker.run();
     }
 
+    void startRepeatingTask(final String devid) {
+        new Runnable() {
+
+            @Override
+            public void run() {
+                con.queryDevices( devid, (short)0x0007);
+            }
+        }.run();
+    }
+
     void stopRepeatingTask() {
     //    mHandler.removeCallbacks(mStatusChecker);
     }
@@ -588,6 +601,7 @@ public class ListDevices extends Activity {
         super.onResume();
         //    if(networkUtil.getConnectionStatus(this) == 1) {
             startService(mDNS);
+            Log.i("ListDevices", "onResume refreshing");
             startRepeatingTask();
             Intent j = new Intent(this, UDPListenerService.class);
             bindService(j, serviceConnection, Context.BIND_AUTO_CREATE);
