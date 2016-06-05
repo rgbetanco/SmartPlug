@@ -267,6 +267,8 @@ public class ListDevicesAdapter extends BaseAdapter {
                     //    Intent i = new Intent("adapter_onClick");
                     //    i.putExtra("start", 0);
                     //    act.sendBroadcast(i);
+                    //Toast.makeText(act.getApplicationContext(), ""+SmartPlugsList.get(position).getIp(), Toast.LENGTH_SHORT).show();
+
                     Cursor u = mySQLHelper.getPlugDataByID(SmartPlugsList.get(position).getId());
                     if (u.getCount() > 0) {
                         u.moveToFirst();

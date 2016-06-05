@@ -65,6 +65,7 @@ public class M1 extends AppCompatActivity {
     BroadcastReceiver timers_sent_successfully;
     BroadcastReceiver device_status_set;
     BroadcastReceiver mDNS_Device_Removed;
+    BroadcastReceiver m1updateui;
     ProgressBar progressBar;
 
     ImageButton plug_icon;
@@ -438,6 +439,15 @@ public class M1 extends AppCompatActivity {
                 }
                 removeGrayOutView();
 
+            }
+        };
+
+        m1updateui = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                System.out.println("Got a broadcast");
+                startRepeatingTask();
+                updateUI();
             }
         };
 
@@ -830,6 +840,7 @@ public class M1 extends AppCompatActivity {
         registerReceiver(timers_sent_successfully, new IntentFilter("timers_sent_successfully"));
         registerReceiver(device_status_set, new IntentFilter("device_status_set"));
         registerReceiver(mDNS_Device_Removed, new IntentFilter("mDNS_Device_Removed"));
+        registerReceiver(m1updateui, new IntentFilter("m1updateui"));
         try {
             Intent intent = new Intent(this, UDPListenerService.class);
             bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
@@ -852,6 +863,7 @@ public class M1 extends AppCompatActivity {
         unregisterReceiver(timers_sent_successfully);
         unregisterReceiver(device_status_set);
         unregisterReceiver(mDNS_Device_Removed);
+        unregisterReceiver(m1updateui);
         udpconnection = true;
         try {
             if (mServiceBound) {

@@ -451,6 +451,10 @@ public class UDPCommunication {
 
         this.command = 0x0009;
 
+        for(int j = 0; j < 512; j++){
+            timers[j] = 0;
+        }
+
         generate_header();
 
         int i = 0;

@@ -215,7 +215,9 @@ public class ListDevices extends Activity {
         m1updateui = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                l.getData();
+                startRepeatingTask();
+                Log.i("BROADCAST", "BROADCAST RECEIVED FROM DEVICE");
+                //l.getData();
                 //UDP BROADCAST RECEIVED
             }
         };
@@ -500,7 +502,6 @@ public class ListDevices extends Activity {
                     if (ipParam != null && !ipParam.isEmpty()) {
                         short command = 0x0007;
                         con.queryDevices(ipParam, command, macParam);
-        //                con.queryDevices(ipParam, command, macParam);
         //                con.queryDevices(ipParam, command, macParam);
                             int counter = 000;
                             while (!deviceStatusChangedFlag && counter > 0) {
