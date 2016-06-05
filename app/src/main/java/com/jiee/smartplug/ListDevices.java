@@ -347,7 +347,7 @@ public class ListDevices extends Activity {
         new_device_receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.i("BROADCAST", "NEW DEVICE FOUND");
+                Log.i("BROADCAST", "Device found1");
                 startRepeatingTask();
             }
         };
@@ -357,7 +357,7 @@ public class ListDevices extends Activity {
             public void onReceive(Context context, Intent intent) {
                 String serviceName = intent.getStringExtra("name");
                 mySQLHelper.updatePlugIP(serviceName, "");
-                System.out.println(serviceName);
+                Log.i("BROADCAST", "Device removed - " + serviceName);
             }
         };
 

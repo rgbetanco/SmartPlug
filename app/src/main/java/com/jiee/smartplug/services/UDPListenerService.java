@@ -32,7 +32,6 @@ public class UDPListenerService extends Service {
     int UDP_BROADCAST_PORT = 20004;
     byte[] lMsg = new byte[512];
     int previous_msgid = 0;
-    boolean process_data = false;
     public static short code = 1;
     NetworkUtil networkUtil;
     DatagramSocket ds = null;
@@ -46,12 +45,9 @@ public class UDPListenerService extends Service {
     byte[] ir = new byte[2];
     MySQLHelper sql;
 
-    UDPCommunication.Command    mCurrentCommand;
-
     private void listenAndWaitAndThrowIntent() {
         shouldRestartSocketListen = false;
         UDPBroadcastThread = null;
-        process_data = false;
 
         try {
             if(ds == null || ds.isClosed()) {
@@ -83,20 +79,18 @@ public class UDPListenerService extends Service {
     }
 
     public boolean listenForIRFileName() {
-        if (process_data == true) {
-            IRFlag = 0;
-            int name = lMsg[18];
-            if(name >= 0) {
-                Intent i = new Intent("ir_filename");
-                i.putExtra("filename", name);
-                sendBroadcast(i);
-            }
-            
-            if(name == 'x'){
-                Intent i = new Intent("ir_filename");
-                i.putExtra("filename", -1);
-                sendBroadcast(i);
-            }
+        IRFlag = 0;
+        int name = lMsg[18];
+        if(name >= 0) {
+            Intent i = new Intent("ir_filename");
+            i.putExtra("filename", name);
+            sendBroadcast(i);
+        }
+
+        if(name == 'x'){
+            Intent i = new Intent("ir_filename");
+            i.putExtra("filename", -1);
+            sendBroadcast(i);
         }
         return true;
     }
@@ -222,16 +216,16 @@ public class UDPListenerService extends Service {
         System.out.println("FLAG: " + flag);
     }
 
-    public void process_get_device_status(){
-        get_relay_status();
-        get_nightlight_status();
-        get_co_status();
+    public void process_get_device_status(UDPCommunication.Command currentCommand){
+        get_relay_status(currentCommand);
+        get_nightlight_status(currentCommand);
+        get_co_status(currentCommand);
         /**************TERMINATOR**************/
         int terminator = process_long(lMsg[48], lMsg[49], lMsg[50], lMsg[51]);
         System.out.println("TERMINATOR: " + terminator);
     }
 
-    void get_relay_status(){
+    void get_relay_status( UDPCommunication.Command currentCommand ){
         /**********************************************/
         int service_id = process_long(lMsg[18], lMsg[19], lMsg[20], lMsg[21]);
         System.out.println("Service ID: "+service_id);
@@ -255,15 +249,15 @@ public class UDPListenerService extends Service {
                 js.setRelay(0);
                 System.out.println("Relay is off");
             }
-            System.out.println("MAC: "+mCurrentCommand.macID);
-            sql.updatePlugRelayService(js.getRelay(), mCurrentCommand.macID);
-            sql.updatePlugHallSensorService(js.getHall_sensor(), mCurrentCommand.macID);
+            System.out.println("MAC: "+ currentCommand.macID);
+            sql.updatePlugRelayService(js.getRelay(), currentCommand.macID);
+            sql.updatePlugHallSensorService(js.getHall_sensor(), currentCommand.macID);
 
         }
         /**********************************************/
     }
 
-    void get_nightlight_status(){
+    void get_nightlight_status(UDPCommunication.Command currentCommand){
         /**********************************************/
         int service_id = process_long(lMsg[28], lMsg[29], lMsg[30], lMsg[31]);
         if(service_id == 0xD1000001) {
@@ -279,12 +273,12 @@ public class UDPListenerService extends Service {
                 js.setNightlight(0);
                 System.out.println("Nighlight is off");
             }
-            sql.updatePlugNightlightService(data, mCurrentCommand.macID);
+            sql.updatePlugNightlightService(data, currentCommand.macID);
         }
         /**********************************************/
     }
 
-    void get_co_status(){
+    void get_co_status(UDPCommunication.Command currentCommand){
         /**********************************************/
         int service_id = process_long(lMsg[38], lMsg[39], lMsg[40], lMsg[41]);
         int costatus = 0;
@@ -304,7 +298,7 @@ public class UDPListenerService extends Service {
                 System.out.println("CO SENSOR NORMAL CONDITION");
                 js.setCo_sensor(costatus);                                             //NORMAL
             }
-            sql.updatePlugCoSensorService(costatus, mCurrentCommand.macID);
+            sql.updatePlugCoSensorService(costatus, currentCommand.macID);
             byte datatype = lMsg[46];
             byte data = lMsg[47];
         }
@@ -366,12 +360,12 @@ public class UDPListenerService extends Service {
 
             previous_msgid = msgid;
 
-            mCurrentCommand = UDPCommunication.dequeueCommand(this.getApplicationContext(), dp.getAddress(), msgid );
-            if( mCurrentCommand==null ) {
+            UDPCommunication.Command    currentCommand = UDPCommunication.dequeueCommand(this.getApplicationContext(), dp.getAddress(), msgid );
+            if( currentCommand==null ) {
                 return;
             }
 
-            switch( mCurrentCommand.command ) {
+            switch( currentCommand.command ) {
 
                 case 0x000C:
                     System.out.println("Entering IR Mode");
@@ -386,7 +380,7 @@ public class UDPListenerService extends Service {
                         //    sql.updatePlugServicesByID(js);
                         Intent i = new Intent("device_info");
                         i.putExtra("ip",dp.getAddress().getHostAddress());
-                        i.putExtra("id", mCurrentCommand.macID);
+                        i.putExtra("id", currentCommand.macID);
                         sendBroadcast(i);
                         code = 1;
                     }
@@ -398,7 +392,7 @@ public class UDPListenerService extends Service {
                     if(code == 0){
                         code = 1;
                         Intent bi = new Intent("set_timer_delay");
-                        bi.putExtra("id", mCurrentCommand.macID);
+                        bi.putExtra("id", currentCommand.macID);
                         sendBroadcast(bi);
 
                     }
@@ -409,16 +403,16 @@ public class UDPListenerService extends Service {
                         code = 1;
                         System.out.println("DEVICE STATUS CHANGED");
                         Intent i = new Intent("device_status_changed");
-                        i.putExtra("id", mCurrentCommand.macID);
+                        i.putExtra("id", currentCommand.macID);
                         sendBroadcast(i);
                     }
                     break;
                 case 0x0007:
                     if(code == 0){
                         code = 1;
-                        process_get_device_status();
+                        process_get_device_status(currentCommand);
                         Intent ui = new Intent("status_changed_update_ui");
-                        ui.putExtra("id", mCurrentCommand.macID);
+                        ui.putExtra("id", currentCommand.macID);
                         sendBroadcast(ui);
                     }
                     break;
@@ -426,7 +420,7 @@ public class UDPListenerService extends Service {
                     if(code == 0){
                         code = 1;
                         Intent ui = new Intent("timers_sent_successfully");
-                        ui.putExtra("id", mCurrentCommand.macID);
+                        ui.putExtra("id", currentCommand.macID);
                         sendBroadcast(ui);
                     }
                     break;
@@ -435,7 +429,7 @@ public class UDPListenerService extends Service {
                         System.out.println("OTA SENT SUCCESSFULLY");
                         code = 1;
                         Intent i = new Intent("ota_sent");
-                        i.putExtra("id", mCurrentCommand.macID);
+                        i.putExtra("id", currentCommand.macID);
                         sendBroadcast(i);
                     }
                     break;
@@ -445,7 +439,7 @@ public class UDPListenerService extends Service {
                         System.out.println("DELETE SEND SUCCESSFULLY");
                         code = 1;
                         Intent i = new Intent("delete_sent");
-                        i.putExtra("id", mCurrentCommand.macID);
+                        i.putExtra("id", currentCommand.macID);
                         sendBroadcast(i);
                     }
                     break;

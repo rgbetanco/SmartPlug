@@ -243,8 +243,7 @@ public class IRCodeMode extends Activity {
             }).start();
 
             Toast.makeText(IRCodeMode.this, getApplicationContext().getString(R.string.processing_ir_command), Toast.LENGTH_SHORT).show();
-            //con.sendIRFileName(filename);
-
+            //con.sendIRFileName( devid, filename);
         }
 
     }
