@@ -154,6 +154,7 @@ public class IREditMode extends Activity {
             Intent intent = new Intent(context, IRCodeMode.class);
             intent.putExtra("groupId", i);
             intent.putExtra("ip", this.ipx);
+            intent.putExtra("devid", devid);
             startActivity(intent);
         }
 

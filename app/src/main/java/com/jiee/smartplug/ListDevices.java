@@ -116,7 +116,7 @@ public class ListDevices extends Activity {
 
         http = new Http();
         httpHelper = new HTTPHelper(this);
-        con = new UDPCommunication();
+        con = new UDPCommunication(this);
 
         networkUtil = new NetworkUtil();
         mySQLHelper = HTTPHelper.getDB(this);
@@ -296,7 +296,7 @@ public class ListDevices extends Activity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 ip = intent.getStringExtra("ip");
-                String id = intent.getStringExtra("id");
+                final String id = intent.getStringExtra("id");
 
                 jsTemp = UDPListenerService.js;
                 jsTemp.setIp(ip);
@@ -309,7 +309,7 @@ public class ListDevices extends Activity {
 
                 MySQLHelper sql = new MySQLHelper(ListDevices.this);
 
-                Cursor c = sql.getPlugDataByID(M1.mac);
+                Cursor c = sql.getPlugDataByID(id);
                 if(c.getCount() > 0){
                     c.moveToFirst();
                     final String model = c.getString(5);
@@ -324,7 +324,7 @@ public class ListDevices extends Activity {
                         public void run() {
                             String param = "devset?token="+ Miscellaneous.getToken(ListDevices.this)+"&hl="
                                     + Locale.getDefault().getLanguage()+"&devid="
-                                    + M1.mac +"&model="+model+ "&buildnumber="+buildnumber+"&protocol="+protocol
+                                    + id +"&model="+model+ "&buildnumber="+buildnumber+"&protocol="+protocol
                                     + "&hardware="+hardware+"&firmware="+firmware
                                     + "&firmwaredate="+firmwaredate+"&send=1";
                             try {
@@ -495,19 +495,31 @@ public class ListDevices extends Activity {
     Runnable mStatusChecker = new Runnable() {
         @Override
         public void run() {
-        //    new Thread(new Runnable() {
+
+            Cursor c = mySQLHelper.getPlugData();
+            if(c.getCount()>0){
+                c.moveToFirst();
+                for(int i = 0; i < c.getCount(); i++) {
+                    con.queryDevices(c.getString(2), (short)0x0007);
+
+                    c.moveToNext();
+                }
+            }
+            c.close();
+
+
+        //    //    new Thread(new Runnable() {
         //        @Override
         //        public void run() {
-                    Intent intent = new Intent("repeatingTaskDone");
-                    if (ipParam != null && !ipParam.isEmpty()) {
-                        short command = 0x0007;
-                        con.queryDevices(ipParam, command, macParam);
+        //            Intent intent = new Intent("repeatingTaskDone");
+        //            if (ipParam != null && !ipParam.isEmpty()) {
+        //                con.queryDevices(macParam, (short)0x0007);
         //                con.queryDevices(ipParam, command, macParam);
-                            int counter = 000;
-                            while (!deviceStatusChangedFlag && counter > 0) {
-                                counter--;
-                                //waiting time
-                            }
+        //                    int counter = 000;
+        //                    while (!deviceStatusChangedFlag && counter > 0) {
+        //                        counter--;
+        //                        //waiting time
+        //                    }
 
                         /*
                         else {
@@ -535,7 +547,7 @@ public class ListDevices extends Activity {
                             }
                         }
 */
-                    }
+                    //}
 
                     deviceStatusChangedFlag = false;
             //        sendBroadcast(intent);
@@ -548,17 +560,7 @@ public class ListDevices extends Activity {
     };
 
     void startRepeatingTask() {
-        Cursor c = mySQLHelper.getPlugData();
-        if(c.getCount()>0){
-            c.moveToFirst();
-            for(int i = 0; i < c.getCount(); i++) {
-                this.macParam = c.getString(2);
-                this.ipParam = c.getString(3);
-                mStatusChecker.run();
-                c.moveToNext();
-            }
-        }
-        c.close();
+        mStatusChecker.run();
     }
 
     void stopRepeatingTask() {

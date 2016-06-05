@@ -98,9 +98,9 @@ public class M2A_Item_Settings extends Activity {
         wifi = NetworkUtil.getWifiName(this);
         http = new HTTPHelper(this);
         sql = HTTPHelper.getDB(this);
-        udp = new UDPCommunication();
+        udp = new UDPCommunication(this);
         networkUtil = new NetworkUtil();
-        con = new UDPCommunication();
+        con = new UDPCommunication(this);
 
         overlay = (RelativeLayout)findViewById(R.id.overlay);
         int opacity = 200; // from 0 to 255
@@ -126,7 +126,7 @@ public class M2A_Item_Settings extends Activity {
                     SystemClock.sleep(1000);
                 }
                 short command = 0x0001;
-                con.queryDevices(M1.ip, command, M1.mac);
+                con.queryDevices(M1.mac, command);
                 removeGrayOutView();
             }
         };
@@ -136,6 +136,13 @@ public class M2A_Item_Settings extends Activity {
             public void onReceive(Context context, Intent intent) {
 
                 System.out.println("DEVICE INFO BROADCAST RECEIVED");
+
+                String macID = intent.getStringExtra("id");
+
+                if( !macID.equals(M1.mac) ) {
+                    Log.v("M2A", "Ignoring broadcast due to different ID");
+                    return;
+                }
 
                 sql.updateDeviceVersions(M1.mac, UDPListenerService.js.getModel(), UDPListenerService.js.getBuildno(),
                         UDPListenerService.js.getProt_ver(), UDPListenerService.js.getHw_ver(), UDPListenerService.js.getFw_ver(), UDPListenerService.js.getFw_date());
@@ -322,7 +329,7 @@ public class M2A_Item_Settings extends Activity {
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    udp.sendOTACommand(M1.ip);
+                                    udp.sendOTACommand(M1.mac, true);
                                 }
                             }).start();
 
@@ -490,7 +497,7 @@ public class M2A_Item_Settings extends Activity {
             @Override
             public void run() {
                 short command = 0x0001;
-                con.queryDevices(M1.ip, command, M1.mac);
+                con.queryDevices(M1.mac, command);
             }
         }).start();
     }

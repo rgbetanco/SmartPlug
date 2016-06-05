@@ -31,7 +31,7 @@ public class S2_Schedule extends Activity {
     BroadcastReceiver listchange;
     BroadcastReceiver timers_sent_successfully;
     BroadcastReceiver gcm_notification;
-    UDPCommunication udp = new UDPCommunication();
+    UDPCommunication udp;
     ImageButton btn_menu_new;
     Button btn_update;
     boolean udpconnection = false;
@@ -41,6 +41,7 @@ public class S2_Schedule extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        udp = new UDPCommunication(this);
         http = new HTTPHelper(this);
 
         setContentView(R.layout.activity_s2__schedule);
@@ -59,7 +60,7 @@ public class S2_Schedule extends Activity {
             public void onClick(View v) {
                 Toast.makeText(S2_Schedule.this, getApplicationContext().getString(R.string.please_wait), Toast.LENGTH_LONG).show();
                 udpconnection = false;
-                udp.sendTimers(S2_Schedule.this, M1.mac, M1.ip);
+                udp.sendTimers(M1.mac);
                 //        udp.sendTimers(M1.mac, S2_Schedule.this, 0);
                 //udp.setDeviceTimersUDP(M1.mac, S2_Schedule.this);     // This is sending both UDP and HTTP to server
             }
@@ -89,8 +90,8 @@ public class S2_Schedule extends Activity {
                     @Override
                     public void run() {
                         if(M1.mac != null && !M1.mac.isEmpty()) {
-                            udp.sendTimers(S2_Schedule.this, M1.mac, M1.ip);
-                            udp.sendTimersHTTP(S2_Schedule.this, M1.mac, 0);
+                            udp.sendTimers(M1.mac);
+                            udp.sendTimersHTTP(M1.mac, 0);
                         } else {
                             System.out.println("M1 MAC EMPTY oR NULL");
                         }

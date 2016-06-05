@@ -56,11 +56,6 @@ public class IconPicker extends Activity {
     public final static int DECODE_FLAG_CROP    = 0x0001; // crop image to fit within bounds
     public final static int DECODE_FLAG_FIT     = 0x0002; // fit within given bounds
     public final static int DECODE_FLAG_CROPFIT  = 0x0003; // crop and fit image
-    // combine CROP | FIT to shrink image so that smallest dimension fits, and then crop the image to fit
-    public final static int DECODE_FLAG_ROUNDEDGE= 0x0004; // round corners
-
-    public final static int DECODE_FLAG_SCALEDOWN= 0x0008; // scale down
-    public final static int DECODE_FLAG_SCALE_P2 = 0x0010; // round to power of 2
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,39 +141,20 @@ public class IconPicker extends Activity {
 
         Bitmap scaledBitmap = null;
 
-        if( (flags & DECODE_FLAG_ROUNDEDGE)==DECODE_FLAG_ROUNDEDGE ) {
-            // create a new bitmap with rounded edges
-            scaledBitmap = Bitmap.createBitmap( (int)dstRect.width(), (int)dstRect.height(), Bitmap.Config.ARGB_8888 );
-            Canvas canvas = new Canvas(scaledBitmap);
+        // crop without rounding the edges... we could just crop, unless we're also scaling down (in which case, we
+        // scale down to save memory)
+        if( srcRect.width()==0 )
+            return null;   // error.
 
-            BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-            Matrix m = new Matrix();
-            m.setRectToRect(new RectF(srcRect), dstRect, Matrix.ScaleToFit.FILL);
-            shader.setLocalMatrix(m);
+        // crop the source rectangle, while applying a matrix to resize it to the proper size
+        scale = dstRect.width() / srcRect.width();
 
-            Paint paint = new Paint();
-            paint.setAntiAlias(true);
-            paint.setShader(shader);
-
-            float radius = Math.max(w,h) * 0.10f;
-
-            canvas.drawRoundRect(dstRect, radius, radius, paint);
-        } else {
-            // crop without rounding the edges... we could just crop, unless we're also scaling down (in which case, we
-            // scale down to save memory)
-            if( srcRect.width()==0 )
-                return null;   // error.
-
-            // crop the source rectangle, while applying a matrix to resize it to the proper size
-            scale = dstRect.width() / srcRect.width();
-
-            Matrix m = null;
-            if( scale<1 ) {
-                m = new Matrix();
-                m.postScale(scale, scale);
-            }
-            scaledBitmap = Bitmap.createBitmap(bitmap, srcRect.left, srcRect.top, srcRect.width(), srcRect.height(), m, true);
+        Matrix m = null;
+        if( scale<1 ) {
+            m = new Matrix();
+            m.postScale(scale, scale);
         }
+        scaledBitmap = Bitmap.createBitmap(bitmap, srcRect.left, srcRect.top, srcRect.width(), srcRect.height(), m, true);
 
         return scaledBitmap;
     }

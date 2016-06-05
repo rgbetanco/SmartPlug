@@ -122,7 +122,7 @@ public class M1 extends AppCompatActivity {
 
         token = Miscellaneous.getToken(this);
 
-        udp = new UDPCommunication();
+        udp = new UDPCommunication(this);
         http = new Http();
         httpHelper = new HTTPHelper(this);
         crashTimer = new CrashCountDown(this);
@@ -588,7 +588,7 @@ public class M1 extends AppCompatActivity {
             try {
                 if (ip != null) {
                     short command = 0x0007;
-                    if (udp.queryDevices(ip, command, mac)) {
+                    if (udp.queryDevices(mac, command)) {
                         removeGrayOutView();
                         //    crashTimer.setTimer(2);
                         //    crashTimer.startTimer();
@@ -806,7 +806,7 @@ public class M1 extends AppCompatActivity {
                 public void run() {
                     if (ip != null) {
                         short command = 0x0007;
-                        if (udp.queryDevices(ip, command, mac)) {
+                        if (udp.queryDevices(mac, command)) {
                          //   crashTimer.setTimer(0);
                          //   crashTimer.startTimer();
                         } else {

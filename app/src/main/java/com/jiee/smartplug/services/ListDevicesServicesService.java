@@ -24,7 +24,7 @@ public class ListDevicesServicesService extends IntentService {
     public static byte action = 0;
     public static String mac = "";
 
-    UDPCommunication udp = new UDPCommunication();
+    UDPCommunication udp;
     MySQLHelper sql;
     HTTPHelper httpHelper;
 
@@ -34,6 +34,9 @@ public class ListDevicesServicesService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent){
 
+        if( udp==null )
+            udp = new UDPCommunication(this);
+
         if( sql==null )
             sql = HTTPHelper.getDB(this);
 
@@ -42,7 +45,7 @@ public class ListDevicesServicesService extends IntentService {
 
         String url = "";
 
-        if(udp.setDeviceStatus(ip, serviceId, action)){
+        if(udp.setDeviceStatus(mac, serviceId, action, true)){
             System.out.println("ACTION: "+action);
             ListDevices.deviceStatusChangedFlag = false;
          //   int counter = 20000;

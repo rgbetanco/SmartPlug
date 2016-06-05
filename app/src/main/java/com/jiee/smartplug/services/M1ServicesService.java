@@ -26,7 +26,7 @@ public class M1ServicesService extends IntentService {
     public static byte action = 0;
     public static String mac = "";
 
-    UDPCommunication udp = new UDPCommunication();
+    UDPCommunication udp;
     MySQLHelper sql;
     HTTPHelper httpHelper;
 
@@ -35,6 +35,9 @@ public class M1ServicesService extends IntentService {
     }
     @Override
     protected void onHandleIntent(Intent intent){
+
+        if( udp==null )
+            udp = new UDPCommunication(this);
 
         if( sql==null )
             sql = HTTPHelper.getDB(this);
@@ -45,7 +48,7 @@ public class M1ServicesService extends IntentService {
 
         String url = "";
         M1.deviceStatusChangedFlag = false;
-        if(udp.setDeviceStatus(ip, serviceId, action)){
+        if(udp.setDeviceStatus( mac, serviceId, action, true)){
             //int counter = 40000;
             //while (!M1.deviceStatusChangedFlag && counter > 0) {
             //    counter--;

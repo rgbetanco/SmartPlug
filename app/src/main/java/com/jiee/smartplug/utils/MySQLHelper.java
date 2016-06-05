@@ -15,6 +15,7 @@ import android.util.Log;
 import com.jiee.smartplug.objects.Alarm;
 import com.jiee.smartplug.objects.JSmartPlug;
 
+import java.net.InetAddress;
 import java.sql.SQLClientInfoException;
 
 public class MySQLHelper extends SQLiteOpenHelper {
@@ -610,6 +611,64 @@ public class MySQLHelper extends SQLiteOpenHelper {
         Cursor res =  db.rawQuery("select * from " + TABLE_SMARTPLUGS + " where active = 1", null);
         return res;
     }
+
+    public String getPlugMacFromIP(InetAddress ia) {
+        return getPlugMacFromIP( ia.getHostAddress() );
+    }
+
+    public String getPlugMacFromIP(String ip) {
+        String mac = null;
+        Cursor res = getPlugData(ip);
+        if (res.getCount() > 0) {
+            res.moveToFirst();
+            for (int i = 0; i < res.getCount(); i++) {
+                mac = res.getString(2);
+                if( mac.length()==0 )
+                    mac = null;
+                break;
+            }
+        }
+        res.close();
+
+        return mac;
+    }
+
+    public String getPlugIP(String mac) {
+        String ip = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery("select * from " + TABLE_SMARTPLUGS + " where active = 1 and " + COLUMN_SID + "='" + mac + "'", null);
+        if (res.getCount() > 0) {
+            res.moveToFirst();
+            for (int i = 0; i < res.getCount(); i++) {
+                ip = res.getString(3);
+                if( ip.length()==0 )
+                    ip = null;
+                break;
+            }
+        }
+        res.close();
+
+        return ip;
+    }
+
+    public InetAddress getPlugInetAddress(String mac) {
+
+        if( mac==null ) {
+            Log.v("MySQLHelper" , "getPlugInetAddress called with null ID");
+            return null;
+        }
+
+        String s = (mac.contains("."))?mac:getPlugIP(mac);
+        if (s == null)
+            return null;
+
+        try {
+            return InetAddress.getByName(s);
+        } catch( Exception e ) {
+            return null;
+        }
+    }
+
 
     public Cursor getNonActivePlugData(){
         SQLiteDatabase db = this.getReadableDatabase();

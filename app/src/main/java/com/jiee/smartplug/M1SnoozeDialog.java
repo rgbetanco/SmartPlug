@@ -72,7 +72,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.m1_snooze_dialog);
-        udp = new UDPCommunication();
+        udp = new UDPCommunication(this.getContext());
 
         //    activity.registerReceiver(timer_delay, new IntentFilter("set_timer_delay"));
 
@@ -210,7 +210,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
                     }
                 }
 
-                if (udp.delayTimer(snooze, 1, getContext(), service_id, 0)) {   //SENDING SNOOZE OF 5 MINUTES TO THE DEVICE
+                if (udp.delayTimer( device_id, snooze, 1, service_id, 0)) {   //SENDING SNOOZE OF 5 MINUTES TO THE DEVICE
                     int counter = 10000;
                     while (!deviceStatusChangedFlag && counter > 0) {
                         counter--;
@@ -220,7 +220,7 @@ public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
 
                 if (!deviceStatusChangedFlag) {
                     Intent i = new Intent("device_not_reached");
-                    if (!udp.delayTimer(snooze, 0, getContext(), service_id, 0)) {
+                    if (!udp.delayTimer(device_id, snooze, 0, service_id, 0)) {
                         i.putExtra("error", "yes");
                         getContext().sendBroadcast(i);
                     } else {

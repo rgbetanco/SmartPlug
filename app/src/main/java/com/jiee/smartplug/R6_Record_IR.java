@@ -27,6 +27,7 @@ public class R6_Record_IR extends Activity {
     String name;
     int ir_filename;                         //NAME OF THE FILE ON THE SMARTPLUG
     String ip;
+    String devid;
 
     ImageButton btn_setting;
     Button btn_recordAgain;
@@ -34,7 +35,7 @@ public class R6_Record_IR extends Activity {
     Button btn_addNew;
     ProgressBar pb;
     BroadcastReceiver brec;
-    UDPCommunication con = new UDPCommunication();
+    UDPCommunication con;
     MySQLHelper sql;
     HTTPHelper http;
     Boolean customeIcon = false;
@@ -43,6 +44,7 @@ public class R6_Record_IR extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        con = new UDPCommunication(this);
         sql = HTTPHelper.getDB(this);
         http = new HTTPHelper(this);
 
@@ -54,6 +56,7 @@ public class R6_Record_IR extends Activity {
         icon = i.getStringExtra("icon");                                //URL PATH TO ICON
         customeIcon = i.getBooleanExtra("customeIcon", false);
         ip = i.getStringExtra("ip");
+        devid = i.getStringExtra("devid");
 
         sendIRRecordCommand();
 
@@ -79,7 +82,7 @@ public class R6_Record_IR extends Activity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        con.sendIRFileName(ir_filename);
+                        con.sendIRFileName(devid, ir_filename);
                     }
                 }).start();
 
@@ -171,7 +174,7 @@ public class R6_Record_IR extends Activity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                con.sendIRMode(ip);
+                con.sendIRMode(devid, true);
             }
         }).start();
     }
@@ -181,7 +184,7 @@ public class R6_Record_IR extends Activity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                con.cancelIRMode();
+                con.cancelIRMode(devid, true);
             }
         }).start();
     }

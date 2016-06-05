@@ -57,7 +57,7 @@ public class HTTPHelper {
     public HTTPHelper(Context a){
         this.a = a.getApplicationContext();
         this.client = new OkHttpClient();
-        udp = new UDPCommunication();
+        udp = new UDPCommunication(a);
         getDB();
     }
 

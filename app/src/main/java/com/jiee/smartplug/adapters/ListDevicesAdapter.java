@@ -72,7 +72,7 @@ public class ListDevicesAdapter extends BaseAdapter {
     final LayoutInflater inflater;
 
     public ListDevicesAdapter(Activity a, MySQLHelper o, UDPListenerService UDPBinding){
-        udp = new UDPCommunication();
+        udp = new UDPCommunication(a);
 
         inflater = (LayoutInflater) a.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -159,7 +159,7 @@ public class ListDevicesAdapter extends BaseAdapter {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        udp.sendReformatCommand(SmartPlugsList.get(position).getIp());
+                        udp.sendReformatCommand(SmartPlugsList.get(position).getId(), true);
                     }
                 }).start();
 
@@ -383,7 +383,7 @@ public class ListDevicesAdapter extends BaseAdapter {
                     @Override
                     public void run() {
                         try {
-                            udp.sendResetCommand(selectedIP);
+                            udp.sendResetCommand(mac, true);
                             http.removeDevice(param, mac);
                         } catch (Exception e){
                             e.printStackTrace();

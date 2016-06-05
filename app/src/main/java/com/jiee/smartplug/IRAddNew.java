@@ -15,7 +15,7 @@ import com.jiee.smartplug.utils.UDPCommunication;
 public class IRAddNew extends Activity {
 
     Context context = this;
-    UDPCommunication con = new UDPCommunication();
+    UDPCommunication con;
     String ip;
     String devid;
 
@@ -24,6 +24,7 @@ public class IRAddNew extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_iradd_new);
 
+        con = new UDPCommunication(this);
         ip = getIntent().getStringExtra("ip");
         devid = getIntent().getStringExtra("devid");
 
@@ -37,7 +38,7 @@ public class IRAddNew extends Activity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        con.sendIRMode(ip);
+                        con.sendIRMode(devid, true);
                     }
                 }).start();
 

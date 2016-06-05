@@ -39,13 +39,14 @@ public class UDPListenerService extends Service {
     DatagramPacket dp = new DatagramPacket(lMsg, lMsg.length);
     boolean shouldRestartSocketListen = false;
     Thread UDPBroadcastThread;
-    public static short command;
     public static JSmartPlug js;
-    UDPCommunication con = new UDPCommunication();
+    UDPCommunication con;
     private IBinder mBinder = new MyBinder();
     int IRFlag = 0;
     byte[] ir = new byte[2];
     MySQLHelper sql;
+
+    UDPCommunication.Command    mCurrentCommand;
 
     private void listenAndWaitAndThrowIntent() {
         shouldRestartSocketListen = false;
@@ -64,97 +65,6 @@ public class UDPListenerService extends Service {
             if(dp.getLength() > 0) {
                 System.out.println("Message Length: " + dp.getLength());
                 process_headers();
-                if(UDPCommunication.command == 0x000C){
-                    System.out.println("Entering IR Mode");
-                    if(code == 0) {
-                        listenForIRFileName();
-                        code = 1;
-                    }
-                }
-                if(UDPCommunication.command == 0x0001){
-
-                    if(code == 0){
-                        process_query_device_command();
-                    //    sql.updatePlugServicesByID(js);
-                        Intent i = new Intent("device_info");
-                        i.putExtra("ip",dp.getAddress().toString().substring(1));
-                        i.putExtra("id", js.getId());
-                        i.putExtra("model", js.getModel());
-                        sendBroadcast(i);
-                        code = 1;
-                    }
-                }
-
-                if(UDPCommunication.command == 0x003){
-                    System.out.println("I got a broadcast .....");
-                }
-
-                if(UDPCommunication.command == 0x000B){
-                    if(code == 0){
-                        code = 1;
-                        Intent bi = new Intent("set_timer_delay");
-                        sendBroadcast(bi);
-                    }
-                }
-
-                if(UDPCommunication.command == 0x0008){
-                    if(code == 0){
-                        code = 1;
-                        System.out.println("DEVICE STATUS CHANGED");
-                        Intent i = new Intent("device_status_changed");
-                        sendBroadcast(i);
-                    }
-                }
-
-                if(UDPCommunication.command == 0x0007){
-                    if(code == 0){
-                        code = 1;
-                        process_get_device_status();
-                        Intent ui = new Intent("status_changed_update_ui");
-                        sendBroadcast(ui);
-                    }
-                }
-
-                if(UDPCommunication.command == 0x0009){
-                    if(code == 0){
-                        code = 1;
-                        Intent ui = new Intent("timers_sent_successfully");
-                        sendBroadcast(ui);
-                    }
-                }
-
-                if(UDPCommunication.command == 0x000F){
-                    if(code == 0){
-                        System.out.println("OTA SENT SUCCESSFULLY");
-                        code = 1;
-                        Intent i = new Intent("ota_sent");
-                        sendBroadcast(i);
-                    }
-                }
-
-                if(UDPCommunication.command == 0x010F){
-                    if(code == 0){
-                        System.out.println("DELETE SEND SUCCESSFULLY");
-                        code = 1;
-                        Intent i = new Intent("delete_sent");
-                        sendBroadcast(i);
-                    }
-                }
-
-                if(code == 0x1000 && process_data == true){
-                    code = 1;
-                    System.out.println("I GOT A BROADCAST");
-                    Intent ui = new Intent("m1updateui");
-                    sendBroadcast(ui);
-                }
-
-                if(code == 0x001F && process_data == true){
-                    code = 1;
-                    System.out.println("OTA FINISHED");
-                    Intent i = new Intent("ota_finished");
-                    sendBroadcast(i);
-                }
-
             }
 
             shouldRestartSocketListen = true;
@@ -191,21 +101,7 @@ public class UDPListenerService extends Service {
         return true;
     }
 
-    public boolean setDeviceStatusProcess(String ip, int serviceid, byte action){
-        code = 1;
-        con.setDeviceStatus(ip, serviceid, action);
-        return true;
-    }
     //HARDWARE VERSION, MAC ADDRESS ETC...
-    public boolean getDeviceInfo(String ip){
-        code = 1;
-        short command = 0x0001;
-        if(con.queryDevices(ip, command, UDPCommunication.macID)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     void startListenForUDPBroadcast() {
         UDPBroadcastThread = new Thread(new Runnable() {
@@ -254,6 +150,7 @@ public class UDPListenerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         js = new JSmartPlug();
+        con = new UDPCommunication(getApplicationContext());
         sql = HTTPHelper.getDB(this);
         shouldRestartSocketListen = true;
         try {
@@ -358,9 +255,9 @@ public class UDPListenerService extends Service {
                 js.setRelay(0);
                 System.out.println("Relay is off");
             }
-            System.out.println("MAC: "+UDPCommunication.macID);
-            sql.updatePlugRelayService(js.getRelay(), UDPCommunication.macID);
-            sql.updatePlugHallSensorService(js.getHall_sensor(), UDPCommunication.macID);
+            System.out.println("MAC: "+mCurrentCommand.macID);
+            sql.updatePlugRelayService(js.getRelay(), mCurrentCommand.macID);
+            sql.updatePlugHallSensorService(js.getHall_sensor(), mCurrentCommand.macID);
 
         }
         /**********************************************/
@@ -382,7 +279,7 @@ public class UDPListenerService extends Service {
                 js.setNightlight(0);
                 System.out.println("Nighlight is off");
             }
-            sql.updatePlugNightlightService(data, UDPCommunication.macID);
+            sql.updatePlugNightlightService(data, mCurrentCommand.macID);
         }
         /**********************************************/
     }
@@ -407,33 +304,35 @@ public class UDPListenerService extends Service {
                 System.out.println("CO SENSOR NORMAL CONDITION");
                 js.setCo_sensor(costatus);                                             //NORMAL
             }
-            sql.updatePlugCoSensorService(costatus, UDPCommunication.macID);
+            sql.updatePlugCoSensorService(costatus, mCurrentCommand.macID);
             byte datatype = lMsg[46];
             byte data = lMsg[47];
         }
         /**********************************************/
     }
 
-    public void process_headers(){
+    public void process_headers() {
         code = 1;
         /**********************************************/
         int header = process_long(lMsg[0],lMsg[1],lMsg[2],lMsg[3]);          //1397576276
 
-        if (header != 1397576276) {
-            process_data = false;
-        }
         System.out.println("HEADER: " + header);
+
+        boolean isCommand;
+
+        if (header == 0x534D5253) {
+            // reply
+            isCommand = false;
+        } else if( header== 0x534D5254 ) {
+            // command
+            isCommand = true;
+        } else {
+            // failed
+            return;
+        }
+
         /**********************************************/
         int msgid = process_long(lMsg[4],lMsg[5],lMsg[6],lMsg[7]);
-
-        if(msgid == previous_msgid){
-            process_data = false;
-        }
-
-        if (msgid != previous_msgid){
-            previous_msgid = msgid;
-            process_data = true;
-        }
 
         System.out.println("MSGID: " + msgid);
         /**********************************************/
@@ -445,6 +344,110 @@ public class UDPListenerService extends Service {
         /**********************************************/
         code = process_short(lMsg[16], lMsg[17]);
         System.out.println("CODE: " + code);
+
+        if( isCommand ) {
+
+            if(code == 0x1000) {
+                code = 1;
+                System.out.println("I GOT A BROADCAST");
+                Intent ui = new Intent("m1updateui");
+                sendBroadcast(ui);
+            }
+
+            if(code == 0x001F) {
+                code = 1;
+                System.out.println("OTA FINISHED");
+                Intent i = new Intent("ota_finished");
+                sendBroadcast(i);
+            }
+
+        } else {
+            if(msgid == previous_msgid){
+                return; // ignore repeated command
+            }
+
+            previous_msgid = msgid;
+
+            mCurrentCommand = UDPCommunication.dequeueCommand(this.getApplicationContext(), dp.getAddress(), msgid );
+            if( mCurrentCommand==null ) {
+                return;
+            }
+
+            switch( mCurrentCommand.command ) {
+
+                case 0x000C:
+                    System.out.println("Entering IR Mode");
+                    if(code == 0) {
+                        listenForIRFileName();
+                        code = 1;
+                    }
+                    break;
+                case 0x0001:
+                    if(code == 0){
+                        process_query_device_command();
+                        //    sql.updatePlugServicesByID(js);
+                        Intent i = new Intent("device_info");
+                        i.putExtra("ip",dp.getAddress().getHostAddress());
+                        i.putExtra("id", mCurrentCommand.macID);
+                        sendBroadcast(i);
+                        code = 1;
+                    }
+                    break;
+                case 0x0003:
+                    System.out.println("I got a broadcast .....");
+                    break;
+                case 0x000B:
+                    if(code == 0){
+                        code = 1;
+                        Intent bi = new Intent("set_timer_delay");
+                        sendBroadcast(bi);
+
+                    }
+                    break;
+
+                case 0x0008:
+                    if(code == 0){
+                        code = 1;
+                        System.out.println("DEVICE STATUS CHANGED");
+                        Intent i = new Intent("device_status_changed");
+                        sendBroadcast(i);
+                    }
+                    break;
+                case 0x0007:
+                    if(code == 0){
+                        code = 1;
+                        process_get_device_status();
+                        Intent ui = new Intent("status_changed_update_ui");
+                        sendBroadcast(ui);
+                    }
+                    break;
+                case 0x0009:
+                    if(code == 0){
+                        code = 1;
+                        Intent ui = new Intent("timers_sent_successfully");
+                        sendBroadcast(ui);
+                    }
+                    break;
+                case 0x000F:
+                    if(code == 0){
+                        System.out.println("OTA SENT SUCCESSFULLY");
+                        code = 1;
+                        Intent i = new Intent("ota_sent");
+                        sendBroadcast(i);
+                    }
+                    break;
+
+                case 0x010F:
+                    if(code == 0){
+                        System.out.println("DELETE SEND SUCCESSFULLY");
+                        code = 1;
+                        Intent i = new Intent("delete_sent");
+                        sendBroadcast(i);
+                    }
+                    break;
+            }
+        }
+
     }
 
     int process_long(byte a, byte b, byte c, byte d){

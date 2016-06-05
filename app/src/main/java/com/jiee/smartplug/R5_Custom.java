@@ -27,6 +27,7 @@ public class R5_Custom extends Activity {
     EditText txt;
     int gid = 0;
     String ip;
+    String devid;
     NetworkUtil util = new NetworkUtil();
     Boolean customeIcon = false;
     @Override
@@ -37,6 +38,7 @@ public class R5_Custom extends Activity {
         Intent i = getIntent();
         gid = i.getIntExtra("gid", 0);
         ip = i.getStringExtra("ip");
+        devid = i.getStringExtra("devid");
 
         ir_icon = (ImageButton)findViewById(R.id.ir_icon);
         Picasso.with(this).load(filePath).into(ir_icon);
@@ -62,6 +64,7 @@ public class R5_Custom extends Activity {
                     i.putExtra("icon", filePath);
                     i.putExtra("customeIcon", customeIcon);
                     i.putExtra("ip", ip);
+                    i.putExtra("devid", devid);
                     startActivity(i);
                     finish();
                 } else {

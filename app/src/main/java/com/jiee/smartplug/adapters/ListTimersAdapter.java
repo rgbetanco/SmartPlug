@@ -51,7 +51,7 @@ public class ListTimersAdapter extends BaseAdapter {
     private ImageButton btn_delete_timer;
     int service_id;
     String device_id;
-    UDPCommunication udp = new UDPCommunication();
+    UDPCommunication udp;
     MySQLHelper sql;
     int globalposition;
 
@@ -60,6 +60,8 @@ public class ListTimersAdapter extends BaseAdapter {
     final LayoutInflater inflater;
 
     public ListTimersAdapter(Activity c, String device_id, int service_id){
+        udp = new UDPCommunication(c);
+
         inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         this.context = c;

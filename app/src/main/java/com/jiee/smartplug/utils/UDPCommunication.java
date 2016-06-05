@@ -1,14 +1,14 @@
 package com.jiee.smartplug.utils;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
-import android.os.SystemClock;
 import android.util.Log;
 
 import com.jiee.smartplug.M1;
 import com.jiee.smartplug.objects.JSmartPlug;
 import com.jiee.smartplug.services.UDPListenerService;
+
+import org.json.HTTP;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -18,9 +18,9 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.IntBuffer;
-import java.security.spec.ECField;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by ronaldgarcia on 9/12/15.
@@ -45,84 +45,91 @@ public class UDPCommunication {
     byte[] timers = new byte[512];
     public static ArrayList<Integer> IRCodes = new ArrayList<>();
     public static JSmartPlug js;
-    public static short command;
-    public static String macID;
     int previous_msgid = 0;
     boolean process_data = false;
     short code = 1;
-    MySQLHelper sql;
     int IRFlag = 0;
     int IRSendFlag = 0;
     int irCode = 0;
     int sendFlag = 0;
     HTTPHelper http;
 
-    public UDPCommunication(){
+    Context mContext;
 
+    static int mLastMsgID =  0;//(new SecureRandom()).nextInt();
+
+    public static class Command {
+        public String macID;
+        public short command;
+        public int   msgID;
+
+        public Command( String macID, short command ) {
+            this.macID = macID;
+            this.command = command;
+        }
+    }
+
+    // map Device to Command
+    static HashMap<String, Command> mQueuedCommands = new HashMap<String, Command>();
+
+    public static void addCommand(Command command) {
+        Log.v( "UDPCommunication", "addCommand: msg#" + command.msgID + " for ID " + command.macID);
+
+        mQueuedCommands.put( command.macID, command );
+    }
+
+    public static Command dequeueCommand(Context c, InetAddress ia, int msgID) {
+        MySQLHelper sql = HTTPHelper.getDB(c);
+
+        String mac = sql.getPlugMacFromIP(ia);
+        if( mac==null ) {
+            mac = ia.getHostAddress();
+            Log.v( "UDPCommunication", "dequeueCommand: No ID associated with IP; using IP "+ mac + " directly.");
+        }
+
+        // convert ia to string
+        return dequeueCommand( mac, msgID );
+    }
+
+    public static Command dequeueCommand(String macID, int msgID) {
+        if( macID==null )
+            return null;
+
+        Command cmd = mQueuedCommands.get(macID);
+        if( cmd==null ) {
+            Log.v( "UDPCommunication", "dequeueCommand: No command associated with ID " + macID);
+            return null;
+        }
+
+        if( cmd.msgID!=msgID ) {
+            Log.v( "UDPCommunication", "dequeueCommand: Got msg#" + msgID + " from device, but was expecting " + cmd.msgID + " for ID " + macID );
+            return null;
+        }
+
+        Log.v( "UDPCommunication", "dequeueCommand: msg#" + msgID + " for ID " + macID);
+
+        mQueuedCommands.remove(macID);
+        return cmd;
+    }
+
+    public UDPCommunication(Context c) {
+        this.mContext = c.getApplicationContext();
     }
 
     //DEVICE QUERY
-    public JSmartPlug runUdpServer() {
-        DatagramPacket dp = new DatagramPacket(lMsg, lMsg.length);
-        DatagramSocket ds = null;
-        try {
-            ds = new DatagramSocket(UDP_SERVER_PORT);
-            //disable timeout for testing
-            ds.setSoTimeout(5000);
-            ds.receive(dp);
-            System.out.println("Message Length: " + dp.getLength());
-            process_headers();
-            if(process_data) {
-                if(command == 0x0001) {
-                    process_query_device_command();                                   //GET MAC, HARDWARE VERSION, etc...
-                } else if(command == 0x0007){
-                    process_get_device_status();                                    //GET ALL THE SERVICES AND THEIR STATUS FROM THE DEVICE
-//                    Intent intent2 = new Intent("get_device_status 0x0007");
-//                    context.sendBroadcast(intent2);
-                } else if(command == 0x0008){
-                    System.out.println("SEND SET DEVICE STATUS COMMAND SUCCESS");     //SET DEVICE SERVICE
-//                    Intent intent1 = new Intent("set_device_status 0x0008");
-//                    context.sendBroadcast(intent1);
-                } else if(command == 0x0009){
-                    if(code == 0x0000){
-                        System.out.println("SUCCESS COMMAND RECEIVED");
-                    }
-                } else if(command == 0x000C){
-                    if(code == 0x0000){
-                        System.out.println("Entering IR Mode");
-                        IRFlag = 1;
-                        IRCodes.clear();
-                        listenForIRCodes();
-                    }
-                } else if(command == 0x000A){
-                    if(code == 0x0000){                                             //This is the feedback from the device
-                        System.out.println("Sending IR Codes ....");
-                        IRSendFlag = 1;
-                    }
-                }
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (ds != null) {
-                ds.close();
-            }
-        }
-        return js;
-    }
 
-    public boolean delayTimer(int seconds, int protocol, Context activity, int serviceId, int send){
+    public boolean delayTimer( String macID, int seconds, int protocol, int serviceId, int send){
+
+        Command command = null;
+
         UDPListenerService.code = 1;
         boolean toReturn = false;
-        http = new HTTPHelper(activity);
-        this.command = 0x000B;
+        http = new HTTPHelper(mContext);
         String ip = M1.ip;
             if (protocol == 0) {
-                generate_header_http();
+                generate_header_http((short) 0x000B);
             } else if (protocol == 1) {
-                generate_header();
+                command = generate_header( macID, (short)0x000B);
             }
             for (int i = 0; i < 14; i++) {
                 delayT[i] = hMsg[i];
@@ -151,7 +158,7 @@ public class UDPCommunication {
                 }
             } else if (protocol == 1) {
                 if(ip != null) {
-                    sendUDP(delayT, ip);
+                    sendUDP(delayT, command);
                     toReturn = true;
                 } else {
                     System.out.println("IP IS NULL WHILE SENDING TIMER DELAY");
@@ -189,84 +196,14 @@ public class UDPCommunication {
         return true;
     }
 
-    public boolean sendActivationKey(String ip, byte[] key){
-        this.command = 0x0001;
-        DatagramSocket ds = null;
+    public boolean queryDevices(String macID, short command )  {
         try {
-            ds = new DatagramSocket();
-            InetAddress serverAddr = InetAddress.getByName(ip);
-            DatagramPacket dp;
-            generate_header();
-            for(int i=0; i<14;i++){
-                kMsg[i] = hMsg[i];
-            }
-
-            for (int k = 0; k < key.length; k++){
-                kMsg[k+14] = key[k];
-            }
-
-            dp = new DatagramPacket(kMsg, kMsg.length, serverAddr, UDP_SERVER_PORT);
-            ds.send(dp);
-        } catch (SocketException e) {
-            e.printStackTrace();
-            return false;
-        }catch (UnknownHostException e) {
-            e.printStackTrace();
-            return false;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        } finally {
-            if (ds != null) {
-                ds.close();
-            }
-        }
-        return true;
-    }
-
-    public boolean queryDevices(String ip, short udpMsg_param, String macParam)  {
-        this.macID = macParam;
-        UDPListenerService.code = 1;
-        this.command = udpMsg_param;
-
-        try {
-            final DatagramSocket ds = new DatagramSocket();
-            InetAddress serverAddr = InetAddress.getByName(ip);
-
-            generate_header();
+            Command cmd = generate_header( macID, command );
             for(int i=0; i<14;i++){
                 rMsg[i] = hMsg[i];
             }
-            final DatagramPacket dp = new DatagramPacket(rMsg, rMsg.length, serverAddr, UDP_SERVER_PORT);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        ds.send(dp);
-                        Log.i("QUERY DEVICES", "Successfully sent");
-                    } catch (Exception e){
-                        Log.i("QUERY DEVICES", "I could not send it");
-                        //e.printStackTrace();
-                    } finally {
-                        if (ds != null) {
-                            ds.close();
-                        }
-                    }
-                }
-            }).start();
 
-        } catch (SocketException e) {
-            e.printStackTrace();
-            return false;
-        }catch (UnknownHostException e) {
-            e.printStackTrace();
-            return false;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+            sendUDP(rMsg, cmd);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -275,15 +212,9 @@ public class UDPCommunication {
         return true;
     }
 
-    public boolean sendIRMode(String ipParam){
-        String ip = ipParam;
-        this.command = 0x000C;
-        DatagramSocket ds = null;
+    public boolean sendIRMode(String macID, boolean temp) {
         try {
-            ds = new DatagramSocket();
-            InetAddress serverAddr = InetAddress.getByName(ip);
-            DatagramPacket dp;
-            generate_header();
+            Command cmd = generate_header(macID, (short)0x000C);
             for (int i = 0; i < 14; i++){
                 iMsg[i] = hMsg[i];
             }
@@ -297,35 +228,17 @@ public class UDPCommunication {
             iMsg[19] = (byte)((flag >> 8) & 0xff);
             iMsg[20] = (byte)((flag >> 16) & 0xff);
             iMsg[21] = (byte)((flag >> 24) & 0xff);
-            dp = new DatagramPacket(iMsg, iMsg.length, serverAddr, UDP_SERVER_PORT);
-            ds.send(dp);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            sendUDP(iMsg, cmd);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (ds != null) {
-                ds.close();
-                //runUdpServer();
-            }
         }
         return true;
     }
 
-    public boolean cancelIRMode(){
-
-        String ip = M1.ip;
-        this.command = 0x000C;
-        DatagramSocket ds = null;
+    public boolean cancelIRMode(String macID, boolean temp){
         try {
-            ds = new DatagramSocket();
-            InetAddress serverAddr = InetAddress.getByName(ip);
-            DatagramPacket dp;
-            generate_header();
+            Command cmd = generate_header(macID, (short)0x000C);
             for (int i = 0; i < 14; i++){
                 iMsg[i] = hMsg[i];
             }
@@ -339,123 +252,53 @@ public class UDPCommunication {
             iMsg[19] = (byte)((flag >> 8) & 0xff);
             iMsg[20] = (byte)((flag >> 16) & 0xff);
             iMsg[21] = (byte)((flag >> 24) & 0xff);
-            dp = new DatagramPacket(iMsg, iMsg.length, serverAddr, UDP_SERVER_PORT);
-            ds.send(dp);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            sendUDP(iMsg, cmd);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (ds != null) {
-                ds.close();
-                //runUdpServer();
-            }
         }
         return true;
     }
 
-    public boolean sendOTACommand(String ip){
-        this.command = 0x000F;
-        generate_header();
-        DatagramSocket ds = null;
-        try {
-            ds = new DatagramSocket();
-            InetAddress serverAddr = InetAddress.getByName(ip);
-            DatagramPacket dp;
-            dp = new DatagramPacket(hMsg, hMsg.length, serverAddr, UDP_SERVER_PORT);
-            ds.send(dp);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        ds.close();
+    public boolean sendOTACommand(String macID, boolean temp){
+        Command cmd = generate_header(macID, (short)0x000F);
+        sendUDP(hMsg, cmd);
         return true;
     }
 
-    public boolean sendReformatCommand(String ip){
-        this.command = 0x010F;
-        generate_header();
-        DatagramSocket ds = null;
-        try {
-            ds = new DatagramSocket();
-            InetAddress serverAddr = InetAddress.getByName(ip);
-            DatagramPacket dp;
-            dp = new DatagramPacket(hMsg, hMsg.length, serverAddr, UDP_SERVER_PORT);
-            ds.send(dp);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        ds.close();
+    public boolean sendReformatCommand(String macID, boolean temp){
+        Command cmd = generate_header(macID, (short)0x010F);
+        sendUDP(hMsg, cmd);
         return true;
     }
 
-    public boolean sendResetCommand(String ip){
-        this.command = 0x0FFF;
-        generate_header();
-        DatagramSocket ds = null;
-        try {
-            ds = new DatagramSocket();
-            InetAddress serverAddr = InetAddress.getByName(ip);
-            DatagramPacket dp;
-            dp = new DatagramPacket(hMsg, hMsg.length, serverAddr, UDP_SERVER_PORT);
-            ds.send(dp);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        ds.close();
+    public boolean sendResetCommand(String macID, boolean temp){
+        Command cmd = generate_header(macID, (short)0x0FFF);
+        sendUDP(hMsg, cmd);
         return true;
     }
 
-    public boolean sendIRFileName(int filename){
-        sendIRHeader(filename);
+    public boolean sendIRFileName(String macID, int filename){
+        sendIRHeader(macID, filename);
         return true;
     }
 
-    public void sendIRHeader(int filename){
-        String ip = M1.ip;
-        this.command = 0x000A;
-        generate_header();
+    public void sendIRHeader(String macID, int filename){
+        Command cmd = generate_header(macID, (short)0x000A);
         for(int i = 0; i < hMsg.length; i++){
             irHeader[i] = hMsg[i];
         }
         irHeader[14] = (byte)filename;
-        DatagramSocket ds = null;
-        try {
-            ds = new DatagramSocket();
-            InetAddress serverAddr = InetAddress.getByName(ip);
-            DatagramPacket dp;
-            dp = new DatagramPacket(irHeader, irHeader.length, serverAddr, UDP_SERVER_PORT);
-            ds.send(dp);
-            System.out.println("IR HEADERS SENT");
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        ds.close();
+
+        sendUDP(irHeader, cmd);
     }
 
-    public boolean setDeviceTimersHTTP(String id, Context activity, int send){
-        boolean toReturn = true;
-        sendFlag = send;
-        String ip = M1.ip;
-        http = new HTTPHelper(activity);
-        boolean header = sendTimerHeaders(ip, 0);
-        boolean timer = sendTimers(id, activity, 0);
-        boolean termi = sendTimerTerminator(ip, 0);
-        return toReturn;
-    }
-
-    public boolean sendTimers(Context a, String id, String ip){
-
-        this.command = 0x0009;
-
+    public boolean sendTimers(String macID){
         for(int j = 0; j < 512; j++){
             timers[j] = 0;
         }
 
-        generate_header();
+        Command cmd = generate_header(macID, (short)0x0009);
 
         int i = 0;
         for(i = 0; i < hMsg.length; i++){
@@ -469,8 +312,8 @@ public class UDPCommunication {
         timers[i++] = (byte) ((time >> 8) & 0xff);
         timers[i++] = (byte) (time & 0xff);
 
-        sql = new MySQLHelper(a);
-        Cursor c = sql.getAlarmData(id);
+        MySQLHelper sql = HTTPHelper.getDB(mContext);
+        Cursor c = sql.getAlarmData(macID);
         if(c.getCount() > 0) {
             c.moveToFirst();
             for (int j = 0; j < c.getCount(); j++) {
@@ -505,17 +348,16 @@ public class UDPCommunication {
             }
         }
         c.close();
-        sendUDP(timers, ip);
+        sendUDP(timers, cmd);
 
         return true;
 
     }
 
-    public boolean sendTimersHTTP(Context a, String id, int send){
+    public boolean sendTimersHTTP(String macID, int send){
             boolean toReturn = false;
-            this.command = 0x0009;
-            http = new HTTPHelper(a);
-            generate_header_http();
+            http = new HTTPHelper(mContext);
+            generate_header_http((short)0x0009);
 
             int i = 0;
             for(i = 0; i < hMsg.length; i++){
@@ -529,8 +371,8 @@ public class UDPCommunication {
             timers[i++] = (byte) ((time >> 16) & 0xff);
             timers[i++] = (byte) ((time >> 24) & 0xff);
 
-            sql = new MySQLHelper(a);
-            Cursor c = sql.getAlarmData(id);
+            MySQLHelper sql = HTTPHelper.getDB(mContext);
+            Cursor c = sql.getAlarmData(macID);
             if(c.getCount() > 0) {
                 c.moveToFirst();
                 for (int j = 0; j < c.getCount(); j++) {
@@ -594,101 +436,19 @@ public class UDPCommunication {
 
         }
 
-    public boolean setDeviceTimersUDP(String id, Context activity){
-        UDPListenerService.code = 1;
-        boolean toReturn = true;
-        String ip = M1.ip;
-        sendTimerHeaders(ip, 1);                            //The last parameter 0 = HTTP, 1 = UDP
-        sendTimers(id, activity, 1);
-        sendTimerTerminator(ip, 1);
-
-        return toReturn;
-    }
-
-    public boolean sendTimerTerminator(String ip, int protocol){
-
-        boolean toReturn = false;
-        this.command = 0x0009;
-        if(protocol == 0) {
-            generate_header_http();
-        } else {
-            generate_header();
-        }
-        for(int i = 0; i < hMsg.length; i++){
-            timerHeader[i] = hMsg[i];
-        }
-        int end = 0x00000000;
-        if(protocol == 0) {
-            timerHeader[14] = (byte) (end & 0xff);
-            timerHeader[15] = (byte) ((end >> 8) & 0xff);
-            timerHeader[16] = (byte) ((end >> 16) & 0xff);
-            timerHeader[17] = (byte) ((end >> 24) & 0xff);
-        }
-        if(protocol == 1){
-            timerHeader[14] = (byte) (end & 0xff);
-            timerHeader[15] = (byte) ((end >> 8) & 0xff);
-            timerHeader[16] = (byte) ((end >> 16) & 0xff);
-            timerHeader[17] = (byte) ((end >> 24) & 0xff);
-        }
-        if(protocol == 0) {
-            try {
-                toReturn = http.setDeviceTimers(timerHeader, sendFlag);
-            } catch (Exception e) {
-                toReturn = false;
-            }
-        } else if(protocol == 1){
-         //   sendUDP(timerHeader, ip);
-        }
-        return toReturn;
-    }
-
-    public boolean sendTimerHeaders(String ip, int protocol){
-        boolean toReturn = false;
-        this.command = 0x0009;
-        if(protocol == 0) {
-            generate_header_http();
-        } else {
-            generate_header();
-        }
-        for(int i = 0; i < hMsg.length; i++){
-            timerHeader[i] = hMsg[i];
-        }
-        int time = (int)(System.currentTimeMillis()/1000);
-        if(protocol == 0) {
-            timerHeader[17] = (byte) (time & 0xff);
-            timerHeader[16] = (byte) ((time >> 8) & 0xff);
-            timerHeader[15] = (byte) ((time >> 16) & 0xff);
-            timerHeader[14] = (byte) ((time >> 24) & 0xff);
-        }
-        if(protocol == 1){
-            timerHeader[14] = (byte) (time & 0xff);
-            timerHeader[15] = (byte) ((time >> 8) & 0xff);
-            timerHeader[16] = (byte) ((time >> 16) & 0xff);
-            timerHeader[17] = (byte) ((time >> 24) & 0xff);
-        }
-        if(protocol == 0) {
-            try {
-                toReturn = http.setDeviceTimers(timerHeader, sendFlag);
-            } catch (Exception e) {
-                toReturn = false;
-            }
-        } else if(protocol == 1){
-         //   sendUDP(timerHeader, ip);
-        }
-        return toReturn;
-    }
-
-    public void sendUDP(byte[] array, String ip){
+    public void sendUDP(byte[] array, final Command command ){
         try {
             final DatagramSocket ds = new DatagramSocket();
-            InetAddress serverAddr = InetAddress.getByName(ip);
+
+            InetAddress serverAddr = HTTPHelper.getDB(mContext).getPlugInetAddress(command.macID);
 
             final DatagramPacket dp = new DatagramPacket(array, array.length, serverAddr, UDP_SERVER_PORT);
-       //     new Thread(new Runnable() {
-       //         @Override
-       //         public void run() {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
                     try {
                         ds.send(dp);
+                        addCommand(command);
                     } catch (Exception e){
                         e.printStackTrace();
                     } finally {
@@ -696,28 +456,28 @@ public class UDPCommunication {
                             ds.close();
                         }
                     }
-        //        }
-        //    }).start();
+                }
+            }).start();
 
         } catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public boolean sendTimers(String id, Context a, int protocol ){
+    public boolean sendTimers(String macID, int protocol ){
         boolean toReturn = false;
-        this.command = 0x0009;
+
+        Command cmd = null;
         if(protocol == 0) {
-            generate_header_http();
+            generate_header_http((short)0x0009);
         } else {
-            generate_header();
+            cmd = generate_header(macID, (short)0x0009);
         }
         for(int i = 0; i < hMsg.length; i++){
             timer[i] = hMsg[i];
         }
-        String ip = M1.ip;
-        sql = new MySQLHelper(a);
-        Cursor c = sql.getAlarmData(id);
+        MySQLHelper sql = HTTPHelper.getDB(mContext);
+        Cursor c = sql.getAlarmData(macID);
         if(c.getCount() > 0) {
             c.moveToFirst();
             for (int j = 0; j < c.getCount(); j++) {
@@ -780,227 +540,37 @@ public class UDPCommunication {
         return toReturn;
     }
 
-    public boolean setDeviceStatus(String ip, int serviceId, byte action)  {
-        this.command = 0x0008;     //to generate the header
-        generate_header();
-        DatagramSocket ds = null;
-        try {
-            ds = new DatagramSocket();
-            InetAddress serverAddr = InetAddress.getByName(ip);
-            DatagramPacket dp;
-            generate_header();
-            for(int i=0; i<14;i++){
-                sMsg[i] = hMsg[i];
-            }
+    public boolean setDeviceStatus( String macID, int serviceId, byte action, boolean temp)  {
+        Command cmd = generate_header(macID, (short)0x0008);
 
-            int service_id = serviceId;
-            sMsg[14] = (byte)(service_id & 0xff);
-            sMsg[15] = (byte)((service_id >> 8 ) & 0xff);
-            sMsg[16] = (byte)((service_id >> 16 ) & 0xff);
-            sMsg[17] = (byte)((service_id >> 24 ) & 0xff);
-            byte datatype = 0x01;
-            sMsg[18] = datatype;
-            byte data = action;
-            sMsg[19] = data;
-            int terminator = 0x00000000;
-            sMsg[20] = (byte)(terminator & 0xff);
-            sMsg[21] = (byte)((terminator >> 8 ) & 0xff);
-            sMsg[22] = (byte)((terminator >> 16 ) & 0xff);
-            sMsg[23] = (byte)((terminator >> 24 ) & 0xff);
-
-            dp = new DatagramPacket(sMsg, sMsg.length, serverAddr, UDP_SERVER_PORT);
-            ds.send(dp);
-        } catch (SocketException e) {
-            e.printStackTrace();
-            return false;
-        }catch (UnknownHostException e) {
-            e.printStackTrace();
-            return false;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        } finally {
-            if (ds != null) {
-                ds.close();
-                //        runUdpServer();
-            }
-            return true;
+        for(int i=0; i<14;i++){
+            sMsg[i] = hMsg[i];
         }
+
+        int service_id = serviceId;
+        sMsg[14] = (byte)(service_id & 0xff);
+        sMsg[15] = (byte)((service_id >> 8 ) & 0xff);
+        sMsg[16] = (byte)((service_id >> 16 ) & 0xff);
+        sMsg[17] = (byte)((service_id >> 24 ) & 0xff);
+        byte datatype = 0x01;
+        sMsg[18] = datatype;
+        byte data = action;
+        sMsg[19] = data;
+        int terminator = 0x00000000;
+        sMsg[20] = (byte)(terminator & 0xff);
+        sMsg[21] = (byte)((terminator >> 8 ) & 0xff);
+        sMsg[22] = (byte)((terminator >> 16 ) & 0xff);
+        sMsg[23] = (byte)((terminator >> 24 ) & 0xff);
+
+        sendUDP(sMsg, cmd);
+
+        return true;
     }
 
-    public void process_headers(){
-        /**********************************************/
-        int header = Math.abs(process_long(lMsg[0],lMsg[1],lMsg[2],lMsg[3]));          //1397576276
-
-        if (header != 1397576276) {
-            process_data = true;
-        }
-        System.out.println("HEADER: " + header);
-        /**********************************************/
-        int msgid = Math.abs(process_long(lMsg[4],lMsg[5],lMsg[6],lMsg[7]));
-        if (msgid != previous_msgid){
-            previous_msgid = msgid;
-            process_data = true;
-        } else {
-            process_data = false;
-        }
-        System.out.println("MSGID: " + msgid);
-        /**********************************************/
-        int seq = Math.abs(process_long(lMsg[8],lMsg[9],lMsg[10],lMsg[11]));
-        System.out.println("SEQ: " + seq);
-        /**********************************************/
-        int size = process_long(lMsg[12], lMsg[13], lMsg[14], lMsg[15]);
-        System.out.println("SIZE: " + size);
-        /**********************************************/
-        code = process_short(lMsg[16], lMsg[17]);
-        System.out.println("CODE: " + code);
-    }
-
-    void process_query_device_command(){
-        /**********************************************/
-        StringBuffer mac = new StringBuffer("");
-        for (int i = 18; i < 24; i++) {
-            mac.append(String.format("%02x", lMsg[i]));
-        }
-        js.setId(mac.toString());
-        System.out.println("MAC: " + mac);
-        /**********************************************/
-        StringBuffer model = new StringBuffer("");
-        for (int i = 24; i < 40; i++) {
-            model.append(String.format("%c", lMsg[i]));
-        }
-        js.setModel(model.toString());
-        System.out.println("MODEL:" + model);
-        /**********************************************/
-        int buildno = process_long(lMsg[40], lMsg[41], lMsg[42], lMsg[43]);
-        js.setBuildno(buildno);
-        System.out.println("BUILD NO: " + buildno);
-        /**********************************************/
-        int prot_ver = process_long(lMsg[44], lMsg[45], lMsg[46], lMsg[47]);
-        js.setProt_ver(prot_ver);
-        System.out.println("PROTOCOL VER: " + prot_ver);
-        /**********************************************/
-        StringBuffer hw_ver = new StringBuffer("");
-        for (int i = 48; i < 64; i++) {
-            hw_ver.append(String.format("%c", lMsg[i]));
-        }
-        js.setHw_ver(hw_ver.toString());
-        System.out.println("HARDWARE VERSION:" + hw_ver);
-        /**********************************************/
-        StringBuffer fw_ver = new StringBuffer("");
-        for (int i = 64; i < 80; i++) {
-            fw_ver.append(String.format("%c", lMsg[i]));
-        }
-        js.setFw_ver(fw_ver.toString());
-        System.out.println("FIRMWARE VERSION:" + fw_ver);
-        /**********************************************/
-        int fw_date = process_long(lMsg[80], lMsg[81], lMsg[82], lMsg[83]);
-        js.setFw_date(fw_date);
-        System.out.println("FIRMWARE DATE: " + fw_date);
-        /**********************************************/
-        int flag = process_long(lMsg[84], lMsg[85], lMsg[86], lMsg[87]);
-        js.setFlag(flag);
-        System.out.println("FLAG: " + flag);
-    }
-
-    public void process_get_device_status(){
-        get_relay_status();
-        get_nightlight_status();
-        get_co_status();
-        /**************TERMINATOR**************/
-        int terminator = process_long(lMsg[48], lMsg[49], lMsg[50], lMsg[51]);
-        System.out.println("TERMINATOR: " + terminator);
-    }
-
-    void get_relay_status(){
-        /**********************************************/
-        int service_id = process_long(lMsg[18], lMsg[19], lMsg[20], lMsg[21]);
-        if (service_id == 0xD1000000) {
-            System.out.println("IS OUTLET SERVICE");
-            int flag = process_long(lMsg[22], lMsg[23], lMsg[24], lMsg[25]);
-            if(flag == 0x00000010){
-                js.setHall_sensor(1);
-                System.out.println("Relay warning");
-            } else {
-                js.setHall_sensor(0);
-            }
-            byte datatype = lMsg[26];
-            byte data = lMsg[27];
-            if(data == 0x01){
-                js.setRelay(1);
-                System.out.println("Relay is on");
-            } else {
-                js.setRelay(0);
-                System.out.println("Relay is off");
-            }
-
-        }
-        /**********************************************/
-    }
-
-    void get_nightlight_status(){
-        /**********************************************/
-        int service_id = process_long(lMsg[28], lMsg[29], lMsg[30], lMsg[31]);
-        if(service_id == 0xD1000001) {
-            System.out.println("NIGHT LIGHT SERVICE");
-            int flag = process_long(lMsg[32], lMsg[33], lMsg[34], lMsg[35]);             //not used for this service
-            byte datatype = lMsg[36];                                                    //always the same 0x01
-            byte data = lMsg[37];
-            if(data == 0x01){
-                js.setNightlight(1);
-                System.out.println("Nighlight is on");
-            } else {
-                js.setNightlight(0);
-                System.out.println("Nighlight is off");
-            }
-        }
-        /**********************************************/
-    }
-
-    void get_co_status(){
-        /**********************************************/
-        int service_id = process_long(lMsg[38], lMsg[39], lMsg[40], lMsg[41]);
-        if(service_id == 0xD1000002) {
-            int flag = process_long(lMsg[42], lMsg[43], lMsg[44], lMsg[45]);
-            if(flag == 0x00000010){
-                js.setCo_sensor(1);                                             //WARNING
-            } else if (flag == 0x00000100){
-                js.setCo_sensor(3);                                             //NOT PLUGGED
-            } else {
-                js.setCo_sensor(0);                                             //NORMAL
-            }
-            byte datatype = lMsg[46];
-            byte data = lMsg[47];
-        }
-        /**********************************************/
-    }
-
-    int process_long(byte a, byte b, byte c, byte d){
-
-        ByteBuffer buffer = ByteBuffer.allocate(4);
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.put(d);
-        buffer.put(c);
-        buffer.put(b);
-        buffer.put(a);
-
-        return buffer.getInt(0);
-    }
-
-    short process_short(byte a, byte b){
-        ByteBuffer buffer = ByteBuffer.allocate(2);
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.put(b);
-        buffer.put(a);
-        return buffer.getShort(0);
-    }
-
-    void generate_header(){
+    Command generate_header(String macID, short command){
+        Command c = new Command(macID, command);
         int header = 0x534D5254;
-        int msgid = (int)(Math.random() * 429496729) + 1;
+        int msgid = c.msgID = (mLastMsgID++);
         int seq = 0x80000000;
         hMsg[0] = (byte) header;
         hMsg[1] = (byte) (header >> 8);
@@ -1014,18 +584,20 @@ public class UDPCommunication {
         hMsg[9] = (byte) (seq >> 8);
         hMsg[10] = (byte) (seq >> 16);
         hMsg[11] = (byte) (seq >> 24);
-        hMsg[12] = (byte) command;
-        hMsg[13] = (byte) (command >> 8);
+        hMsg[12] = (byte) c.command;
+        hMsg[13] = (byte) (c.command >> 8);
+
+        return c;
     }
 
-    void generate_header_http(){
+    void generate_header_http(short command){
         int header = 0x534D5254;
         hMsg[3] = (byte)(header);
         hMsg[2] = (byte)((header >> 8 ));
         hMsg[1] = (byte)((header >> 16 ));
         hMsg[0] = (byte)((header >> 24 ));
 
-        int msid = (int)(Math.random()*4294967+1);
+        int msid = (mLastMsgID++);
         hMsg[7] = (byte)(msid);
         hMsg[6] = (byte)((msid >> 8 ));
         hMsg[5] = (byte)((msid >> 16 ));
@@ -1035,7 +607,6 @@ public class UDPCommunication {
         hMsg[10] = (byte)((seq >> 8 ));
         hMsg[9] = (byte)((seq >> 16 ));
         hMsg[8] = (byte)((seq >> 24 ));
-        short command = this.command;
         hMsg[13] = (byte)(command);
         hMsg[12] = (byte)((command >> 8 ));
     }

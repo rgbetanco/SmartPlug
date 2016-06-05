@@ -43,8 +43,9 @@ public class IRCodeMode extends Activity {
     View v[] = new View[254];
     int irGroupCode[] = new int[254];
     TextView txt[] = new TextView[254];
-    UDPCommunication con = new UDPCommunication();
+    UDPCommunication con;
     String ip;
+    String devid;
     HTTPHelper http;
     ViewGroup layout;
     BroadcastReceiver serverReplied;
@@ -56,6 +57,7 @@ public class IRCodeMode extends Activity {
 
         mIsEditMode = false;
 
+        con = new UDPCommunication(this);
         http = new HTTPHelper(this);
         sql = HTTPHelper.getDB(this);
 
@@ -64,6 +66,7 @@ public class IRCodeMode extends Activity {
         Intent intent = getIntent();
         gid = intent.getIntExtra("groupId", 0);
         ip = intent.getStringExtra("ip");
+        devid = intent.getStringExtra("devid");
 
         layout = (ViewGroup)findViewById(R.id.ir_edit_linearlayout);
 
@@ -108,6 +111,7 @@ public class IRCodeMode extends Activity {
                     Intent i = new Intent(IRCodeMode.this, R5_Custom.class);
                     i.putExtra("ip", ip);
                     i.putExtra("gid", gid);
+                    i.putExtra("devid", devid);
                     startActivity(i);
                     finish();
                 } else {
@@ -228,7 +232,7 @@ public class IRCodeMode extends Activity {
                         token = c.getString(1);
                     }
                     if(token != null && !token.isEmpty()) {
-                        String param = "devctrl?token=" + token + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + M1.mac+"&send=0";
+                        String param = "devctrl?token=" + token + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + devid+"&send=0";
                         try {
                             http.setDeviceStatus(param, (byte) filename, GlobalVariables.IR_SERVICE);
                         } catch (Exception e) {
@@ -292,7 +296,7 @@ public class IRCodeMode extends Activity {
                         String action = "del";
                         String type = "button";
                         if (token != null && !token.isEmpty()) {
-                            http.manageIRButton(M1.mac, GlobalVariables.IR_SERVICE, type, action, groupId, i, "", iconId, 0, 0, false);
+                            http.manageIRButton(devid, GlobalVariables.IR_SERVICE, type, action, groupId, i, "", iconId, 0, 0, false);
                         }
                         Intent i = new Intent("serverReplied");
                         sendBroadcast(i);

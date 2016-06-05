@@ -80,7 +80,7 @@ public class S3 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_s3);
 
-        udp = new UDPCommunication();
+        udp = new UDPCommunication(this);
         sql = HTTPHelper.getDB(this);
 
         img_action = (ImageView) findViewById(R.id.img_action);
@@ -317,7 +317,7 @@ public class S3 extends AppCompatActivity {
                             sql.insertAlarm(a);
                         }
                         Intent i = new Intent("device_not_reached");
-                        if(udp.sendTimers(S3.this, M1.mac, M1.ip)) {
+                        if(udp.sendTimers(M1.mac)) {
 
                             int counter = 10000;
                             while (!deviceStatusChangedFlag && counter > 0) {
@@ -327,14 +327,14 @@ public class S3 extends AppCompatActivity {
                         }
 
                         if(!deviceStatusChangedFlag) {
-                            if(!udp.sendTimersHTTP(S3.this, M1.mac, 0)){
+                            if(!udp.sendTimersHTTP(M1.mac, 0)){
                                 i.putExtra("error", "yes");
                             } else {
                                 i.putExtra("error","");
                                 deviceStatusChangedFlag = false;
                             }
                         } else {
-                            udp.sendTimersHTTP(S3.this, M1.mac, 1);
+                            udp.sendTimersHTTP(M1.mac, 1);
                             i.putExtra("error","");
                             deviceStatusChangedFlag = false;
                         }

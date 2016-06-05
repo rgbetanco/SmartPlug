@@ -91,7 +91,7 @@ public class NewDeviceList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_device_list);
 
-        con = new UDPCommunication();
+        con = new UDPCommunication(this);
         http = new Http();
         httpHelper = new HTTPHelper(this);
         mySQLHelper = HTTPHelper.getDB(this);
@@ -163,7 +163,7 @@ public class NewDeviceList extends AppCompatActivity {
                     @Override
                     public void run() {
                         short command = 0x0001;
-                        con.queryDevices(ip, command, "unknown");
+                        con.queryDevices(ip, command);
                         crashTimer.setTimer(3);
                         crashTimer.startTimer();
                     }
@@ -177,8 +177,6 @@ public class NewDeviceList extends AppCompatActivity {
                 crashTimer.stopTimer();
                 ip = intent.getStringExtra("ip");
                 id = intent.getStringExtra("id");
-
-                String model = intent.getStringExtra("model");
 
                     for (int i = 0; i < plugs.size(); i++) {
                         if(plugs.get(i).getIp()!=null && !plugs.get(i).getIp().isEmpty()&& ip!=null && !ip.isEmpty()) {
@@ -218,7 +216,7 @@ public class NewDeviceList extends AppCompatActivity {
             //        @Override
             //        public void run() {
                         short command = 0x0001;
-                        con.queryDevices(ip, command, "unknown");
+                        con.queryDevices(ip, command);
                         crashTimer.setTimer(3);
                         crashTimer.startTimer();
             //        }
@@ -275,7 +273,7 @@ public class NewDeviceList extends AppCompatActivity {
                                 System.out.println("NO PLUGS FOUND WHEN YOU CLICK");
                             //    Toast.makeText(NewDeviceList.this, getApplicationContext().getString(R.string.error_adding_new_device), Toast.LENGTH_SHORT).show();
                                 short command = 0x0001;
-                                con.queryDevices(ip, command, "unknown");
+                                con.queryDevices(ip, command);
                                 crashTimer.setTimer(3);
                                 crashTimer.startTimer();
                             //    removeGrayOutView();
