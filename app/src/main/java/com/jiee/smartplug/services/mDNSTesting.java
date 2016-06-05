@@ -90,7 +90,11 @@ public class mDNSTesting extends Service {
     @Override
     public void onDestroy(){
         if(mNsdManager != null) {
-            mNsdManager.stopServiceDiscovery(discoveryListener);
+            try {
+                mNsdManager.stopServiceDiscovery(discoveryListener);
+            } catch( Exception e ) {
+                e.printStackTrace();
+            }
         }
         if (jmdns != null) {
             try {

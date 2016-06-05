@@ -50,7 +50,6 @@ public class HTTPHelper {
     protected static MySQLHelper mSQL;
     byte[] sMsg = new byte[24];
     UDPCommunication udp;
-    ArrayList<Alarm> alarms = new ArrayList<>();
     String json;
     String idLocal;
 
@@ -648,10 +647,6 @@ public class HTTPHelper {
     //        public void run() {
         MySQLHelper sql = getDB();
                 String param = "alarmget?token="+Miscellaneous.getToken(a)+"&hl="+Locale.getDefault().getLanguage()+"&devid="+devId;
-                alarms.clear();
-                if(!sql.removeAlarms(devId)){
-                    System.out.println("ALARM WAS NOT ABLE TO BE REMOVED WITH DEVID: "+devId);
-                }
                 OkHttpClient c = new OkHttpClient();
                 String url = GlobalVariables.DOMAIN+param;
                 System.out.println("ALARMS FROM THE SERVER: "+url);
@@ -687,7 +682,9 @@ public class HTTPHelper {
                     j++;
                 }
 
-                for (int i = 0; i < array.length -12 ; i+=12) {
+        ArrayList<Alarm> alarms = new ArrayList<>();
+
+        for (int i = 0; i < array.length -12 ; i+=12) {
                     int serviceId = process_long(array[i], array[i+1], array[i+2], array[i+3]);
 
                     if(serviceId != 0) {
@@ -715,7 +712,11 @@ public class HTTPHelper {
                     }
                 }
 
-                if(alarms.size() > 0){
+        if(!sql.removeAlarms(devId)){
+            System.out.println("ALARM WAS NOT ABLE TO BE REMOVED WITH DEVID: "+devId);
+        }
+
+                //if(alarms.size() > 0){
     //                if(sql.removeAlarms(devId)) {
                         for (int i = 0; i < alarms.size(); i++) {
                             if (sql.insertAlarm(alarms.get(i))) {
@@ -725,9 +726,9 @@ public class HTTPHelper {
                             }
                         }
     //                }
-                } else {
+                //} else {
     //                sql.removeAlarms(devId);
-                }
+                //}
  //               Intent i = new Intent("status_changed_update_ui");
  //               a.sendBroadcast(i);
     //        }
