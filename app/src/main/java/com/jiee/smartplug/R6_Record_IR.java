@@ -49,9 +49,9 @@ public class R6_Record_IR extends Activity {
         setContentView(R.layout.activity_r6__record__ir);
 
         Intent i = getIntent();
-        name = i.getStringExtra("txt_name");          //DISPLAY NAME
-        gid = i.getIntExtra("groupId", 0);        //GROUP ID
-        icon = i.getStringExtra("icon");          //URL PATH TO ICON
+        name = i.getStringExtra("txt_name");                            //DISPLAY NAME
+        gid = i.getIntExtra("groupId", 0);                              //GROUP ID
+        icon = i.getStringExtra("icon");                                //URL PATH TO ICON
         customeIcon = i.getBooleanExtra("customeIcon", false);
         ip = i.getStringExtra("ip");
 
@@ -119,7 +119,11 @@ public class R6_Record_IR extends Activity {
                     String action = "add";
                     String type = "button";
                     if(token != null && !token.isEmpty()) {
-                        http.manageIRButton(M1.mac, GlobalVariables.IR_SERVICE, type, action, groupId, 0, name, iconId, ir_filename, Miscellaneous.getResolution(R6_Record_IR.this), customeIcon);
+                        if(!customeIcon) {
+                            http.manageIRButton(M1.mac, GlobalVariables.IR_SERVICE, type, action, groupId, 0, name, iconId, ir_filename, Miscellaneous.getResolution(R6_Record_IR.this), customeIcon);
+                        } else {
+                            http.manageIRButton(M1.mac, GlobalVariables.IR_SERVICE, type, action, groupId, 0, name, 0, ir_filename, Miscellaneous.getResolution(R6_Record_IR.this), customeIcon);
+                        }
                     }
                     Intent i = new Intent("serverReplied");
                     sendBroadcast(i);
