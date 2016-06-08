@@ -446,7 +446,18 @@ public class M1 extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 System.out.println("Got a broadcast");
-                startRepeatingTask();
+
+                final String devid = intent.getStringExtra("id");
+                final String mac = intent.getStringExtra("mac");
+                final int outlet = intent.getIntExtra("outlet", -1);
+                final int nightlight = intent.getIntExtra("nightlight", -1);
+
+                Log.i("BROADCAST", "BROADCAST RECEIVED FROM DEVICE + " + mac );
+
+                sql.updatePlugRelayService(outlet, mac);
+                sql.updatePlugNightlightService(nightlight, mac);
+
+                //startRepeatingTask();
                 updateUI();
             }
         };

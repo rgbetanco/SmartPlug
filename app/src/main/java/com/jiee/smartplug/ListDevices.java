@@ -216,9 +216,20 @@ public class ListDevices extends Activity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 final String devid = intent.getStringExtra("id");
-                Log.i("BROADCAST", "BROADCAST RECEIVED FROM DEVICE + " + devid );
+                final String mac = intent.getStringExtra("mac");
+                final int outlet = intent.getIntExtra("outlet", -1);
+                final int nightlight = intent.getIntExtra("nightlight", -1);
 
-                startRepeatingTask(devid);
+                Log.i("BROADCAST", "BROADCAST RECEIVED FROM DEVICE + " + mac );
+
+                mySQLHelper.updatePlugRelayService(outlet, mac);
+                mySQLHelper.updatePlugNightlightService(nightlight, mac);
+
+                if(l!=null) {
+                    l.getData();
+                }
+
+                //startRepeatingTask(devid);
             }
         };
 
@@ -600,7 +611,7 @@ public class ListDevices extends Activity {
     protected void onResume(){
         super.onResume();
         //    if(networkUtil.getConnectionStatus(this) == 1) {
-            startService(mDNS);
+        startService(mDNS);
             Log.i("ListDevices", "onResume refreshing");
             startRepeatingTask();
             Intent j = new Intent(this, UDPListenerService.class);

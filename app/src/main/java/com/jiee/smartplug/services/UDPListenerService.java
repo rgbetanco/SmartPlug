@@ -14,12 +14,14 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.os.SystemClock;
 import android.util.Log;
 
 import com.jiee.smartplug.M1;
 import com.jiee.smartplug.objects.JSmartPlug;
+import com.jiee.smartplug.utils.GlobalVariables;
 import com.jiee.smartplug.utils.HTTPHelper;
 import com.jiee.smartplug.utils.MySQLHelper;
 import com.jiee.smartplug.utils.NetworkUtil;
@@ -44,6 +46,7 @@ public class UDPListenerService extends Service {
     int IRFlag = 0;
     byte[] ir = new byte[2];
     MySQLHelper sql;
+    HashMap broadcastValues = new HashMap();
 
     private void listenAndWaitAndThrowIntent() {
         shouldRestartSocketListen = false;
@@ -167,6 +170,30 @@ public class UDPListenerService extends Service {
         public UDPListenerService getService() {
             return UDPListenerService.this;
         }
+    }
+
+    void process_broadcast_info(){
+        broadcastValues.clear();
+        /**********************************************/
+        StringBuffer mac = new StringBuffer("");
+        for (int i = 18; i < 24; i++) {
+            mac.append(String.format("%02x", lMsg[i]));
+        }
+        /**********************************************/
+        int outlet_service = process_long(lMsg[24], lMsg[25], lMsg[26], lMsg[27]);
+        int outlet_value = -1;
+        if(outlet_service == GlobalVariables.ALARM_RELAY_SERVICE) {
+            outlet_value = lMsg[28];
+        }
+        int nightlight_service = process_long(lMsg[29], lMsg[30], lMsg[31], lMsg[32]);
+        int nightlight_value = -1;
+        if(nightlight_service == GlobalVariables.ALARM_NIGHLED_SERVICE) {
+            nightlight_value = lMsg[33];
+        }
+        broadcastValues.put("mac", new String(mac));
+        broadcastValues.put("outlet", outlet_value);
+        broadcastValues.put("nightlight", nightlight_value);
+
     }
 
     void process_query_device_command(){
@@ -334,9 +361,14 @@ public class UDPListenerService extends Service {
 
             if(code == 0x1000) {
                 code = 1;
-                Log.v( "UDPListenerService", "command = BROADCAST" );
+                Log.v("UDPListenerService", "command = BROADCAST");
+                process_broadcast_info();
                 Intent ui = new Intent("m1updateui");
                 ui.putExtra("id", sql.getPlugMacFromIP( dp.getAddress() ) );
+                ui.putExtra("mac", (String) broadcastValues.get("mac"));
+                ui.putExtra("outlet", (int) broadcastValues.get("outlet"));
+                ui.putExtra("nightlight", (int) broadcastValues.get("nightlight"));
+
                 sendBroadcast(ui);
             }
             else if(code == 0x001F) {
