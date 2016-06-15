@@ -426,6 +426,7 @@ public class ListDevices extends Activity {
                     Intent i = new Intent("status_changed_update_ui");
                     sendBroadcast(i);
 
+                    /*
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -438,7 +439,7 @@ public class ListDevices extends Activity {
                             }
                         }
                     }).start();
-
+                    */
 
                 }
 

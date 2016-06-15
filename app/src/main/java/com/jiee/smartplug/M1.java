@@ -303,6 +303,7 @@ public class M1 extends AppCompatActivity {
                     Intent i = new Intent("status_changed_update_ui");
                     sendBroadcast(i);
 
+                    /*
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -315,6 +316,7 @@ public class M1 extends AppCompatActivity {
                             }
                         }
                     }).start();
+                    */
                 }
                 M1.deviceStatusChangedFlag = false;
 
