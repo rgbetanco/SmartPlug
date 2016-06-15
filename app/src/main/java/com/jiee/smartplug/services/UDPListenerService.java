@@ -180,16 +180,32 @@ public class UDPListenerService extends Service {
             mac.append(String.format("%02x", lMsg[i]));
         }
         /**********************************************/
+
+        int terminator = 1;
+        int init = 24;
+        while ( terminator > 0){
+            int service = process_long(lMsg[init], lMsg[init+1], lMsg[init+2], lMsg[init+3]);
+            int value = -1;
+            int datatype = lMsg[init+4];
+            if(service == GlobalVariables.ALARM_RELAY_SERVICE) {
+                value = lMsg[init+5];
+            }
+            init+=5;
+        }
+
         int outlet_service = process_long(lMsg[24], lMsg[25], lMsg[26], lMsg[27]);
         int outlet_value = -1;
+        int datatypeOutlet = lMsg[28];
         if(outlet_service == GlobalVariables.ALARM_RELAY_SERVICE) {
-            outlet_value = lMsg[28];
+            outlet_value = lMsg[29];
         }
-        int nightlight_service = process_long(lMsg[29], lMsg[30], lMsg[31], lMsg[32]);
+        int nightlight_service = process_long(lMsg[30], lMsg[31], lMsg[32], lMsg[33]);
         int nightlight_value = -1;
+        int datatypeNightlight = 34;
         if(nightlight_service == GlobalVariables.ALARM_NIGHLED_SERVICE) {
-            nightlight_value = lMsg[33];
+            nightlight_value = lMsg[35];
         }
+        int terminator = process_long(lMsg[36], lMsg[37], lMsg[38], lMsg[39]);
         broadcastValues.put("mac", new String(mac));
         broadcastValues.put("outlet", outlet_value);
         broadcastValues.put("nightlight", nightlight_value);
