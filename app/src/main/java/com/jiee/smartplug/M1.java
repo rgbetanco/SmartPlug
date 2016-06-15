@@ -754,12 +754,12 @@ public class M1 extends AppCompatActivity {
         updateUI();
         startRepeatingTask();
         registerReceiver(udp_update_ui, new IntentFilter("status_changed_update_ui"));
-        registerReceiver(device_status_changed, new IntentFilter("device_status_changed"));
+        //registerReceiver(device_status_changed, new IntentFilter("device_status_changed"));
         registerReceiver(gcm_notification, new IntentFilter("gcm_notification"));
         registerReceiver(gcm_notification_done, new IntentFilter("gcmNotificationDone"));
         registerReceiver(http_device_status, new IntentFilter("http_device_status"));
         registerReceiver(device_not_reached, new IntentFilter("device_not_reached"));
-        registerReceiver(device_status_set, new IntentFilter("device_status_set"));
+        //registerReceiver(device_status_set, new IntentFilter("device_status_set"));
         registerReceiver(mDNS_Device_Removed, new IntentFilter("mDNS_Device_Removed"));
         registerReceiver(m1updateui, new IntentFilter("m1updateui"));
         try {
@@ -775,12 +775,12 @@ public class M1 extends AppCompatActivity {
         super.onPause();
 
         unregisterReceiver(udp_update_ui);
-        unregisterReceiver(device_status_changed);
+        //unregisterReceiver(device_status_changed);
         unregisterReceiver(gcm_notification);
         unregisterReceiver(gcm_notification_done);
         unregisterReceiver(http_device_status);
         unregisterReceiver(device_not_reached);
-        unregisterReceiver(device_status_set);
+        //unregisterReceiver(device_status_set);
         unregisterReceiver(mDNS_Device_Removed);
         unregisterReceiver(m1updateui);
         udpconnection = true;

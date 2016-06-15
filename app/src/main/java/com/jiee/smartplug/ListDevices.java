@@ -536,7 +536,7 @@ public class ListDevices extends Activity {
             registerReceiver(device_removed_receiver, new IntentFilter("mDNS_Device_Removed"));
             registerReceiver(gcm_notification, new IntentFilter("gcm_notification"));
             registerReceiver(gcm_notification_done, new IntentFilter("gcmNotificationDone"));
-            registerReceiver(device_status_changed, new IntentFilter("device_status_changed"));
+            //registerReceiver(device_status_changed, new IntentFilter("device_status_changed"));
             registerReceiver(status_changed_update_ui, new IntentFilter("status_changed_update_ui"));
             registerReceiver(m1updateui, new IntentFilter("m1updateui"));
             registerReceiver(adapter_onClick, new IntentFilter("adapter_onClick"));
@@ -561,7 +561,7 @@ public class ListDevices extends Activity {
             unregisterReceiver(device_info);
             unregisterReceiver(gcm_notification);
             unregisterReceiver(gcm_notification_done);
-            unregisterReceiver(device_status_changed);
+            //unregisterReceiver(device_status_changed);
             unregisterReceiver(status_changed_update_ui);
             unregisterReceiver(m1updateui);
             unregisterReceiver(adapter_onClick);
