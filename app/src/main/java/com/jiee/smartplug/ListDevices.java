@@ -216,14 +216,8 @@ public class ListDevices extends Activity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 final String devid = intent.getStringExtra("id");
-                final String mac = intent.getStringExtra("mac");
-                final int outlet = intent.getIntExtra("outlet", -1);
-                final int nightlight = intent.getIntExtra("nightlight", -1);
 
-                Log.i("BROADCAST", "BROADCAST RECEIVED FROM DEVICE + " + mac );
-
-                mySQLHelper.updatePlugRelayService(outlet, mac);
-                mySQLHelper.updatePlugNightlightService(nightlight, mac);
+                Log.i("BROADCAST", "BROADCAST RECEIVED FROM DEVICE + " + devid );
 
                 if(l!=null) {
                     l.getData();

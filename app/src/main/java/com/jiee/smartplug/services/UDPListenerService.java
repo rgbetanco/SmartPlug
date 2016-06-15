@@ -46,7 +46,6 @@ public class UDPListenerService extends Service {
     int IRFlag = 0;
     byte[] ir = new byte[2];
     MySQLHelper sql;
-    HashMap broadcastValues = new HashMap();
 
     private void listenAndWaitAndThrowIntent() {
         shouldRestartSocketListen = false;
@@ -172,14 +171,81 @@ public class UDPListenerService extends Service {
         }
     }
 
-    void process_broadcast_info(){
-        broadcastValues.clear();
+    void updateRelayFlags(int flags, String id) {
+        if((flags & GlobalVariables.SERVICE_FLAGS_WARNING) == GlobalVariables.SERVICE_FLAGS_WARNING){
+            js.setHall_sensor(1);
+            System.out.println("Relay warning");
+            sql.updatePlugHallSensorService(js.getHall_sensor(), id);
+        } else {
+            System.out.println("Relay normal condition");
+            js.setHall_sensor(0);
+            sql.updatePlugHallSensorService(js.getHall_sensor(), id);
+        }
+    }
+
+    void updateCOSensorFlags(int flags, String id) {
+        int costatus = 0;
+        if((flags & GlobalVariables.SERVICE_FLAGS_WARNING) == GlobalVariables.SERVICE_FLAGS_WARNING ){
+            System.out.println("CO SENSOR WARNING");
+            costatus = 1;
+            js.setCo_sensor(costatus);                                             //WARNING
+        } else if ((flags & GlobalVariables.SERVICE_FLAGS_DISABLED) == GlobalVariables.SERVICE_FLAGS_DISABLED){
+            costatus = 3;
+            System.out.println("CO SENSOR NOT PLUGGED IN");
+            js.setCo_sensor(costatus);                                             //NOT PLUGGED
+        } else {
+            System.out.println("CO SENSOR NORMAL CONDITION = " + flags);
+            js.setCo_sensor(costatus);                                             //NORMAL
+        }
+
+        sql.updatePlugCoSensorService(costatus, id);
+    }
+
+    Intent process_broadcast_info(){
+        Intent ui = new Intent("m1updateui");
+        String id = sql.getPlugMacFromIP( dp.getAddress() );
+        ui.putExtra("id", id );
+
+        //ui.putExtra("mac", (String) broadcastValues.get("mac"));
+
         /**********************************************/
+
+        int pos = 18;
+        int serviceID;
+        while( (serviceID = process_long( lMsg[pos], lMsg[pos+1], lMsg[pos+2], lMsg[pos+3] )) !=0 ) {
+            pos+=4;
+            int flags = process_long( lMsg[pos], lMsg[pos+1], lMsg[pos+2], lMsg[pos+3] );
+            pos+=4;
+            byte serviceFormat = lMsg[pos];
+            pos++;
+            byte serviceData = lMsg[pos];   // NOTE: currently only need 1 byte, but in future, make sure
+                                            // this data size is based on serviceFormat!
+            pos++;
+
+            if( serviceFormat!=0x11 )
+                break;  // unhandled service format (This will need to be updated for future devices!)
+
+            if( serviceID == GlobalVariables.ALARM_RELAY_SERVICE) {
+                sql.updatePlugRelayService(serviceData, id);
+                updateRelayFlags(flags, id);
+            } else if( serviceID == GlobalVariables.ALARM_NIGHLED_SERVICE) {
+                sql.updatePlugNightlightService(serviceData, id);
+            } else if( serviceID == GlobalVariables.ALARM_CO_SERVICE ) {
+                updateCOSensorFlags(flags, id);
+            } else {
+                break; // stop processing when unknown services are reached
+            }
+
+        }
+
+        /*
         StringBuffer mac = new StringBuffer("");
         for (int i = 18; i < 24; i++) {
             mac.append(String.format("%02x", lMsg[i]));
         }
+        */
         /**********************************************/
+        /*
         int outlet_service = process_long(lMsg[24], lMsg[25], lMsg[26], lMsg[27]);
         int outlet_value = -1;
         if(outlet_service == GlobalVariables.ALARM_RELAY_SERVICE) {
@@ -193,7 +259,9 @@ public class UDPListenerService extends Service {
         broadcastValues.put("mac", new String(mac));
         broadcastValues.put("outlet", outlet_value);
         broadcastValues.put("nightlight", nightlight_value);
+        */
 
+        return ui;
     }
 
     void process_query_device_command(){
@@ -256,16 +324,11 @@ public class UDPListenerService extends Service {
         /**********************************************/
         int service_id = process_long(lMsg[18], lMsg[19], lMsg[20], lMsg[21]);
         System.out.println("Service ID: "+service_id);
-        if (service_id == 0xD1000000) {
+        if (service_id == GlobalVariables.ALARM_RELAY_SERVICE) {
             System.out.println("IS OUTLET SERVICE");
             int flag = process_long(lMsg[22], lMsg[23], lMsg[24], lMsg[25]);
-            if(flag == 0x00000010){
-                js.setHall_sensor(1);
-                System.out.println("Relay warning");
-            } else {
-                System.out.println("Relay normal condition");
-                js.setHall_sensor(0);
-            }
+            updateRelayFlags(flag, currentCommand.macID);
+
             byte datatype = lMsg[26];
             byte data = lMsg[27];
             System.out.println("DATA: " + data);
@@ -278,7 +341,6 @@ public class UDPListenerService extends Service {
             }
             System.out.println("MAC: "+ currentCommand.macID);
             sql.updatePlugRelayService(js.getRelay(), currentCommand.macID);
-            sql.updatePlugHallSensorService(js.getHall_sensor(), currentCommand.macID);
 
         }
         /**********************************************/
@@ -287,7 +349,7 @@ public class UDPListenerService extends Service {
     void get_nightlight_status(UDPCommunication.Command currentCommand){
         /**********************************************/
         int service_id = process_long(lMsg[28], lMsg[29], lMsg[30], lMsg[31]);
-        if(service_id == 0xD1000001) {
+        if(service_id == GlobalVariables.ALARM_NIGHLED_SERVICE) {
             System.out.println("NIGHT LIGHT SERVICE");
             int flag = process_long(lMsg[32], lMsg[33], lMsg[34], lMsg[35]);             //not used for this service
             byte datatype = lMsg[36];                                                    //always the same 0x01
@@ -309,23 +371,9 @@ public class UDPListenerService extends Service {
         /**********************************************/
         int service_id = process_long(lMsg[38], lMsg[39], lMsg[40], lMsg[41]);
         int costatus = 0;
-        if(service_id == 0xD1000002) {
+        if(service_id == GlobalVariables.ALARM_CO_SERVICE) {
             int flag = process_long(lMsg[42], lMsg[43], lMsg[44], lMsg[45]);
-            if(flag == 0x00000010){
-                System.out.println("CO SENSOR WARNING");
-                costatus = 1;
-                js.setCo_sensor(costatus);                                             //WARNING
-            } else if (flag == 0x00000100){
-                costatus = 3;
-                System.out.println("CO SENSOR NOT PLUGGED IN");
-                js.setCo_sensor(costatus);                                             //NOT PLUGGED
-            } else {
-                costatus = 0;
-                System.out.println(flag);
-                System.out.println("CO SENSOR NORMAL CONDITION");
-                js.setCo_sensor(costatus);                                             //NORMAL
-            }
-            sql.updatePlugCoSensorService(costatus, currentCommand.macID);
+            updateCOSensorFlags(flag, currentCommand.macID);
             byte datatype = lMsg[46];
             byte data = lMsg[47];
         }
@@ -362,12 +410,7 @@ public class UDPListenerService extends Service {
             if(code == 0x1000) {
                 code = 1;
                 Log.v("UDPListenerService", "command = BROADCAST");
-                process_broadcast_info();
-                Intent ui = new Intent("m1updateui");
-                ui.putExtra("id", sql.getPlugMacFromIP( dp.getAddress() ) );
-                ui.putExtra("mac", (String) broadcastValues.get("mac"));
-                ui.putExtra("outlet", (int) broadcastValues.get("outlet"));
-                ui.putExtra("nightlight", (int) broadcastValues.get("nightlight"));
+                Intent ui = process_broadcast_info();
 
                 sendBroadcast(ui);
             }
