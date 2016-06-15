@@ -65,7 +65,6 @@ public class ListDevicesAdapter extends BaseAdapter {
     public static String mac;
     public static String param;
     Handler mHandler;
-    int globlaPosition = 0;
     boolean deviceStatusChangedFlag = false;
     CrashCountDown crashTimer;
 
@@ -398,13 +397,13 @@ public class ListDevicesAdapter extends BaseAdapter {
     }
 
     public void gotoM1(int position){
-        this.globlaPosition = position;
+        final String name = SmartPlugsList.get(position).getName();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Intent i = new Intent("adapter_onClick");
                 i.putExtra("start", 0);
-                i.putExtra("name", SmartPlugsList.get(globlaPosition).getName());
+                i.putExtra("name", name);
                 act.sendBroadcast(i);
             }
         }).start();
