@@ -36,6 +36,7 @@ import com.jiee.smartplug.utils.MySQLHelper;
 
 import org.apache.http.protocol.HTTP;
 
+import java.util.HashSet;
 import java.util.Locale;
 
 public class MyGcmListenerService extends GcmListenerService {
@@ -79,7 +80,7 @@ public class MyGcmListenerService extends GcmListenerService {
             String param = "devget?token=" + Miscellaneous.getToken(getApplicationContext()) + "&hl=" + Locale.getDefault().getLanguage() + "&res=0&devid=" + devId;
             try {
                 if(devId != null && !devId.isEmpty() && !devId.equals("null")) {
-                    http.getDeviceStatus(param, devId, getApplicationContext());
+                    http.getDeviceStatus(param, devId, getApplicationContext(), false);
                 }
             } catch (Exception e){
                 e.printStackTrace();

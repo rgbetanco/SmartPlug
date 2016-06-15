@@ -206,6 +206,8 @@ public class UDPListenerService extends Service {
         String id = sql.getPlugMacFromIP( dp.getAddress() );
         ui.putExtra("id", id );
 
+        HTTPHelper.mPollingDevices.remove(id);
+
         //ui.putExtra("mac", (String) broadcastValues.get("mac"));
 
         /**********************************************/
