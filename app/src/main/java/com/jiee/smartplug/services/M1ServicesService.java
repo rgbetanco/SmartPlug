@@ -46,6 +46,8 @@ public class M1ServicesService extends IntentService {
         if( httpHelper==null )
             httpHelper = new HTTPHelper(this);
 
+
+
         String url = "";
         M1.deviceStatusChangedFlag = false;
         if(udp.setDeviceStatus( mac, serviceId, action, true)){

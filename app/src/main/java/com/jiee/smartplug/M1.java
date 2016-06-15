@@ -59,10 +59,8 @@ public class M1 extends AppCompatActivity {
     BroadcastReceiver device_status_changed;
     BroadcastReceiver gcm_notification;
     BroadcastReceiver gcm_notification_done;
-    BroadcastReceiver timer_crash_reached;
     BroadcastReceiver http_device_status;
     BroadcastReceiver device_not_reached;
-    BroadcastReceiver timers_sent_successfully;
     BroadcastReceiver device_status_set;
     BroadcastReceiver mDNS_Device_Removed;
     BroadcastReceiver m1updateui;
@@ -103,7 +101,6 @@ public class M1 extends AppCompatActivity {
     RelativeLayout btn_layout_ir;
     RelativeLayout btn_layout_co;
     RelativeLayout overlay;
-    CrashCountDown crashTimer;
     UDPCommunication udp;
     boolean udpconnection = false;
     String url = "";
@@ -125,7 +122,6 @@ public class M1 extends AppCompatActivity {
         udp = new UDPCommunication(this);
         http = new Http();
         httpHelper = new HTTPHelper(this);
-        crashTimer = new CrashCountDown(this);
 
         progressBar = (ProgressBar) findViewById(R.id.M1ProgressBar);
         progressBar.setVisibility(View.GONE);
@@ -252,83 +248,6 @@ public class M1 extends AppCompatActivity {
         overlay.setLayoutParams(params);
         overlay.invalidate(); // update the view
         overlay.setVisibility(View.GONE);
-
-        timers_sent_successfully = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                System.out.println("TIMERS SENT SUCCESSFULLY BROADCAST");
-                deviceStatusChangedFlag = true;
-            }
-        };
-
-        timer_crash_reached = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if(!M1.deviceStatusChangedFlag){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String url = "devctrl?token=" + Miscellaneous.getToken(getApplicationContext()) + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + mac + "&send=0&ignoretoken="+ RegistrationIntentService.regToken;
-                            try {
-                                if (httpHelper.setDeviceStatus(url, (byte) action, serviceId)) {
-                                    if (serviceId == GlobalVariables.ALARM_RELAY_SERVICE) {
-                                        sql.updatePlugRelayService(action, mac);
-                                    }
-
-                                    if (serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
-                                        sql.updatePlugNightlightService(action, mac);
-                                    }
-                                    Intent i = new Intent("status_changed_update_ui");
-                                    sendBroadcast(i);
-                                } else {
-                                    Intent i = new Intent("http_device_status");
-                                    i.putExtra("error", "yes");
-                                    sendBroadcast(i);
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }).start();
-
-                } else {
-
-                    if (serviceId == GlobalVariables.ALARM_RELAY_SERVICE) {
-                        sql.updatePlugRelayService(action, mac);
-                    }
-
-                    if (serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
-                        sql.updatePlugNightlightService(action, mac);
-                    }
-                    Intent i = new Intent("status_changed_update_ui");
-                    sendBroadcast(i);
-
-                    /*
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String url = "devctrl?token=" + Miscellaneous.getToken(getApplicationContext()) + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + mac + "&send=1&ignoretoken="+ RegistrationIntentService.regToken;
-
-                            try {
-                                httpHelper.setDeviceStatus(url, (byte) action, serviceId);
-                            } catch (Exception e){
-                                e.printStackTrace();
-                            }
-                        }
-                    }).start();
-                    */
-                }
-                M1.deviceStatusChangedFlag = false;
-
-                /*
-                img_warn2.setVisibility(View.VISIBLE);
-                warning_text.setText(getApplicationContext().getString(R.string.no_udp_Connection));
-                warning_text.setVisibility(View.VISIBLE);
-                btn_warning.setVisibility(View.VISIBLE);
-                udpconnection = false;
-                */
-            }
-        };
 
         http_device_status = new BroadcastReceiver() {
             @Override
@@ -838,10 +757,8 @@ public class M1 extends AppCompatActivity {
         registerReceiver(device_status_changed, new IntentFilter("device_status_changed"));
         registerReceiver(gcm_notification, new IntentFilter("gcm_notification"));
         registerReceiver(gcm_notification_done, new IntentFilter("gcmNotificationDone"));
-        registerReceiver(timer_crash_reached, new IntentFilter("timer_crash_reached"));
         registerReceiver(http_device_status, new IntentFilter("http_device_status"));
         registerReceiver(device_not_reached, new IntentFilter("device_not_reached"));
-        registerReceiver(timers_sent_successfully, new IntentFilter("timers_sent_successfully"));
         registerReceiver(device_status_set, new IntentFilter("device_status_set"));
         registerReceiver(mDNS_Device_Removed, new IntentFilter("mDNS_Device_Removed"));
         registerReceiver(m1updateui, new IntentFilter("m1updateui"));
@@ -861,10 +778,8 @@ public class M1 extends AppCompatActivity {
         unregisterReceiver(device_status_changed);
         unregisterReceiver(gcm_notification);
         unregisterReceiver(gcm_notification_done);
-        unregisterReceiver(timer_crash_reached);
         unregisterReceiver(http_device_status);
         unregisterReceiver(device_not_reached);
-        unregisterReceiver(timers_sent_successfully);
         unregisterReceiver(device_status_set);
         unregisterReceiver(mDNS_Device_Removed);
         unregisterReceiver(m1updateui);
@@ -926,10 +841,7 @@ public class M1 extends AppCompatActivity {
         M1ServicesService.mac = mac;
         startService(iService);
 
-        crashTimer.setMicroTimer();
-        crashTimer.startTimer();
-
-        SystemClock.sleep(300);
+        //SystemClock.sleep(300);
 
         plug_icon.setEnabled(true);
         nightled_icon.setEnabled(true);

@@ -479,8 +479,10 @@ public class UDPListenerService extends Service {
                     if(code == 0){
                         code = 1;
                         System.out.println("DEVICE STATUS CHANGED");
+                        con.finishDeviceStatus(currentCommand.msgID);
                         Intent i = new Intent("device_status_changed");
                         i.putExtra("id", currentCommand.macID);
+                        i.putExtra("msgid", currentCommand.msgID);
                         sendBroadcast(i);
                     }
                     break;
@@ -490,6 +492,7 @@ public class UDPListenerService extends Service {
                         process_get_device_status(currentCommand);
                         Intent ui = new Intent("status_changed_update_ui");
                         ui.putExtra("id", currentCommand.macID);
+                        ui.putExtra("msgid", currentCommand.msgID);
                         sendBroadcast(ui);
                     }
                     break;
@@ -498,6 +501,7 @@ public class UDPListenerService extends Service {
                         code = 1;
                         Intent ui = new Intent("timers_sent_successfully");
                         ui.putExtra("id", currentCommand.macID);
+                        ui.putExtra("msgid", currentCommand.msgID);
                         sendBroadcast(ui);
                     }
                     break;
