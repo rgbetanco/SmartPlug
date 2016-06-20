@@ -42,7 +42,7 @@ public class ListDevicesUpdateAlarmService extends IntentService {
 
         try {
             String param = "devget?token=" + Miscellaneous.getToken( getApplicationContext() ) + "&hl=" + Locale.getDefault().getLanguage() + "&res=0&devid=" + macParam;
-            httpHelper.getDeviceStatus(param, macParam, getApplicationContext());
+            httpHelper.getDeviceStatus(param, macParam, getApplicationContext(), false);
         } catch (Exception e){
             e.printStackTrace();
         }

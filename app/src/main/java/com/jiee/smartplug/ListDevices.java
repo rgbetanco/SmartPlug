@@ -80,7 +80,6 @@ public class ListDevices extends Activity {
     BroadcastReceiver UpdateAlarmServiceDone;
     BroadcastReceiver http_device_status;
     BroadcastReceiver delete_sent;
-    BroadcastReceiver timer_crash_reached;
     ListDevicesAdapter l;
     ListView list;
     NetworkUtil networkUtil;
@@ -95,10 +94,8 @@ public class ListDevices extends Activity {
     String ipParam, macParam;
     Handler mHandler;
     RelativeLayout overlay;
-    public static boolean deviceStatusChangedFlag = false;
     public static String token;
     SharedPreferences sharedpreferences;
-    CrashCountDown crashTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -278,7 +275,6 @@ public class ListDevices extends Activity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 System.out.println("DEVICE STATUS CHANGED UI");
-                deviceStatusChangedFlag = true;
 
                 if(l!=null) {
                     l.setDeviceStatusChangedFlag(true);
@@ -290,7 +286,6 @@ public class ListDevices extends Activity {
         device_status_changed = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                deviceStatusChangedFlag = true;
        //         l.setDeviceStatusChangedFlag(true);
                 Log.i("BROADCAST", "DeviceStatusChanged");
 
@@ -370,79 +365,6 @@ public class ListDevices extends Activity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 l.deleteDevice();
-            }
-        };
-
-        timer_crash_reached = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-                if( mySQLHelper==null )
-                    mySQLHelper = HTTPHelper.getDB(ListDevices.this);
-
-                if( httpHelper==null )
-                    httpHelper = new HTTPHelper(ListDevices.this);
-
-                String url = "";
-
-
-                if(ListDevices.deviceStatusChangedFlag == false){
-                    System.out.println("device status changed flag == false");
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String url = "devctrl?token=" + Miscellaneous.getToken(getApplicationContext()) + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + ListDevicesServicesService.mac + "&send=0&ignoretoken="+ RegistrationIntentService.regToken;
-                            try {
-                                if (httpHelper.setDeviceStatus(url, (byte) ListDevicesServicesService.action, ListDevicesServicesService.serviceId)) {
-                                    if (ListDevicesServicesService.serviceId == GlobalVariables.ALARM_RELAY_SERVICE) {
-                                        mySQLHelper.updatePlugRelayService(ListDevicesServicesService.action, ListDevicesServicesService.mac);
-                                    }
-
-                                    if (ListDevicesServicesService.serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
-                                        mySQLHelper.updatePlugNightlightService(ListDevicesServicesService.action, ListDevicesServicesService.mac);
-                                    }
-                                    Intent i = new Intent("status_changed_update_ui");
-                                    sendBroadcast(i);
-                                } else {
-                                    Intent i = new Intent("http_device_status");
-                                    i.putExtra("error", "yes");
-                                    sendBroadcast(i);
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }).start();
-
-                } else {
-
-                    if (ListDevicesServicesService.serviceId == GlobalVariables.ALARM_RELAY_SERVICE) {
-                        mySQLHelper.updatePlugRelayService(ListDevicesServicesService.action, ListDevicesServicesService.mac);
-                    }
-
-                    if (ListDevicesServicesService.serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
-                        mySQLHelper.updatePlugNightlightService(ListDevicesServicesService.action, ListDevicesServicesService.mac);
-                    }
-                    Intent i = new Intent("status_changed_update_ui");
-                    sendBroadcast(i);
-
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String url = "devctrl?token=" + Miscellaneous.getToken(getApplicationContext()) + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + ListDevicesServicesService.mac + "&send=1&ignoretoken="+ RegistrationIntentService.regToken;
-
-                            try {
-                                httpHelper.setDeviceStatus(url, (byte) ListDevicesServicesService.action, ListDevicesServicesService.serviceId);
-                            } catch (Exception e){
-                                e.printStackTrace();
-                            }
-                        }
-                    }).start();
-
-
-                }
-
-                ListDevices.deviceStatusChangedFlag = false;
             }
         };
 
@@ -557,7 +479,6 @@ public class ListDevices extends Activity {
 */
                     //}
 
-                    deviceStatusChangedFlag = false;
             //        sendBroadcast(intent);
                     stopRepeatingTask();
                     //    mHandler.postDelayed(mStatusChecker, 7000);
@@ -615,7 +536,7 @@ public class ListDevices extends Activity {
             registerReceiver(device_removed_receiver, new IntentFilter("mDNS_Device_Removed"));
             registerReceiver(gcm_notification, new IntentFilter("gcm_notification"));
             registerReceiver(gcm_notification_done, new IntentFilter("gcmNotificationDone"));
-            registerReceiver(device_status_changed, new IntentFilter("device_status_changed"));
+            //registerReceiver(device_status_changed, new IntentFilter("device_status_changed"));
             registerReceiver(status_changed_update_ui, new IntentFilter("status_changed_update_ui"));
             registerReceiver(m1updateui, new IntentFilter("m1updateui"));
             registerReceiver(adapter_onClick, new IntentFilter("adapter_onClick"));
@@ -623,7 +544,6 @@ public class ListDevices extends Activity {
             registerReceiver(UpdateAlarmServiceDone, new IntentFilter("UpdateAlarmServiceDone"));
             registerReceiver(http_device_status, new IntentFilter("http_device_status"));
             registerReceiver(delete_sent, new IntentFilter("delete_sent"));
-            registerReceiver(timer_crash_reached, new IntentFilter("timer_crash_reached"));
             LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                     new IntentFilter(GlobalVariables.REGISTRATION_COMPLETE));
     //    }
@@ -641,7 +561,7 @@ public class ListDevices extends Activity {
             unregisterReceiver(device_info);
             unregisterReceiver(gcm_notification);
             unregisterReceiver(gcm_notification_done);
-            unregisterReceiver(device_status_changed);
+            //unregisterReceiver(device_status_changed);
             unregisterReceiver(status_changed_update_ui);
             unregisterReceiver(m1updateui);
             unregisterReceiver(adapter_onClick);
@@ -649,7 +569,6 @@ public class ListDevices extends Activity {
             unregisterReceiver(UpdateAlarmServiceDone);
             unregisterReceiver(http_device_status);
             unregisterReceiver(delete_sent);
-            unregisterReceiver(timer_crash_reached);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
     //    }
     }

@@ -47,7 +47,6 @@ public class ListDevicesServicesService extends IntentService {
 
         if(udp.setDeviceStatus(mac, serviceId, action, true)){
             System.out.println("ACTION: "+action);
-            ListDevices.deviceStatusChangedFlag = false;
          //   int counter = 20000;
          //   while (!ListDevices.deviceStatusChangedFlag && counter > 0) {
          //       counter--;

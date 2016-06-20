@@ -1,11 +1,17 @@
 package com.jiee.smartplug.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.jiee.smartplug.M1;
 import com.jiee.smartplug.objects.JSmartPlug;
+import com.jiee.smartplug.services.ListDevicesServicesService;
+import com.jiee.smartplug.services.RegistrationIntentService;
 import com.jiee.smartplug.services.UDPListenerService;
 
 import org.json.HTTP;
@@ -21,6 +27,8 @@ import java.nio.ByteOrder;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.concurrent.RunnableFuture;
 
 /**
  * Created by ronaldgarcia on 9/12/15.
@@ -57,6 +65,17 @@ public class UDPCommunication {
     Context mContext;
 
     static int mLastMsgID = (new SecureRandom()).nextInt();
+
+    static class QueueItem {
+        Runnable runnable;
+        int msgID;
+        int serviceID;
+        int action;
+        String macID;
+    }
+
+    static SparseArray<QueueItem>    mSetStatusQueue = new SparseArray<QueueItem>();
+    static Handler mSetStatusHandler;
 
     public static class Command {
         public String macID;
@@ -113,6 +132,9 @@ public class UDPCommunication {
 
     public UDPCommunication(Context c) {
         this.mContext = c.getApplicationContext();
+        if( mSetStatusHandler==null ) {
+            mSetStatusHandler = new Handler();
+        }
     }
 
     //DEVICE QUERY
@@ -543,7 +565,36 @@ public class UDPCommunication {
         return toReturn;
     }
 
-    public boolean setDeviceStatus( String macID, int serviceId, byte action, boolean temp)  {
+    public void finishDeviceStatus( final int msgID ) {
+        // removes the given message from queue
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.v( "sendUDP", "dequeuing command " + msgID );
+
+                synchronized (mSetStatusQueue) {
+                    QueueItem item = mSetStatusQueue.get(msgID);
+                    if( item!=null ) {
+                        mSetStatusHandler.removeCallbacks(item.runnable);
+                        mSetStatusQueue.remove(msgID);
+
+                        if (ListDevicesServicesService.serviceId == GlobalVariables.ALARM_RELAY_SERVICE) {
+                            HTTPHelper.getDB(mContext).updatePlugRelayService(item.action, item.macID);
+                        }
+
+                        if (ListDevicesServicesService.serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
+                            HTTPHelper.getDB(mContext).updatePlugNightlightService(item.action, item.macID);
+                        }
+                        Intent i = new Intent("status_changed_update_ui");
+                        mContext.sendBroadcast(i);
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public boolean setDeviceStatus( final String macID, final int serviceId, final byte action, boolean temp)  {
         Command cmd = generate_header(macID, (short)0x0008);
 
         for(int i=0; i<14;i++){
@@ -564,6 +615,76 @@ public class UDPCommunication {
         sMsg[21] = (byte)((terminator >> 8 ) & 0xff);
         sMsg[22] = (byte)((terminator >> 16 ) & 0xff);
         sMsg[23] = (byte)((terminator >> 24 ) & 0xff);
+
+        final int msgID = cmd.msgID;
+
+        Runnable runnable = new Runnable() {
+
+            @Override
+            public void run() {
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (mSetStatusQueue) {
+                            if( mSetStatusQueue.get(msgID)==null )
+                                return;
+
+                            mSetStatusQueue.remove(msgID);
+                        }
+                        Log.v( "sendUDP", "sending command " + msgID + " to server after timeout." );
+
+                        String url = "devctrl?token=" + Miscellaneous.getToken(mContext) + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + macID + "&send=0&ignoretoken="+ RegistrationIntentService.regToken;
+                        try {
+                            HTTPHelper httpHelper = new HTTPHelper(mContext);
+
+                            if (httpHelper.setDeviceStatus(url, action, serviceId)) {
+                                if (serviceId == GlobalVariables.ALARM_RELAY_SERVICE) {
+                                    httpHelper.getDB().updatePlugRelayService(action, macID);
+                                }
+
+                                if (serviceId == GlobalVariables.ALARM_NIGHLED_SERVICE) {
+                                    httpHelper.getDB().updatePlugNightlightService(action, macID);
+                                }
+                                Intent i = new Intent("status_changed_update_ui");
+                                mContext.sendBroadcast(i);
+                            } else {
+                                Intent i = new Intent("http_device_status");
+                                i.putExtra("error", "yes");
+                                mContext.sendBroadcast(i);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+
+            }
+        };
+
+        QueueItem item = new QueueItem();
+        item.msgID = msgID;
+        item.runnable = runnable;
+        item.serviceID = serviceId;
+        item.action = action;
+        item.macID = macID;
+
+        synchronized (mSetStatusQueue) {
+            for( int i=mSetStatusQueue.size()-1; i>=0; i-- ) {
+                QueueItem itemTemp = mSetStatusQueue.valueAt(i);
+                if( itemTemp.macID.equals(macID) && itemTemp.serviceID==serviceId ) {
+                    Log.v( "sendUDP", "dropping command " + itemTemp.msgID );
+                    mSetStatusHandler.removeCallbacks(itemTemp.runnable);
+                    mSetStatusQueue.removeAt(i);
+                    break;
+                }
+            }
+
+            mSetStatusHandler.postDelayed(runnable, 500);
+
+            Log.v( "sendUDP", "queuing command " + msgID );
+            mSetStatusQueue.append( msgID, item );
+        }
 
         sendUDP(sMsg, cmd);
 

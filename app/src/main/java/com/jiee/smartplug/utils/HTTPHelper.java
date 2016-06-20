@@ -30,6 +30,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.spec.ECField;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -471,15 +472,27 @@ public class HTTPHelper {
         return toReturn;
     }
 
-    public boolean getDeviceStatus(String param, String id, Context context) throws IOException{
+
+    static public HashSet<String> mPollingDevices = new HashSet<String>();
+
+    public boolean getDeviceStatus(String param, String id, Context context, boolean alwaysUpdate ) throws IOException{
         boolean toReturn = false;
         this.idLocal = id;
         try {
+            if( mPollingDevices.contains(id) && !alwaysUpdate )
+                return false;
+            mPollingDevices.add(id);
             json = getJSONData(param);
             System.out.println(json);
         } catch (Exception e){
             e.printStackTrace();
+            mPollingDevices.remove(id);
         }
+
+        if( !mPollingDevices.contains(id) && !alwaysUpdate )
+            return true; // don't update because broadcast already did that!
+
+        mPollingDevices.remove(id);
 
         MySQLHelper sql = getDB();
 
