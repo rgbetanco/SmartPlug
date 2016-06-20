@@ -14,9 +14,14 @@ import android.widget.Toast;
 import com.jiee.smartplug.services.SmartConfigService;
 import com.jiee.smartplug.utils.NetworkUtil;
 
-/**
- * Created by ronaldgarcia on 2/12/15.
+/** TO DO:
+ *
+ /*
+ SmartConfigDialog.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This dialog allows the user to provide SSID and password to the device to connect to the WiFi rounter.
  */
+
 public class SmartConfigDialog extends Dialog implements View.OnClickListener {
 
     public Activity c;

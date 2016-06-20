@@ -1,5 +1,10 @@
 package com.jiee.smartplug;
 
+/* TO DO: DELETE THIS CLASS, IT IS NOT BEING USED
+ *
+*/
+
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;

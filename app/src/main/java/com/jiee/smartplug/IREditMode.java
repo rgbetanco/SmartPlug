@@ -1,5 +1,13 @@
 package com.jiee.smartplug;
 
+/** TO DO:
+ *
+ /*
+ IREditMode.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This class allows the user to add/delete IR Groups
+ */
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -1,5 +1,12 @@
 package com.jiee.smartplug;
 
+/** TO DO: DELETE THIS FILE
+ *
+ /*
+ mDNSsearch.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ */
+
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;

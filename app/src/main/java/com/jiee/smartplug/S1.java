@@ -1,5 +1,13 @@
 package com.jiee.smartplug;
 
+/** TO DO:
+ *
+ /*
+ S1.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This class allow the user to change the account password. The required parameters are old password, new password and re-entry the new password.
+ */
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;

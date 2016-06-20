@@ -26,9 +26,14 @@ import com.jiee.smartplug.utils.UDPCommunication;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by ronaldgarcia on 29/12/15.
+/** TO DO:
+ *
+ /*
+ M1SnoozeDialog.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This dialog allows the user to add extra delay to the alarm. Note that this delay will be added to the end-time part of the alarm.
  */
+
 public class M1SnoozeDialog extends Dialog implements View.OnClickListener {
 
     ListView listView;

@@ -1,5 +1,13 @@
 package com.jiee.smartplug;
 
+/** TO DO:
+ *
+ /*
+ Splashscreen.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ The splash screen will show at the opening of the app, during a short period of time the app would also try to connet to the server.
+ */
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -1,7 +1,10 @@
 package com.jiee.smartplug;
 
-/**
- * Created by ronaldgarcia on 2/12/15.
+/** TO DO: DELETE THIS FILE.
+ *
+/*
+ NewDeviceList.cpp
+ Author: Chinsoft Ltd. | www.chinsoft.com
  */
 
 import android.app.Activity;

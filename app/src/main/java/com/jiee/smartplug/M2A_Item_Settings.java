@@ -1,5 +1,14 @@
 package com.jiee.smartplug;
 
+/** TO DO:
+ *
+ /*
+ M2A_Item_Settings.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This class allows the user to change or visualize the settings of every device. This activity also allows the user to change the device icon
+ and to update the firmware of the device.
+ */
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -439,27 +448,12 @@ public class M2A_Item_Settings extends Activity {
                 try {
                     if (urlReturnedIntent.getIntExtra("custom", 0) != 1){
                         customeIcon = false;
-                        InputStream is;
-                        try {
-                            is = this.getContentResolver().openInputStream(Uri.parse(urlReturnedIntent.getStringExtra("url")));
-                            BitmapFactory.Options options=new BitmapFactory.Options();
-                            options.inSampleSize = 10;
-                            Bitmap preview_bitmap= BitmapFactory.decodeStream(is, null, options);
-
-                            iconLocal = new BitmapDrawable(getResources(),preview_bitmap);
-
-                        } catch (FileNotFoundException e) {
-                            iconLocal = getResources().getDrawable(R.drawable.lamp);
-                        }
-                        btn_icon.setBackground(iconLocal);
-
                     } else {
                         customeIcon = true;
-                        btn_icon.setBackground(null);
-                        icon = urlReturnedIntent.getStringExtra("url");
-                        Uri Uricon = Uri.parse(icon);
-                        Picasso.with(M2A_Item_Settings.this).load(Uricon).into(btn_icon);
                     }
+                    icon = urlReturnedIntent.getStringExtra("url");
+                    Uri Uricon = Uri.parse(icon);
+                    Picasso.with(M2A_Item_Settings.this).load(Uricon).into(btn_icon);
                 } catch(Exception e){
                     e.printStackTrace();
                 }

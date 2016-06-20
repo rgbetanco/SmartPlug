@@ -1,5 +1,16 @@
 package com.jiee.smartplug;
 
+/** TO DO:
+ *
+ /*
+ R6_Record_IR.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ Once this activity is called a command is sent to the SmartPlug and the SmartPlug gets in IR Listening mode. If the user does not send
+ any IR command to the SmartPlug the device will send a timeout command to the phone. After the user sends an IR command to the device, the
+ device sends a file number to the phone, this file number will be used to play back the command. The user, on this activity, is allow to
+ save the command, repeat the process and test the command.
+ */
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;

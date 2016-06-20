@@ -1,5 +1,14 @@
 package com.jiee.smartplug;
 
+/* TO DO:
+ *
+/*
+ CreateAccount.cpp
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ Create a new account for the user.
+
+ */
+
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;

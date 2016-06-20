@@ -1,5 +1,13 @@
 package com.jiee.smartplug;
 
+/* TO DO: DELETE THIS FILE
+ *
+/*
+ NewDeviceList.cpp
+ Author: Chinsoft Ltd. | www.chinsoft.com
+
+ */
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;

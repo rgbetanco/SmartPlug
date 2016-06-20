@@ -1,5 +1,14 @@
 package com.jiee.smartplug;
 
+/* TO DO:
+ *
+/*
+ CustomDialog.cpp
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ Display different dialogs with messages depending on the calling activity.
+
+ */
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;

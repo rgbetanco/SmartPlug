@@ -1,5 +1,13 @@
 package com.jiee.smartplug;
 
+/** TO DO:
+ *
+ /*
+ IRCodeMode.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This class allows the user to add/delete and execute IR commands inside a IR Group
+ */
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -1,5 +1,13 @@
 package com.jiee.smartplug;
 
+/** TO DO:
+ *
+ /*
+ IRListCommands.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ List the IR codes to display in the S3 activity. The S3 activity allows the user to add alarms.
+ */
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;

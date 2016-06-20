@@ -29,6 +29,7 @@ import com.jiee.smartplug.utils.UDPCommunication;
 
 public class UDPListenerService extends Service {
     static String UDP_BROADCAST = "UDPBroadcast";
+    static final String TAG =  "UDPListenerService";
 
     InetAddress broadcastIP;
     int UDP_BROADCAST_PORT = 20004;
@@ -110,7 +111,7 @@ public class UDPListenerService extends Service {
                     }
                 } catch (Exception e) {
                     startListenForUDPBroadcast();
-                    Log.i("UDP", "no longer listening for UDP broadcasts cause of error " + e.getMessage());
+                    Log.i( TAG, "no longer listening for UDP broadcasts cause of error " + e.getMessage());
                 }
             }
         });
@@ -156,7 +157,7 @@ public class UDPListenerService extends Service {
         }
         //listenAndWaitAndThrowIntent(broadcastIP, port);
         startListenForUDPBroadcast();
-        Log.i("UDP", "UPD Service started");
+        Log.i( TAG, "UPD Service started");
         return START_STICKY;
     }
 
@@ -327,21 +328,18 @@ public class UDPListenerService extends Service {
         int service_id = process_long(lMsg[18], lMsg[19], lMsg[20], lMsg[21]);
         System.out.println("Service ID: "+service_id);
         if (service_id == GlobalVariables.ALARM_RELAY_SERVICE) {
-            System.out.println("IS OUTLET SERVICE");
             int flag = process_long(lMsg[22], lMsg[23], lMsg[24], lMsg[25]);
             updateRelayFlags(flag, currentCommand.macID);
 
             byte datatype = lMsg[26];
             byte data = lMsg[27];
-            System.out.println("DATA: " + data);
             if(data == 0x01){
                 js.setRelay(1);
-                System.out.println("Relay is on");
             } else {
                 js.setRelay(0);
-                System.out.println("Relay is off");
             }
-            System.out.println("MAC: "+ currentCommand.macID);
+
+            Log.v( TAG, "relay data=" + ((data==1)?"on":"off") + " devid=" + currentCommand.macID );
             sql.updatePlugRelayService(js.getRelay(), currentCommand.macID);
 
         }
@@ -352,18 +350,16 @@ public class UDPListenerService extends Service {
         /**********************************************/
         int service_id = process_long(lMsg[28], lMsg[29], lMsg[30], lMsg[31]);
         if(service_id == GlobalVariables.ALARM_NIGHLED_SERVICE) {
-            System.out.println("NIGHT LIGHT SERVICE");
             int flag = process_long(lMsg[32], lMsg[33], lMsg[34], lMsg[35]);             //not used for this service
             byte datatype = lMsg[36];                                                    //always the same 0x01
             byte data = lMsg[37];
-            System.out.println("DATA: "+data);
             if(data == 0x01){
                 js.setNightlight(1);
-                System.out.println("Nighlight is on");
             } else {
                 js.setNightlight(0);
-                System.out.println("Nighlight is off");
             }
+
+            Log.v( TAG, "light data=" + ((data==1)?"on":"off") + " devid=" + currentCommand.macID );
             sql.updatePlugNightlightService(data, currentCommand.macID);
         }
         /**********************************************/
@@ -397,7 +393,7 @@ public class UDPListenerService extends Service {
             isCommand = true;
         } else {
             // failed
-            Log.v( "UDPListenerService", "ignoring header=" + header );
+            Log.v( TAG, "ignoring header=" + header );
             return;
         }
 
@@ -411,29 +407,29 @@ public class UDPListenerService extends Service {
 
             if(code == 0x1000) {
                 code = 1;
-                Log.v("UDPListenerService", "command = BROADCAST");
+                Log.v( TAG, "command = BROADCAST");
                 Intent ui = process_broadcast_info();
 
                 sendBroadcast(ui);
             }
             else if(code == 0x001F) {
                 code = 1;
-                Log.v( "UDPListenerService", "command = OTA firmware OK" );
+                Log.v( TAG, "command = OTA firmware OK" );
                 Intent i = new Intent("ota_finished");
                 i.putExtra("id", sql.getPlugMacFromIP( dp.getAddress() ) );
                 sendBroadcast(i);
             }
             else {
-                Log.v( "UDPListenerService", "unknown command " + code );
+                Log.v( TAG, "unknown command " + code );
             }
 
         } else {
             if(msgid == previous_msgid){
-                Log.v( "UDPListenerService", "ignoring duplicate msg#" + msgid );
+                Log.v( TAG, "ignoring duplicate msg#" + msgid );
                 return; // ignore repeated command
             }
 
-            Log.v( "UDPListenerService", "Received header=" + header + " msg#" + msgid + " seq#" + seq + " size=" + size + " code=" + code );
+            Log.v( TAG, "Received header=" + header + " msg#" + msgid + " seq#" + seq + " size=" + size + " code=" + code );
 
             previous_msgid = msgid;
 

@@ -1,5 +1,13 @@
 package com.jiee.smartplug;
 
+/* TO DO: DELETE THIS CLASS IF NOT USED IN THE FUTURE.
+ *
+/*
+ DetectIR.cpp
+ Author: Chinsoft Ltd. | www.chinsoft.com
+
+ */
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;

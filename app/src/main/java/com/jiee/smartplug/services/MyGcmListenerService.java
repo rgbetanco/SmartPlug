@@ -68,13 +68,7 @@ public class MyGcmListenerService extends GcmListenerService {
         String getDeviceFlag = data.getString("getDeviceFlag");
         String getAlarmFlag = data.getString("getAlarmFlag");
         String devId = data.getString("devid");
-        Log.d(TAG, "From: " + from);
-        Log.d(TAG, "Message: " + message);
-        Log.d(TAG, "Show Flag: " + showFlag);
-        Log.d(TAG, "Get Data Flag: " + getDataFlag);
-        Log.d(TAG, "Get Device Flag: " + getDeviceFlag);
-        Log.d(TAG, "Get Alarm Flag: " + getAlarmFlag);
-        Log.d(TAG, "Device Id: "+devId);
+        Log.d(TAG, "From: " + from + " msg: " + message + " devid:" + devId + " (flag=" + showFlag + ", data=" + getDataFlag + ", dev=" + getDeviceFlag + ", alarm=" + getAlarmFlag + ")");
 
         if(getDataFlag.equals("true")){
             String param = "devget?token=" + Miscellaneous.getToken(getApplicationContext()) + "&hl=" + Locale.getDefault().getLanguage() + "&res=0&devid=" + devId;

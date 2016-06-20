@@ -38,10 +38,16 @@ import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
+/** TO DO:
+ *
+ /*
+ IconPicker.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This class allows the user to pick an icon, choose an existing picture from the gallery or take a picture to set as device icon.
+ */
+
 /*
-
     Designed by Chinsoft Company, 2016. Copyrighted
-
  */
 
 public class IconPicker extends Activity {

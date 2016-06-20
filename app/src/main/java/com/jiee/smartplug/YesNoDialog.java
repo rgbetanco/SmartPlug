@@ -21,7 +21,8 @@ import com.jiee.smartplug.utils.NetworkUtil;
 import java.util.Locale;
 
 /**
- * Created by ronaldgarcia on 2/12/15.
+ * Created by Chinsoft on 2/12/15.
+ * This dialog show a simple yes/no dialog for the user to confirm action.
  */
 public class YesNoDialog extends Dialog implements View.OnClickListener {
 

@@ -1,5 +1,13 @@
 package com.jiee.smartplug;
 
+/** TO DO:
+ *
+ /*
+ R2_EditItem.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This class allows the user to add the icon and name of the IR groups
+ */
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -1,5 +1,12 @@
 package com.jiee.smartplug;
 
+/** TO DO: NOT BEIGN USED AT THE MOMENT
+ *
+ /*
+ ResetPassword.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ */
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;

@@ -1,5 +1,13 @@
 package com.jiee.smartplug;
 
+/** TO DO:
+ *
+ /*
+ S0.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This class allows the user to logout or to go to another activity (S1) to change the account password
+ */
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;

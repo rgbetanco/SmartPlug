@@ -1,5 +1,13 @@
 package com.jiee.smartplug;
 
+/** TO DO:
+ *
+ /*
+ S2_Schedule.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This class list all the alarms per service and allow the user to edit or delete any alarm.
+ */
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;

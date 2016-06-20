@@ -1,5 +1,14 @@
 package com.jiee.smartplug;
 
+/** TO DO:
+ *
+ /*
+ MainActivity.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ Login class, this class will be called the first time the user login or if the user logout. This class will create a token that is shared
+ between the app and the server.
+ */
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;

@@ -1,5 +1,13 @@
 package com.jiee.smartplug;
 
+/** TO DO:
+ *
+ /*
+ S3.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This class allows the user to add a new alarm to any of the services such as IR, outlet, and nightlight.
+ */
+
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;

@@ -1,5 +1,14 @@
 package com.jiee.smartplug;
 
+/** TO DO:
+ *
+ /*
+ M1.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ M1 is the main activity for every device, it allows the user to toggle outlet and nightlight. It also allows the user to add new alarms for
+ outlet, nightlight and IR commands. Show alert messages for CO sensor.
+ */
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -31,7 +40,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jiee.smartplug.objects.JSmartPlug;
-import com.jiee.smartplug.services.CrashCountDown;
 import com.jiee.smartplug.services.M1ServicesService;
 import com.jiee.smartplug.services.RegistrationIntentService;
 import com.jiee.smartplug.services.UDPListenerService;
@@ -59,8 +67,10 @@ public class M1 extends AppCompatActivity {
     BroadcastReceiver device_status_changed;
     BroadcastReceiver gcm_notification;
     BroadcastReceiver gcm_notification_done;
+    BroadcastReceiver timer_crash_reached;
     BroadcastReceiver http_device_status;
     BroadcastReceiver device_not_reached;
+    BroadcastReceiver timers_sent_successfully;
     BroadcastReceiver device_status_set;
     BroadcastReceiver mDNS_Device_Removed;
     BroadcastReceiver m1updateui;
@@ -248,6 +258,14 @@ public class M1 extends AppCompatActivity {
         overlay.setLayoutParams(params);
         overlay.invalidate(); // update the view
         overlay.setVisibility(View.GONE);
+
+        timers_sent_successfully = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                System.out.println("TIMERS SENT SUCCESSFULLY BROADCAST");
+                deviceStatusChangedFlag = true;
+            }
+        };
 
         http_device_status = new BroadcastReceiver() {
             @Override
@@ -754,12 +772,13 @@ public class M1 extends AppCompatActivity {
         updateUI();
         startRepeatingTask();
         registerReceiver(udp_update_ui, new IntentFilter("status_changed_update_ui"));
-        //registerReceiver(device_status_changed, new IntentFilter("device_status_changed"));
+        registerReceiver(device_status_changed, new IntentFilter("device_status_changed"));
         registerReceiver(gcm_notification, new IntentFilter("gcm_notification"));
         registerReceiver(gcm_notification_done, new IntentFilter("gcmNotificationDone"));
         registerReceiver(http_device_status, new IntentFilter("http_device_status"));
         registerReceiver(device_not_reached, new IntentFilter("device_not_reached"));
-        //registerReceiver(device_status_set, new IntentFilter("device_status_set"));
+        registerReceiver(timers_sent_successfully, new IntentFilter("timers_sent_successfully"));
+        registerReceiver(device_status_set, new IntentFilter("device_status_set"));
         registerReceiver(mDNS_Device_Removed, new IntentFilter("mDNS_Device_Removed"));
         registerReceiver(m1updateui, new IntentFilter("m1updateui"));
         try {
@@ -775,12 +794,13 @@ public class M1 extends AppCompatActivity {
         super.onPause();
 
         unregisterReceiver(udp_update_ui);
-        //unregisterReceiver(device_status_changed);
+        unregisterReceiver(device_status_changed);
         unregisterReceiver(gcm_notification);
         unregisterReceiver(gcm_notification_done);
         unregisterReceiver(http_device_status);
         unregisterReceiver(device_not_reached);
-        //unregisterReceiver(device_status_set);
+        unregisterReceiver(timers_sent_successfully);
+        unregisterReceiver(device_status_set);
         unregisterReceiver(mDNS_Device_Removed);
         unregisterReceiver(m1updateui);
         udpconnection = true;
@@ -841,36 +861,14 @@ public class M1 extends AppCompatActivity {
         M1ServicesService.mac = mac;
         startService(iService);
 
+        //crashTimer.setMicroTimer();
+        //crashTimer.startTimer();
+
         //SystemClock.sleep(300);
 
         plug_icon.setEnabled(true);
         nightled_icon.setEnabled(true);
 
-/*
-        udpconnection = false;
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                deviceStatusChangedFlag = false;
-                if(udp.setDeviceStatus(ip, serviceId, action)){
-                    Intent deviceStatusSet = new Intent("device_status_set");
-                    sendBroadcast(deviceStatusSet);
-                    int counter = 2;
-                    while (!deviceStatusChangedFlag && counter > 0) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (Exception e){
-                            e.printStackTrace();
-                        }
-                        counter--;
-                        //waiting time
-                    }
-                }
-
-            }
-        }).start();
-*/
         progressBar.setVisibility(View.GONE);
 
     }

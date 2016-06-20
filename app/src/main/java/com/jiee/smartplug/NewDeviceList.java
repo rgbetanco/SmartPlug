@@ -1,5 +1,14 @@
 package com.jiee.smartplug;
 
+/* TO DO:
+ *
+/*
+ NewDeviceList.cpp
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ NewDeviceList is an activity class that allows the user to add new devices and/or provide a authentication information to the new device.
+
+ */
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -31,7 +40,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jiee.smartplug.objects.JSmartPlug;
-import com.jiee.smartplug.services.CrashCountDown;
 import com.jiee.smartplug.services.UDPListenerService;
 import com.jiee.smartplug.services.mDNSTesting;
 import com.jiee.smartplug.services.mDNSservice;
@@ -63,7 +71,6 @@ public class NewDeviceList extends AppCompatActivity {
     BroadcastReceiver device_removed_receiver;
     BroadcastReceiver stop_searching_receiver;
     BroadcastReceiver device_info;
-    BroadcastReceiver timer_crash_reached;
     BroadcastReceiver smartconfig_stopped;
     ProgressBar HeaderProgress;
     UDPCommunication con;
@@ -82,7 +89,6 @@ public class NewDeviceList extends AppCompatActivity {
     boolean runThread = true;
     int delay = 1000; //milliseconds
     Intent j;
-    CrashCountDown crashTimer;
     RelativeLayout overlay;
     int globalposition;
 
@@ -96,7 +102,6 @@ public class NewDeviceList extends AppCompatActivity {
         httpHelper = new HTTPHelper(this);
         mySQLHelper = HTTPHelper.getDB(this);
         networkUtil = new NetworkUtil();
-        crashTimer = new CrashCountDown(this);
 
         overlay = (RelativeLayout)findViewById(R.id.overlay);
         int opacity = 200; // from 0 to 255
@@ -155,33 +160,16 @@ public class NewDeviceList extends AppCompatActivity {
             }
         };
 
-        timer_crash_reached = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                System.out.println("CRASH TIMER TIME-OUT");
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        short command = 0x0001;
-                        con.queryDevices(ip, command);
-                        crashTimer.setTimer(3);
-                        crashTimer.startTimer();
-                    }
-                }).start();
-            }
-        };
-
         device_info = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                crashTimer.stopTimer();
                 ip = intent.getStringExtra("ip");
                 id = intent.getStringExtra("id");
 
                     for (int i = 0; i < plugs.size(); i++) {
                         if(plugs.get(i).getIp()!=null && !plugs.get(i).getIp().isEmpty()&& ip!=null && !ip.isEmpty()) {
                             if (plugs.get(i).getIp().equals(ip)) {
-                                plugs.get(i).setId(id);
+                                plugs.get(i).setId(UDPListenerService.js.getId());
                                 plugs.get(i).setModel(UDPListenerService.js.getModel());
                                 plugs.get(i).setBuildno(UDPListenerService.js.getBuildno());
                                 plugs.get(i).setProt_ver(UDPListenerService.js.getProt_ver());
@@ -189,7 +177,7 @@ public class NewDeviceList extends AppCompatActivity {
                                 plugs.get(i).setFw_ver(UDPListenerService.js.getFw_ver());
                                 plugs.get(i).setFw_date(UDPListenerService.js.getFw_date());
                                 plugs.get(i).setFlag(UDPListenerService.js.getFlag());
-                                System.out.println("DEVICE INFO RECEIVED IP: " + ip + " ID: " + id + " POSITION: " + i + " NAME:" + plugs.get(i).getName());
+                                System.out.println("DEVICE INFO RECEIVED IP: " + ip + " ID: " + plugs.get(i).getId() + " POSITION: " + i + " NAME:" + plugs.get(i).getName());
                             } else {
                                 System.out.println("NOT UPDATING - DEVICE INFO RECEIVED IP: " + ip + " ID: " + id + " POSITION: " + i + " NAME:" + plugs.get(i).getName() + " Plug IP: " + plugs.get(i).getIp());
                             }
@@ -217,8 +205,6 @@ public class NewDeviceList extends AppCompatActivity {
             //        public void run() {
                         short command = 0x0001;
                         con.queryDevices(ip, command);
-                        crashTimer.setTimer(3);
-                        crashTimer.startTimer();
             //        }
             //    }).start();
             }
@@ -274,8 +260,6 @@ public class NewDeviceList extends AppCompatActivity {
                             //    Toast.makeText(NewDeviceList.this, getApplicationContext().getString(R.string.error_adding_new_device), Toast.LENGTH_SHORT).show();
                                 short command = 0x0001;
                                 con.queryDevices(ip, command);
-                                crashTimer.setTimer(3);
-                                crashTimer.startTimer();
                             //    removeGrayOutView();
                         }
 
@@ -366,7 +350,6 @@ public class NewDeviceList extends AppCompatActivity {
             registerReceiver(device_removed_receiver, new IntentFilter("mDNS_Device_Removed"));
     //        registerReceiver(stop_searching_receiver, new IntentFilter("stopsearching"));
             registerReceiver(device_info, new IntentFilter("device_info"));
-            registerReceiver(timer_crash_reached, new IntentFilter("timer_crash_reached"));
             registerReceiver(smartconfig_stopped, new IntentFilter("smartconfig_stopped"));
     //        update_list_new();
      //   }
@@ -385,7 +368,6 @@ public class NewDeviceList extends AppCompatActivity {
                 unregisterReceiver(device_removed_receiver);
         //        unregisterReceiver(stop_searching_receiver);
                 unregisterReceiver(device_info);
-                unregisterReceiver(timer_crash_reached);
                 unregisterReceiver(smartconfig_stopped);
             } catch (Exception e){
                 e.printStackTrace();

@@ -1,5 +1,14 @@
 package com.jiee.smartplug;
 
+/** TO DO:
+ *
+ /*
+ ListDevices.cpp
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This is the first activity once login. This activity shows all the devices added on the account. It also shows the user if there are currently
+ alarm set or if there is any warning. It also allows the user to toggle the outlet.
+ */
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -28,7 +37,6 @@ import com.daimajia.swipe.SwipeLayout;
 import com.google.android.gms.maps.CameraUpdate;
 import com.jiee.smartplug.adapters.ListDevicesAdapter;
 import com.jiee.smartplug.objects.JSmartPlug;
-import com.jiee.smartplug.services.CrashCountDown;
 import com.jiee.smartplug.services.ListDevicesServicesService;
 import com.jiee.smartplug.services.ListDevicesUpdateAlarmService;
 import com.jiee.smartplug.services.MqttCallbackHandler;

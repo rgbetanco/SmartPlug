@@ -1,5 +1,13 @@
 package com.jiee.smartplug;
 
+/** TO DO:
+ *
+ /*
+ R2_Custom.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This class allows the user to add the icon and name of the IR command
+ */
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;

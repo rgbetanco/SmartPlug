@@ -28,7 +28,6 @@ import com.jiee.smartplug.MainActivity;
 import com.jiee.smartplug.NewDeviceList;
 import com.jiee.smartplug.R;
 import com.jiee.smartplug.objects.JSmartPlug;
-import com.jiee.smartplug.services.CrashCountDown;
 import com.jiee.smartplug.services.ListDevicesServicesService;
 import com.jiee.smartplug.services.M1ServicesService;
 import com.jiee.smartplug.services.RegistrationIntentService;
@@ -66,7 +65,6 @@ public class ListDevicesAdapter extends BaseAdapter {
     public static String param;
     Handler mHandler;
     boolean deviceStatusChangedFlag = false;
-    CrashCountDown crashTimer;
 
     final LayoutInflater inflater;
 
@@ -80,8 +78,6 @@ public class ListDevicesAdapter extends BaseAdapter {
         this.UDPBinding = UDPBinding;
         SmartPlugsList = getSmartPlugsList();
         http = new HTTPHelper(a);
-        crashTimer = new CrashCountDown(this.act);
-
         pb = (ProgressBar)a.findViewById(R.id.DeviceListProgress);
     }
 
@@ -295,66 +291,6 @@ public class ListDevicesAdapter extends BaseAdapter {
                     ListDevicesServicesService.action = action;
                     ListDevicesServicesService.mac = SmartPlugsList.get(position).getId();
                     act.startService(iService);
-
-                    crashTimer.setTimer(2);
-                    crashTimer.startTimer();
-
-                    /*
-
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent i = new Intent("repeatingTaskDone");
-                            udp.setDeviceStatus(SmartPlugsList.get(position).getIp(), serviceId, action);
-                            int counter = 1;
-                            while (!deviceStatusChangedFlag && counter > 0) {
-                                try {
-                                    Thread.sleep(1000);
-                                } catch (Exception e){
-                                    e.printStackTrace();
-                                }
-                                counter--;
-                                //waiting time
-                            }
-
-                            if (deviceStatusChangedFlag) {
-                                if (serviceId == gb.ALARM_RELAY_SERVICE) {
-                                    mySQLHelper.updatePlugRelayService(action, SmartPlugsList.get(position).getId());
-                                }
-                                if (serviceId == gb.ALARM_NIGHLED_SERVICE) {
-                                    mySQLHelper.updatePlugNightlightService(action, SmartPlugsList.get(position).getId());
-                                }
-                                act.sendBroadcast(i);
-                                try {
-                                    http.setDeviceStatus("devctrl?token=" + ListDevices.token + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + SmartPlugsList.get(position).getId() + "&send=1&ignoretoken="+ RegistrationIntentService.regToken, action, serviceId);
-                                } catch (Exception e){
-                                    e.printStackTrace();
-                                }
-                            } else {
-
-                                try {
-                                    if (http.setDeviceStatus("devctrl?token=" + ListDevices.token + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + SmartPlugsList.get(position).getId()+"&send=0&ignoretoken="+ RegistrationIntentService.regToken, action, serviceId)) {
-                                        if (serviceId == gb.ALARM_RELAY_SERVICE) {
-                                            mySQLHelper.updatePlugRelayService(action, SmartPlugsList.get(position).getId());
-                                        }
-                                        if (serviceId == gb.ALARM_NIGHLED_SERVICE) {
-                                            mySQLHelper.updatePlugNightlightService(action, SmartPlugsList.get(position).getId());
-                                        }
-                                        act.sendBroadcast(i);
-                                        Log.i("LISTADAPTER", "devctrl?token=" + ListDevices.token + "&hl=" + Locale.getDefault().getLanguage() + "&devid=" + SmartPlugsList.get(position).getId() + " ACTION: " + action + " SERVICE: " + serviceId);
-                                    } else {
-                                        i.putExtra("errorMessage", "yes");
-                                    }
-                                } catch (Exception e) {
-                                    i.putExtra("errorMessage", "yes");
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }).start();
-                    */
-                    //deviceStatusChangedFlag = false;
-
                 }
 
             });
