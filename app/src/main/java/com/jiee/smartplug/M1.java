@@ -67,7 +67,6 @@ public class M1 extends AppCompatActivity {
     BroadcastReceiver device_status_changed;
     BroadcastReceiver gcm_notification;
     BroadcastReceiver gcm_notification_done;
-    BroadcastReceiver timer_crash_reached;
     BroadcastReceiver http_device_status;
     BroadcastReceiver device_not_reached;
     BroadcastReceiver timers_sent_successfully;
@@ -531,8 +530,6 @@ public class M1 extends AppCompatActivity {
                     short command = 0x0007;
                     if (udp.queryDevices(mac, command)) {
                         removeGrayOutView();
-                        //    crashTimer.setTimer(2);
-                        //    crashTimer.startTimer();
                     } else {
                         System.out.println("IP IS NULL");
                     }
@@ -748,8 +745,6 @@ public class M1 extends AppCompatActivity {
                     if (ip != null) {
                         short command = 0x0007;
                         if (udp.queryDevices(mac, command)) {
-                         //   crashTimer.setTimer(0);
-                         //   crashTimer.startTimer();
                         } else {
                             System.out.println("IP IS NULL");
                         }
@@ -860,11 +855,6 @@ public class M1 extends AppCompatActivity {
         M1ServicesService.action = action;
         M1ServicesService.mac = mac;
         startService(iService);
-
-        //crashTimer.setMicroTimer();
-        //crashTimer.startTimer();
-
-        //SystemClock.sleep(300);
 
         plug_icon.setEnabled(true);
         nightled_icon.setEnabled(true);
