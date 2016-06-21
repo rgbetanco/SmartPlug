@@ -3,7 +3,7 @@ package com.jiee.smartplug;
 /* TO DO:
  *
 /*
- CreateAccount.cpp
+ CreateAccount.java
  Author: Chinsoft Ltd. | www.chinsoft.com
  Create a new account for the user.
 

@@ -9,9 +9,16 @@ import com.integrity_project.smartconfiglib.SmartConfigListener;
 import com.jiee.smartplug.utils.NetworkUtil;
 import com.jiee.smartplug.utils.SmartConfigConstants;
 
-/**
- * Created by ronaldgarcia on 8/12/15.
+/** TO DO:
+ *
+ /*
+ SmartConfigService.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This class starts the smart config routine to provide username and password to the smartplug, this is an
+ adaptation and implementation of the original TI library
+
  */
+
 public class SmartConfigService extends IntentService {
 
     byte[] freeData;

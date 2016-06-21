@@ -3,7 +3,7 @@ package com.jiee.smartplug;
 /* TO DO: DELETE THIS CLASS IF NOT USED IN THE FUTURE.
  *
 /*
- DetectIR.cpp
+ DetectIR.java
  Author: Chinsoft Ltd. | www.chinsoft.com
 
  */

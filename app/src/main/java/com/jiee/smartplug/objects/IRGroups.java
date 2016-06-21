@@ -1,8 +1,5 @@
 package com.jiee.smartplug.objects;
 
-/**
- * Created by ronaldgarcia on 7/4/16.
- */
 public class IRGroups {
 
     int id;

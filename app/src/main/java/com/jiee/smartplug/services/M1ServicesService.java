@@ -16,9 +16,15 @@ import com.jiee.smartplug.utils.MySQLHelper;
 import com.jiee.smartplug.utils.UDPCommunication;
 import java.util.Locale;
 
-/**
- * Created by ronaldgarcia on 22/4/16.
+/** TO DO:
+ *
+ /*
+ M1ServicesService.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ Queue all the click events on the plug icon in the M1 activity
+
  */
+
 public class M1ServicesService extends IntentService {
 
     public static String ip = "";

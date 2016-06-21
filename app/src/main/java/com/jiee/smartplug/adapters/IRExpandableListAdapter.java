@@ -13,9 +13,16 @@ import com.jiee.smartplug.R;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by ronaldgarcia on 1/5/16.
+/** TO DO:
+ *
+ /*
+ IRExpandableListAdapter.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+
+ An adapter that hanlde the IR List commands on the alarm.
+
  */
+
 public class IRExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context _context;

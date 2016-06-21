@@ -3,7 +3,7 @@ package com.jiee.smartplug;
 /** TO DO: DELETE THIS FILE.
  *
 /*
- NewDeviceList.cpp
+ NewDeviceList.java
  Author: Chinsoft Ltd. | www.chinsoft.com
  */
 

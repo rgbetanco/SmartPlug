@@ -26,9 +26,17 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceListener;
 import javax.jmdns.JmDNS;
 
-/**
- * Created by ronaldgarcia on 22/1/16.
+/** TO DO:
+ *
+ /*
+ mDNSTesting.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This is a background service use to discover the SmartPlug through mDNS. The library has compatibility for after and before Jellybeans version
+ of Android.
+
  */
+
+
 public class mDNSTesting extends Service {
 
     private WifiManager.MulticastLock lock;

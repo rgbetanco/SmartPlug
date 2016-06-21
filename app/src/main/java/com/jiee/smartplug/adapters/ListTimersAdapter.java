@@ -36,9 +36,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.Inflater;
 
-/**
- * Created by ronaldgarcia on 4/2/16.
+/** TO DO:
+ *
+ /*
+ ListTimerAdapter.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+
+ Adapter for the S2_Schedule activity's list
+
  */
+
 public class ListTimersAdapter extends BaseAdapter {
 
     private final Activity context;

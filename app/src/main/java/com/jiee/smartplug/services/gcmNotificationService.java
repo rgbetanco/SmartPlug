@@ -10,9 +10,15 @@ import com.jiee.smartplug.utils.Miscellaneous;
 
 import java.util.Locale;
 
-/**
- * Created by ronaldgarcia on 25/4/16.
+/** TO DO:
+ *
+/*
+ gcmNoficationService.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ Receive the GCM push notifications and send a broadcast to process the information.
+
  */
+
 public class gcmNotificationService extends IntentService {
 
     public static String mac;

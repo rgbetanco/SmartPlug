@@ -1,8 +1,6 @@
 package com.jiee.smartplug.objects;
 
-/**
- * Created by ronaldgarcia on 29/12/15.
- */
+
 public class AlarmList {
     public AlarmList(){}
     String name;

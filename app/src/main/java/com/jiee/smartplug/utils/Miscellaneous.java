@@ -27,8 +27,14 @@ import com.jiee.smartplug.R;
 
 import org.json.HTTP;
 
-/**
- * Created by ronaldgarcia on 29/12/15.
+/** TO DO:
+ *
+ /*
+ Miscellaneous.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+
+ This class is a set of methods used as utilities in the app
+
  */
 public class Miscellaneous {
 

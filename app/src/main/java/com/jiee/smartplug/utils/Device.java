@@ -4,6 +4,10 @@
 
 package com.pandaos.smartconfig.utils;
 
+/**
+ * class not being used.
+ */
+
 public class Device {
 	public String name;
 	public String host;

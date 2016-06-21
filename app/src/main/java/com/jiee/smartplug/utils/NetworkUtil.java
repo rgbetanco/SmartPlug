@@ -4,6 +4,14 @@
 
 package com.jiee.smartplug.utils;
 
+/** TO DO: TO DELETE, THIS CLASS IS NOT BEING USED
+ *
+ /*
+ NetworkUtil.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+
+ */
+
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;

@@ -1,8 +1,15 @@
 package com.jiee.smartplug.utils;
 
-/**
- * Created by ronaldgarcia on 8/1/16.
+/** TO DO:
+ *
+ /*
+ GlobalVariables.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+
+ Global variables use on the app
+
  */
+
 public class GlobalVariables {
     public static int ALARM_RELAY_SERVICE = 0xD1000000;
     public static int ALARM_NIGHLED_SERVICE = 0xD1000001;

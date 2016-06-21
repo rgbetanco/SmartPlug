@@ -1,8 +1,5 @@
 package com.jiee.smartplug.objects;
 
-/**
- * Created by ronaldgarcia on 9/12/15.
- */
 public class JSmartPlug {
     int dbid;
     String name;

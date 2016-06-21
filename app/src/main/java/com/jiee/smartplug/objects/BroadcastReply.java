@@ -1,8 +1,5 @@
 package com.jiee.smartplug.objects;
 
-/**
- * Created by ronaldgarcia on 23/12/15.
- */
 public class BroadcastReply {
 
     int id;

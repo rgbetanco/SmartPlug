@@ -19,9 +19,17 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.zip.Inflater;
 
-/**
- * Created by ronaldgarcia on 11/2/16.
+
+/** TO DO:
+ *
+ /*
+ ListIconAdapter.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+
+ Adapter for the IconPicker activity's list
+
  */
+
 public class ListIconsAdapter extends BaseAdapter {
     Activity a;
     MySQLHelper sql;

@@ -14,9 +14,15 @@ import com.jiee.smartplug.utils.UDPCommunication;
 
 import java.util.Locale;
 
-/**
- * Created by ronaldgarcia on 22/4/16.
+/** TO DO:
+ *
+ /*
+ ListDevicesServicesService.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ Queue all the click events on the plug icon in the ListDevices activity
+
  */
+
 public class ListDevicesServicesService extends IntentService {
 
     public static String ip = "";

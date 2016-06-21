@@ -30,6 +30,16 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceListener;
 import javax.jmdns.ServiceTypeListener;
 
+/** TO DO: TO DELETE, THIS CLASS WAS REPLACED BY mDNSTesting.java
+ *
+ /*
+ mDNSservice.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This is a background service use to discover the SmartPlug through mDNS. The library has compatibility for after and before Jellybeans version
+ of Android.
+
+ */
+
 public class mDNSservice extends Service implements ServiceListener, ServiceTypeListener {
 
     private final IBinder mBinder = new MyBinder();

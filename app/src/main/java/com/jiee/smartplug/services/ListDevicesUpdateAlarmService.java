@@ -12,9 +12,14 @@ import com.jiee.smartplug.utils.MySQLHelper;
 
 import java.util.Locale;
 
-/**
- * Created by ronaldgarcia on 25/4/16.
+/** TO DO:
+ *
+ /*
+ ListDevicesUpdateAlarmService.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+ This service ask the server for the alarms stored and update the local database. This will also be used to update DeviceList UI
  */
+
 public class ListDevicesUpdateAlarmService extends IntentService {
 
     HTTPHelper httpHelper;

@@ -16,9 +16,16 @@ import com.jiee.smartplug.utils.MySQLHelper;
 
 import java.util.List;
 
-/**
- * Created by ronaldgarcia on 29/12/15.
+/** TO DO:
+ *
+ /*
+ ListAlarmAdapter.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+
+ Adapter for the M1SnoozeDialog dialog's list
+
  */
+
 public class ListAlarmsAdapter extends ArrayAdapter<AlarmList> {
     private final List<AlarmList> values;
     MySQLHelper sql;

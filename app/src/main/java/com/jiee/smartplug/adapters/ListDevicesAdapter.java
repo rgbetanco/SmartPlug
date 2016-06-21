@@ -43,9 +43,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Created by ronaldgarcia on 14/12/15.
+/** TO DO:
+ *
+ /*
+ ListDeviceAdapter.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+
+ Adapter for the DeviceList activity's list
+
  */
+
 public class ListDevicesAdapter extends BaseAdapter {
     Activity act;
     MySQLHelper mySQLHelper;

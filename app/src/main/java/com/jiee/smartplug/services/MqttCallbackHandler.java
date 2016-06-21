@@ -5,9 +5,12 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import android.content.Context;
 
-/**
- * Handles call backs from the MQTT Client
+/** TO DO: TO DELETE, NOT USED ON THIS VERSION
  *
+ /*
+ MqttCallbackHandler.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+
  */
 public class MqttCallbackHandler implements MqttCallback {
 

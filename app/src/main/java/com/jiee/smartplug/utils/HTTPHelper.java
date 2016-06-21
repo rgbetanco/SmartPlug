@@ -41,9 +41,16 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-/**
- * Created by ronaldgarcia on 16/2/16.
+/** TO DO:
+ *
+ /*
+ HTTPHelper.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+
+ This class handle all connections to the server using OkHttp library.
+
  */
+
 public class HTTPHelper {
     public static final MediaType TEXT = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
     OkHttpClient client;

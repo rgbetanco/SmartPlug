@@ -1,7 +1,13 @@
 package com.jiee.smartplug.utils;
 
-/**
- * Created by ronaldgarcia on 11/12/15.
+/** TO DO:
+ *
+ /*
+ MySQLHelper.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+
+ This class handles everything related to the local database ( delete/update/select )
+
  */
 
 import android.content.ContentValues;

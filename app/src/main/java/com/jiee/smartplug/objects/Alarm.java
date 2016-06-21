@@ -1,8 +1,6 @@
 package com.jiee.smartplug.objects;
 
-/**
- * Created by ronaldgarcia on 28/12/15.
- */
+
 public class Alarm {
 
     public Alarm(){}

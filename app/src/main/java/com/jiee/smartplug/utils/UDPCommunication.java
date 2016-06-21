@@ -30,9 +30,16 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.concurrent.RunnableFuture;
 
-/**
- * Created by ronaldgarcia on 9/12/15.
+/** TO DO:
+ *
+ /*
+ UDPCommunication.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+
+ The methods in this class send udp communication to the device according to the documentation.
+
  */
+
 public class UDPCommunication {
 
     int MAX_UDP_DATAGRAM_LEN = 128;

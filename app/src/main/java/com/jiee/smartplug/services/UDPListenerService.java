@@ -27,6 +27,16 @@ import com.jiee.smartplug.utils.MySQLHelper;
 import com.jiee.smartplug.utils.NetworkUtil;
 import com.jiee.smartplug.utils.UDPCommunication;
 
+/** TO DO:
+ *
+ /*
+ UDPListenerService.java
+ Author: Chinsoft Ltd. | www.chinsoft.com
+
+ This class waits for UDP transmission, processing header, body and terminator according to documentation.
+
+ */
+
 public class UDPListenerService extends Service {
     static String UDP_BROADCAST = "UDPBroadcast";
     static final String TAG =  "UDPListenerService";
