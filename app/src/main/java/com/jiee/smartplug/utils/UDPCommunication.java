@@ -55,7 +55,6 @@ public class UDPCommunication {
     byte[] iMsg = new byte[22];
     byte[] kMsg = new byte[46];
     byte[] ir = new byte[128];
-    byte[] delayT = new byte[22];
     byte[] ir2 = new byte[1];
     byte[] timers = new byte[512];
     public static ArrayList<Integer> IRCodes = new ArrayList<>();
@@ -154,7 +153,8 @@ public class UDPCommunication {
         boolean toReturn = false;
         http = new HTTPHelper(mContext);
         String ip = M1.ip;
-            if (protocol == 0) {
+        byte[] delayT = new byte[22];
+        if (protocol == 0) {
                 generate_header_http((short) 0x000B);
             } else if (protocol == 1) {
                 command = generate_header( macID, (short)0x000B);
@@ -439,7 +439,7 @@ public class UDPCommunication {
 
             } else {
                 System.out.println("SENDING ALL ZERO TIMER");
-                for(int x = 0; x < 11; x++){
+                for(int x = 0; x < 12; x++){
                     timers[i++] = 0;
                 }
 
