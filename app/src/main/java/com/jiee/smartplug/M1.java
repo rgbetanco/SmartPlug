@@ -73,6 +73,7 @@ public class M1 extends AppCompatActivity {
     BroadcastReceiver device_status_set;
     BroadcastReceiver mDNS_Device_Removed;
     BroadcastReceiver m1updateui;
+    BroadcastReceiver broadcasted_presence;
     ProgressBar progressBar;
 
     ImageButton plug_icon;
@@ -279,6 +280,15 @@ public class M1 extends AppCompatActivity {
             }
         };
 
+        broadcasted_presence = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String paramName = intent.getStringExtra("name");
+                String paramIp = intent.getStringExtra("ip");
+                sql.updatePlugIP(paramName, paramIp);
+            }
+        };
+
         device_status_set = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -385,7 +395,6 @@ public class M1 extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 final String devid = intent.getStringExtra("id");
                 Log.i("BROADCAST", "BROADCAST RECEIVED FROM DEVICE + " + devid );
-
                 //startRepeatingTask();
                 updateUI();
             }
@@ -764,7 +773,7 @@ public class M1 extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        updateUI();
+     //   updateUI();
         startRepeatingTask();
         registerReceiver(udp_update_ui, new IntentFilter("status_changed_update_ui"));
         registerReceiver(device_status_changed, new IntentFilter("device_status_changed"));
@@ -776,6 +785,7 @@ public class M1 extends AppCompatActivity {
         registerReceiver(device_status_set, new IntentFilter("device_status_set"));
         registerReceiver(mDNS_Device_Removed, new IntentFilter("mDNS_Device_Removed"));
         registerReceiver(m1updateui, new IntentFilter("m1updateui"));
+        registerReceiver(broadcasted_presence, new IntentFilter("broadcasted_presence"));
         try {
             Intent intent = new Intent(this, UDPListenerService.class);
             bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
@@ -798,6 +808,7 @@ public class M1 extends AppCompatActivity {
         unregisterReceiver(device_status_set);
         unregisterReceiver(mDNS_Device_Removed);
         unregisterReceiver(m1updateui);
+        unregisterReceiver(broadcasted_presence);
         udpconnection = true;
         try {
             if (mServiceBound) {

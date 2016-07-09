@@ -369,7 +369,7 @@ public class UDPListenerService extends Service {
                 js.setNightlight(0);
             }
 
-            Log.v( TAG, "light data=" + ((data==1)?"on":"off") + " devid=" + currentCommand.macID );
+            Log.v(TAG, "light data=" + ((data == 1) ? "on" : "off") + " devid=" + currentCommand.macID);
             sql.updatePlugNightlightService(data, currentCommand.macID);
         }
         /**********************************************/
@@ -415,9 +415,10 @@ public class UDPListenerService extends Service {
 
         if( isCommand ) {
 
-            if(code == 0x1000) {
+            if(code == 0x1000 && msgid != previous_msgid) {
                 code = 1;
                 Log.v( TAG, "command = BROADCAST");
+                Log.v(TAG, "msid: "+msgid+" - previous_msgid: "+previous_msgid);
                 Intent ui = process_broadcast_info();
 
                 sendBroadcast(ui);
@@ -427,6 +428,18 @@ public class UDPListenerService extends Service {
                 Log.v( TAG, "command = OTA firmware OK" );
                 Intent i = new Intent("ota_finished");
                 i.putExtra("id", sql.getPlugMacFromIP( dp.getAddress() ) );
+                sendBroadcast(i);
+            }
+            else if(code == 0x0F0F){
+                int mac = 0;
+                for (int i = 18; i < 24; i++) {
+                    mac += lMsg[i] & 0xff;
+                }
+                code = 1;
+                Intent i = new Intent("broadcasted_presence");
+                System.out.println("DEVICE IS ALIVE");
+                i.putExtra("ip",dp.getAddress().getHostAddress());
+                i.putExtra("name", "JSPlug"+mac);
                 sendBroadcast(i);
             }
             else {
@@ -528,6 +541,13 @@ public class UDPListenerService extends Service {
                         Intent i = new Intent("delete_sent");
                         i.putExtra("id", currentCommand.macID);
                         sendBroadcast(i);
+                    }
+                    break;
+
+                case 0x0F0F:
+                    if(code == 0){
+                        //do nothing if we already receive this command
+                        code = 1;
                     }
                     break;
             }

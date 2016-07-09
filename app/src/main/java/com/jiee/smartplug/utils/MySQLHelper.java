@@ -409,7 +409,7 @@ public class MySQLHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_ICON, js.getIcon());
         contentValues.put(COLUMN_SID, js.getId());
         //if(js.getIp()!=null && !js.getIp().isEmpty() && !js.getIp().equals("null"))
-        //    contentValues.put(COLUMN_IP, js.getIp());
+        contentValues.put(COLUMN_IP, js.getIp());
         contentValues.put(COLUMN_MODEL, js.getModel());
         contentValues.put(COLUMN_BUILD_NO, js.getBuildno());
         contentValues.put(COLUMN_PROT_VER, js.getProt_ver());

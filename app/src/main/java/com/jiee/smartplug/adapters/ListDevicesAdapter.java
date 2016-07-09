@@ -298,6 +298,8 @@ public class ListDevicesAdapter extends BaseAdapter {
                     ListDevicesServicesService.action = action;
                     ListDevicesServicesService.mac = SmartPlugsList.get(position).getId();
                     act.startService(iService);
+
+                    Toast.makeText(act, R.string.processing_command, Toast.LENGTH_SHORT).show();
                 }
 
             });

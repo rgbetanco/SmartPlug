@@ -39,6 +39,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jiee.smartplug.adapters.ListDevicesAdapter;
 import com.jiee.smartplug.objects.JSmartPlug;
 import com.jiee.smartplug.services.UDPListenerService;
 import com.jiee.smartplug.services.mDNSTesting;
@@ -72,6 +73,7 @@ public class NewDeviceList extends AppCompatActivity {
     BroadcastReceiver stop_searching_receiver;
     BroadcastReceiver device_info;
     BroadcastReceiver smartconfig_stopped;
+    BroadcastReceiver broadcasted_presence;
     ProgressBar HeaderProgress;
     UDPCommunication con;
     List<JSmartPlug> items;
@@ -79,6 +81,7 @@ public class NewDeviceList extends AppCompatActivity {
     Activity c = this;
     //mDNSservice mDNS;
     Intent i;
+    Intent jk;
     NetworkUtil networkUtil;
     Handler handler;
     Http http;
@@ -91,6 +94,8 @@ public class NewDeviceList extends AppCompatActivity {
     Intent j;
     RelativeLayout overlay;
     int globalposition;
+    UDPListenerService UDPBinding;
+    boolean UDPBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +123,7 @@ public class NewDeviceList extends AppCompatActivity {
 
         update_plugs();
 
-        j = new Intent(this, mDNSTesting.class);
+    //    j = new Intent(this, mDNSTesting.class);
 
         TextView toolbar_text = (TextView) findViewById(R.id.sub_toolbar_yellow);
         toolbar_text.setText(getApplicationContext().getString(R.string.title_addDevice));
@@ -155,8 +160,15 @@ public class NewDeviceList extends AppCompatActivity {
         smartconfig_stopped = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                stopService(j);
-                startService(j);
+             // stopService(j);
+             // startService(j);
+            }
+        };
+
+        broadcasted_presence = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                request_device_info(intent);
             }
         };
 
@@ -189,24 +201,14 @@ public class NewDeviceList extends AppCompatActivity {
         device_removed_receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-           //     update_list_new();
+            //    update_list_new();
             }
         };
 
         new_device_receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context c, Intent i) {
-                name = i.getStringExtra("name");
-                ip = i.getStringExtra("ip");
-                Log.i("NewDeviceList", "New Device Received "+name+", IP "+ip);
-                update_list_new(name, ip);
-            //    new Thread(new Runnable() {
-            //        @Override
-            //        public void run() {
-                        short command = 0x0001;
-                        con.queryDevices(ip, command);
-            //        }
-            //    }).start();
+            //    request_device_info(i);
             }
         };
 
@@ -294,6 +296,15 @@ public class NewDeviceList extends AppCompatActivity {
         c.close();
     }
 
+    public void request_device_info(Intent intent){
+        name = intent.getStringExtra("name");
+        ip = intent.getStringExtra("ip");
+        Log.i("NewDeviceList", "New Device Received " + name + ", IP " + ip);
+        update_list_new(name, ip);
+        short command = 0x0001;
+        con.queryDevices(ip, command);
+    }
+
     public void update_list_new(String name, String ip){
 
         //check if the name is not already in the database
@@ -340,6 +351,20 @@ public class NewDeviceList extends AppCompatActivity {
 
     }
 
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            UDPListenerService.MyBinder myBinder = (UDPListenerService.MyBinder) service;
+            UDPBinding = myBinder.getService();
+            UDPBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            UDPBound = false;
+        }
+    };
+
     @Override
     protected void onResume(){
         super.onResume();
@@ -351,10 +376,14 @@ public class NewDeviceList extends AppCompatActivity {
     //        registerReceiver(stop_searching_receiver, new IntentFilter("stopsearching"));
             registerReceiver(device_info, new IntentFilter("device_info"));
             registerReceiver(smartconfig_stopped, new IntentFilter("smartconfig_stopped"));
+            registerReceiver(broadcasted_presence, new IntentFilter("broadcasted_presence"));
     //        update_list_new();
      //   }
 
-        startService(j);
+        jk = new Intent(this, UDPListenerService.class);
+        bindService(jk, serviceConnection, Context.BIND_AUTO_CREATE);
+
+        startService(jk);
 
     }
 
@@ -369,6 +398,10 @@ public class NewDeviceList extends AppCompatActivity {
         //        unregisterReceiver(stop_searching_receiver);
                 unregisterReceiver(device_info);
                 unregisterReceiver(smartconfig_stopped);
+                unregisterReceiver(broadcasted_presence);
+                unbindService(serviceConnection);
+                stopService(jk);
+
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -379,7 +412,7 @@ public class NewDeviceList extends AppCompatActivity {
     protected void onDestroy(){
         super.onDestroy();
         try {
-            stopService(j);
+//            stopService(j);
         } catch (Exception e){
             e.printStackTrace();
         }

@@ -16,6 +16,12 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.util.Log;
+
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.ByteOrder;
 
 public class NetworkUtil {
 
@@ -71,5 +77,27 @@ public class NetworkUtil {
 				((i >> 16 ) & 0xFF) + "." +
 				((i >> 8 ) & 0xFF) + "." +
 				( i & 0xFF) ;
+	}
+
+	public static String wifiIpAddress(Context context) {
+		WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+		int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
+
+		// Convert little-endian to big-endianif needed
+		if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
+			ipAddress = Integer.reverseBytes(ipAddress);
+		}
+
+		byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
+
+		String ipAddressString;
+		try {
+			ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
+		} catch (UnknownHostException ex) {
+			Log.e("WIFIIP", "Unable to get host address.");
+			ipAddressString = null;
+		}
+
+		return ipAddressString;
 	}
 }

@@ -88,6 +88,7 @@ public class ListDevices extends Activity {
     BroadcastReceiver UpdateAlarmServiceDone;
     BroadcastReceiver http_device_status;
     BroadcastReceiver delete_sent;
+    BroadcastReceiver broadcasted_presence;
     ListDevicesAdapter l;
     ListView list;
     NetworkUtil networkUtil;
@@ -229,6 +230,15 @@ public class ListDevices extends Activity {
                 }
 
                 //startRepeatingTask(devid);
+            }
+        };
+
+        broadcasted_presence = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String paramName = intent.getStringExtra("name");
+                String paramIp = intent.getStringExtra("ip");
+                mySQLHelper.updatePlugIP(paramName, paramIp);
             }
         };
 
@@ -400,7 +410,7 @@ public class ListDevices extends Activity {
             }
         });
 
-        mDNS = new Intent(this, mDNSTesting.class);
+     //   mDNS = new Intent(this, mDNSTesting.class);
 
      //   if(!sharedpreferences.getString("alarms", "outdated").equals("updated")) {
             Cursor c = mySQLHelper.getPlugData();
@@ -439,7 +449,6 @@ public class ListDevices extends Activity {
                 c.moveToFirst();
                 for(int i = 0; i < c.getCount(); i++) {
                     con.queryDevices(c.getString(2), (short)0x0007);
-
                     c.moveToNext();
                 }
             }
@@ -534,7 +543,7 @@ public class ListDevices extends Activity {
     protected void onResume(){
         super.onResume();
         //    if(networkUtil.getConnectionStatus(this) == 1) {
-        startService(mDNS);
+//            startService(mDNS);
             Log.i("ListDevices", "onResume refreshing");
             startRepeatingTask();
             Intent j = new Intent(this, UDPListenerService.class);
@@ -552,6 +561,7 @@ public class ListDevices extends Activity {
             registerReceiver(UpdateAlarmServiceDone, new IntentFilter("UpdateAlarmServiceDone"));
             registerReceiver(http_device_status, new IntentFilter("http_device_status"));
             registerReceiver(delete_sent, new IntentFilter("delete_sent"));
+            registerReceiver(broadcasted_presence, new IntentFilter("broadcasted_presence"));
             LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                     new IntentFilter(GlobalVariables.REGISTRATION_COMPLETE));
     //    }
@@ -577,13 +587,14 @@ public class ListDevices extends Activity {
             unregisterReceiver(UpdateAlarmServiceDone);
             unregisterReceiver(http_device_status);
             unregisterReceiver(delete_sent);
+            unregisterReceiver(broadcasted_presence);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
     //    }
     }
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        stopService(mDNS);
+//        stopService(mDNS);
         stopRepeatingTask();
 
         SharedPreferences.Editor editor = sharedpreferences.edit();
