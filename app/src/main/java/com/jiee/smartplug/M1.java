@@ -639,11 +639,12 @@ public class M1 extends AppCompatActivity {
                     warning_text.setText(R.string.msg_co_warning);
                     break;
                 case 3:
-                    warning_layout.setVisibility(View.VISIBLE);
-                    btn_co.setImageResource(R.drawable.svc_3_big_off);
-                    img_warn2.setVisibility(View.VISIBLE);
-                    btn_warning.setVisibility(View.VISIBLE);
-                    warning_text.setText(R.string.USB_not_plugged_in);
+                    Toast.makeText(M1.this, R.string.USB_not_plugged_in, Toast.LENGTH_SHORT).show();
+                    //warning_layout.setVisibility(View.VISIBLE);
+                    //btn_co.setImageResource(R.drawable.svc_3_big_off);
+                    //img_warn2.setVisibility(View.VISIBLE);
+                    //btn_warning.setVisibility(View.VISIBLE);
+                    //warning_text.setText(R.string.USB_not_plugged_in);
                     break;
             }
             switch (u.getInt(15)) {                                                                  //NIGHT LIGHT
